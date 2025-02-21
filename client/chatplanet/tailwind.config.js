@@ -5,7 +5,9 @@ export const content = [
     
 ]
 
-export const darkmode = 'class'
+export const darkMode = 'class'
+
+
 
 export const plugin = [
     require("flyonui"),

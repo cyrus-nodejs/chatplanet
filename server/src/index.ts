@@ -15,7 +15,7 @@ import { Server } from "socket.io";
 import cors from "cors"
 import { authenticateJWT } from '../middlewares/jwt/jwt';
 import cookieParser from 'cookie-parser';
-
+import { uploadToCloudinary } from '../utils/cloudinary';
 dotenv.config()
 // const crypto = require("crypto")
 // let token = crypto.randomBytes(64).toString('hex');
@@ -115,21 +115,13 @@ io.on('connection', (socket) => {
   try{
   users[sender_id] = socket.id;
 
-  
-  pool.connect(async (err:any) => {
-    if (err) throw err;
-    
     // Update online Users status in database
-     const sqlUpdate = `UPDATE users   SET status = ?   WHERE  id = ?`
-     const insert_query = mysql.format(sqlUpdate,["online", sender_id])
-     pool.query(insert_query, async (err:any, result:any) => {
+     const sqlUpdate = `UPDATE users   SET status = 'online', last_seen = NOW()  WHERE  id = '${sender_id}'`
+    //  const insert_query = mysql.format(sqlUpdate,["online",  sender_id])
+     pool.query(sqlUpdate, async (err:any, result:any) => {
       if (err) throw err;
           //  console.log(`${sender_id} socket active`)
       })
-  
-  });
-
- 
   io.emit('onlineUsers', users); // Emit connected users list
 }catch(err){
   console.log(err)
@@ -140,9 +132,6 @@ try{
  // Emit chat history when a user connects
  socket.on('requestChatHistory', (data) => {
   const {sender_id, receiver_id} = data
-   
-pool.connect(async (err:any) => {
-  if (err) throw err;
   pool.query(
     'SELECT * FROM private_messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY timestamp ASC',
     [sender_id, receiver_id, receiver_id, sender_id],
@@ -152,7 +141,7 @@ pool.connect(async (err:any) => {
       socket.emit('chatHistory', results);
     }
   );
-})
+
 })
 }catch (err){
 console.log(err)
@@ -160,24 +149,70 @@ console.log(err)
    
     
  // Handle private messages
- socket.on('private_message', (data) => {
+ socket.on('private_message', (messageData) => {
   try{
-  const {  receiver_id, message, sender_id } = data;
-  pool.connect(async (err) => {
-    if (err) throw err;
-     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, message) VALUES (?,?,?,?)"
-     const insert_query = mysql.format(sqlInsert,[uuidv4(), sender_id, receiver_id, message])
+  const {  receiver_id, message, sender_id } = messageData;
+     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, message, status) VALUES (?,?,?,?,?)"
+     const insert_query = mysql.format(sqlInsert,[uuidv4(), sender_id, receiver_id, message, 'delivered'])
             pool.query (insert_query, (err, result:any)=> {
               if (err) throw err;
               console.log(`This is ${ result.affectedRows}`)
             
              })
-          
-            
-        })
    if (users[receiver_id]) {
     io.to(users[receiver_id]).emit('private_message', { sender_id, message });
     console.log(`${message} sent to ${users[receiver_id]}`)
+    console.log(receiver_id)
+  }
+}catch (err){
+  console.log(err)
+      }
+   
+});
+
+
+
+
+// Handle private messages
+ socket.on('private_media', (mediaData) => {
+  try{
+      
+  const {  receiver_id, media, sender_id } = mediaData
+
+  const image = media.image
+     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, media, status) VALUES (?,?,?,?,?)"
+     const insert_query = mysql.format(sqlInsert,[uuidv4(), sender_id, receiver_id, image, 'delivered'])
+            pool.query (insert_query, (err, result:any)=> {
+              if (err) throw err;
+              console.log(`This is ${ result.affectedRows}`)
+            
+             })
+   if (users[receiver_id]) {
+    io.to(users[receiver_id]).emit('private_message', { sender_id, media });
+    console.log(`${media} sent to ${users[receiver_id]}`)
+    console.log(receiver_id)
+  }
+}catch (err){
+  console.log(err)
+      }
+   
+});
+
+// Handle private messages
+ socket.on('private_files', (fileData) => {
+  try{
+  const {  receiver_id, files, sender_id } = fileData;
+  const file = files.Files
+     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, files, status) VALUES (?,?,?,?,?)"
+     const insert_query = mysql.format(sqlInsert,[uuidv4(), sender_id, receiver_id, file, 'delivered'])
+            pool.query (insert_query, (err, result:any)=> {
+              if (err) throw err;
+              console.log(`This is ${ result.affectedRows}`)
+            
+             })
+   if (users[receiver_id]) {
+    io.to(users[receiver_id]).emit('private_message', { sender_id, files });
+    console.log(`${files} sent to ${users[receiver_id]}`)
     console.log(receiver_id)
   }
 }catch (err){
@@ -196,27 +231,55 @@ console.log(err)
 
  
   // Handle group messages
-  socket.on('group_message', (data) => {
-    const { sender_id, group_id, groupMessage } = data;
-    console.log(`socket ${data}`)
-    pool.connect(async (err) => {
-      if (err) throw err;
-       const sqlInsert = "INSERT INTO group_messages(id, group_id, sender_id, message) VALUES (?,?,?,?)"
-       const insert_query = mysql.format(sqlInsert,[uuidv4(), group_id, sender_id, groupMessage])
+  socket.on('group_message', (messageData) => {
+    const { user_id, group_id, message } = messageData;
+    console.log(`socket ${messageData}`)
+
+       const sqlInsert = "INSERT INTO group_messages( group_id, user_id, message) VALUES (?,?,?)"
+       const insert_query = mysql.format(sqlInsert,[ group_id, user_id, message])
               pool.query (insert_query, (err, result:any)=> {
                 if (err) throw err;
               // console.log(`group message: ${result}`)
                })
-          })
-    io.to(group_id).emit("group_message", data); // Broadcast to group
+          
+    io.to(group_id).emit("group_message", messageData); // Broadcast to group
+  });
+
+    // Handle group messages
+    socket.on('group_media', (mediaData) => {
+      const { user_id, group_id, media } = mediaData;
+      console.log(`socket ${mediaData}`)
+  
+         const sqlInsert = "INSERT INTO group_messages( group_id, user_id, media) VALUES (?,?,?)"
+         const insert_query = mysql.format(sqlInsert,[ group_id, user_id, media])
+                pool.query (insert_query, (err, result:any)=> {
+                  if (err) throw err;
+                // console.log(`group message: ${result}`)
+                 })
+            
+      io.to(group_id).emit("group_message", mediaData); // Broadcast to group
+    });
+
+      // Handle group messages
+  socket.on('group_files', (fileData) => {
+    const { user_id, group_id, files } = fileData;
+    console.log(`socket ${fileData}`)
+
+       const sqlInsert = "INSERT INTO group_messages( group_id, user_id, files) VALUES (?,?,?)"
+       const insert_query = mysql.format(sqlInsert,[ group_id, user_id, files])
+              pool.query (insert_query, (err, result:any)=> {
+                if (err) throw err;
+              // console.log(`group message: ${result}`)
+               })
+          
+    io.to(group_id).emit("group_message", fileData); // Broadcast to group
   });
 
 
  // Emit groupchat history when a user connects
  socket.on('requestGroupChatHistory', (group_id) => {
   try{
-  pool.connect(async (err:any) => {
-    if (err) throw err;
+
     pool.query(
       'SELECT * FROM group_messages WHERE group_id = ?  ORDER BY timestamp ASC',
       [group_id],
@@ -226,7 +289,7 @@ console.log(err)
         socket.emit('groupChatHistory', results);
       }
     );
-  })
+  
 }catch (err){
 
 }
@@ -247,18 +310,16 @@ console.log(err)
       for (let userId in users) {
         if (users[userId] === socket.id) {
           delete users[userId];
-          pool.connect(async (err:any) => {
-            if (err) throw err;
             // console.log("DB connected successful: " );
             // Update online Users status in database
-            const sqlUpdate = `UPDATE users   SET status = ?   WHERE  id = ?`
-            const insert_query = mysql.format(sqlUpdate,["offline", userId])
-            pool.query(insert_query, async (err:any, result:any) => {
+            const sqlUpdate = `UPDATE users   SET status = 'offline',  last_seen = NOW()  WHERE  id = '${userId}'`
+            // const insert_query = mysql.format(sqlUpdate,["offline", userId])
+            pool.query(sqlUpdate, async (err:any, result:any) => {
              if (err) throw err;
                 //  console.log(`${users[userId]} disconnected`)
              })
           
-          });
+     
           break;
         }
       }

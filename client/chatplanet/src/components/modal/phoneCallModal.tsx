@@ -19,7 +19,7 @@ const PhoneCallModal = () => {
       onClick={togglePhoneCallModal}
     >
       <div
-        className="bg-white p-6 rounded-lg shadow-lg w-96"
+        className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded-lg shadow-lg w-96"
         onClick={(e) => e.stopPropagation()}
       >
         

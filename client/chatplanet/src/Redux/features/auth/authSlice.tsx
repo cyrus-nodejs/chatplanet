@@ -13,6 +13,7 @@ console.log(token2)
 
 export interface AuthState {
   onlineUsers:USER[]
+  allUsers:USER[]
    authUser: USER | null | undefined 
     twoFaUser:USER | null | undefined 
     isAuthenticated: boolean
@@ -26,6 +27,7 @@ export interface AuthState {
   // Define the initial value for the slice state
 const initialState: AuthState = {
   onlineUsers:[],
+  allUsers:[],
    authUser: null,
     twoFaUser:null,
     isAuthenticated: false,
@@ -96,7 +98,7 @@ export const fetchAsyncUser = createAsyncThunk(
           export const fetchResetPassword = createAsyncThunk(
             'auth/fetchResetPassword',  async (data:{ password:string, token:string}) => {
                const { password, token} = data
-              const response= await axios.post(`${BASEURL}/resetpassword`,{ password, token}, { withCredentials: true })
+              const response= await axios.post(`${BASEURL}/resetpassword/${token}`,{ password, token}, { withCredentials: true })
                 console.log(response.data)
                 return response.data
               });
@@ -108,7 +110,15 @@ export const fetchAsyncUser = createAsyncThunk(
                     return response.data
                   });
             
-     
+                
+
+                  export const fetchAllUsers = createAsyncThunk(
+                    'contact/fetchAllUsers', async () => {
+                        const response= await axios.get(`${BASEURL}/allusers`, { withCredentials: true })
+                        console.log(response.data)
+                        return response.data
+                      });
+                      
          
 // Slices contain Redux reducer logic for updating state, and
 // generate actions that can be dispatched to trigger those updates.
@@ -241,7 +251,20 @@ export const authSlice = createSlice({
               state.error = action.error.message;
               
             })
-    
+            builder.addCase(fetchAllUsers.pending, (state) => {
+              state.status = 'pending'
+              
+            })
+            .addCase(fetchAllUsers.fulfilled, (state, action) => {
+                 state.allUsers= action.payload.users
+                 state.message= action.payload.message
+              })
+              .addCase(fetchAllUsers.rejected, (state, action) => {
+                state.status = 'failed'
+                state.error = action.error.message;
+                
+              })
+      
   },
 })
 
@@ -253,7 +276,7 @@ export const getIsAuthenticated = (state:RootState) => state.auth.isAuthenticate
 export const getAuthError = (state:RootState) => state.auth.error
 export const getAuthStatus = (state:RootState) => state.auth.status
 export const getOnlineUsers = (state:RootState) => state.auth.onlineUsers
-
+export const getAllUsers = (state:RootState) => state.auth.allUsers
 export const getMessage =(state:RootState) => state.auth.message
 
 export const {handleLogout} = authSlice.actions

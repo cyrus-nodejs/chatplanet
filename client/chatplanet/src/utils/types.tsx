@@ -1,60 +1,81 @@
-import { ReactNode } from "react";
+
 
 export type tabsType = {
      activeTab:number
      setActiveTab:React.Dispatch<React.SetStateAction<number>>
-    // tabsContent:string,
-    // setTabsContent:React.Dispatch<React.SetStateAction<string>>
-    // handleTabs:() => void
-    // setTabs:React.Dispatch<React.SetStateAction<boolean>>;
-    // tabs:boolean
+     messageIMageModal:boolean
+     filesModal:boolean
+     groupFilesModal:boolean
+     groupIMageModal:boolean
+     updateBioModal:boolean
+     updateLocationModal:boolean
+     updateProfileIMageModal:boolean
+     updateMobileModal:boolean
+     isGroupModalOpen:boolean
+     isContactModalOpen:boolean
+     isAddContactToGroupModalOpen:boolean
+     isPhoneCallModalOpen:boolean
+     isVideoCallModalOpen:boolean
+     toggleBioModal:() => void
+     toggleLocationModal:() => void
+     toggleMobileModal:() => void
+     toggleProfileImageModal:() => void
     toggleAddContactToGroupModal:() => void
-    isAddContactToGroupModalOpen:boolean
     toggleContactModal:() => void
-    isContactModalOpen:boolean
-    isGroupModalOpen:boolean
     toggleGroupModal:() => void
     togglePhoneCallModal:() => void
     toggleVideoCallModal:() => void
-    isPhoneCallModalOpen:boolean
-    isVideoCallModalOpen:boolean
+    toggleFilesModal:() => void
+        toggleGroupImageModal:() => void
+        toggleGroupFilesModal:() => void
+        toggleMessageImageModal:() => void
+   
     tabData:unknown[]
     setIsDarkMode:React.Dispatch<React.SetStateAction<boolean>>
     isDarkMode: boolean
   };
-
+  export interface IMAGE {
+    publicId:string;
+     url:string;
+  }
   
 export interface USER {
     id: string,
     firstname: string,
     lastname: string,
     email: string,
-    image:string,
+    profile_image:string,
+    about:string,
     mobile:string
     status:string,
-    country:string
+    created_at:string,
+    last_seen:string,
+    country:string,
+    resettoken:string
   }
   
     
-export interface CHATMESSAGES {
-  sender: ReactNode;
+export interface CHATMESSAGES  {
   id:string,
-  sender_id: string,
+  sender_id:  string | undefined,
   receiver_id: string,
   message: string,
-  type: string,
-  status:string,
-  timestamp: string,
+  media:string,
+  files:string,
+   type: string,
+status:string,
+   timestamp: string,
 
 }
 
     
-export interface  GROUPCHATMESSAGES {
-  id:string,
-  group_id: string,
-  sender_id: string,
+export interface GROUPCHATMESSAGES  {
+  group_id: string | undefined,
+  user_id: string | undefined,
   message: string,
-  timestamp: string,
+  media:string,
+  files:string,
+   timestamp: string,
 
 }
 
@@ -62,8 +83,8 @@ export interface  GROUPCHATMESSAGES {
     
 export interface GROUPMEMBERS {
   group_id:string;
-  userid:string,
-  
+  user_id:string,
+  timestamp:string,
 }
 
     
@@ -82,37 +103,92 @@ export interface CONTACTS {
 export interface GROUPS {
   id: string,
   name: string,
+  description:string,
   createdBy:string
   members: CONTACTS[],
  timestamp:string,
+ group_image:string
  
 }
 
+export interface RECENTUSERS {
+  receiver_id: string,
+  user_id:string,
+  timestamp:string
+}
+
+export interface SENDGROUPMESSAGE {
+  group_id: string
+  sender_id:string | undefined
+  message:string
+  media:string,
+  files:string
+}
+
+export interface SENDMESSAGE{
+  sender_id:string | undefined
+  receiver_id:string
+  message:string
+  media:string,
+  files:string
+}
+export interface State {
+  messages: CHATMESSAGES[],
+   groupMessages: GROUPCHATMESSAGES[], 
+   currentMessage:string,
+    currentGroupMessage:string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    currentFile:any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    currentMedia:any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    currentGroupFile:any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    currentGroupMedia:any
+}
+
+
+export type Action =
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+| { type: 'SET_CURRENTGROUP_FILE'; payload: any }
+ 
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ | { type: 'SET_CURRENTGROUP_MEDIA'; payload: any    }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+| { type: 'SET_CURRENTFILE'; payload: any }
+ 
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ | { type: 'SET_CURRENTMEDIA'; payload: any    }
+  | { type: 'SET_CURRENTMESSAGE'; payload: string  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | { type: 'SEND_MESSAGE'; payload: any}
+  | { type: 'RECEIVE_MESSAGE'; payload: CHATMESSAGES }
+  | { type: 'RECEIVE_MESSAGEHISTORY'; payload: CHATMESSAGES[] }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | { type: 'SEND_GROUPMESSAGE'; payload: any }
+  | { type: 'SET_CURRENTGROUP_MESSAGE'; payload: string  }
+   |{ type: 'RECEIVE_GROUPMESSAGE'; payload:GROUPCHATMESSAGES }
+   |{ type: 'RECEIVE_GROUPMESSAGE_HISTORY'; payload:GROUPCHATMESSAGES[] }
+  
 
 export type chatType = {
-  members:CONTACTS[]
-  setMembers:React.Dispatch<React.SetStateAction<CONTACTS[]>>
   receiver:CONTACTS
   group:GROUPS
-  message:string
-  messages:CHATMESSAGES[]
-  sentMessages:CHATMESSAGES[]
-  setSentMessages:React.Dispatch<React.SetStateAction<never[]>>
-  setMessage:React.Dispatch<React.SetStateAction<string>>
-  setMessages:React.Dispatch<React.SetStateAction<never[]>>
-  // handleSendMessage:(arg0: USER) => void
   sendPrivateMessage:(arg0: CONTACTS) => void
   sendGroupMessage:(arg0: GROUPS) => void
-  onlineusers:USER[]
-  groupIndex:number
-  setGroupIndex:React.Dispatch<React.SetStateAction<number>>
-  contactIndex:number
-  setContactIndex:React.Dispatch<React.SetStateAction<number>>
   setReceiver:React.Dispatch<React.SetStateAction<CONTACTS>>
   setGroup:React.Dispatch<React.SetStateAction<GROUPS>>
-  setGroupId:React.Dispatch<React.SetStateAction<string>>
   groupMessages:GROUPCHATMESSAGES[]
-  setGroupMessages:React.Dispatch<React.SetStateAction<never[]>>
-  groupMessage:string
-  setGroupMessage:React.Dispatch<React.SetStateAction<string>>
+  currentGroupMessage:string
+  messages:CHATMESSAGES[]
+  currentMessage:string
+   currentMedia:File
+   currentFile:File
+   currentGroupMedia:File
+   currentGroupFile:File
+  state:State
+  dispatch: React.Dispatch<Action>
+
 }
+  
+

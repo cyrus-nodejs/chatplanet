@@ -4,35 +4,52 @@ import { useContext, useEffect } from "react"
 import { ChatTabsContext } from "../../Context/chatTabs"
 import { ChatContext } from "../../Context/chatContext"
 import { useAppDispatch, useAppSelector } from "../../Redux/app/hook"
-import { fetchGroups,   getAllGroup  } from "../../Redux/features/groups/groupSlice"
-import { GROUPS } from "../../utils/types"
-
+import { fetchGroups, fetchGroupMembers, getGroupMembers,   getAllGroup  } from "../../Redux/features/groups/groupSlice"
+import { GROUPMEMBERS, GROUPS } from "../../utils/types"
+import { getAuthUser, fetchAsyncUser } from "../../Redux/features/auth/authSlice"
+// import AddGroupContactModal from "../../components/modal/AddGroupContactModal"
+import { capitalizeFirstLetter } from "../../utils/helper"
 const Groups = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let data;
-  const { toggleGroupModal, toggleAddContactToGroupModal } = useContext(ChatTabsContext)
+
+
+const { toggleGroupModal, toggleAddContactToGroupModal } = useContext(ChatTabsContext)
   const {setGroup} = useContext(ChatContext)
  const dispatch = useAppDispatch()
   const allGroups = useAppSelector(getAllGroup)
+  const groupmembers = useAppSelector(getGroupMembers)
+  const authUser = useAppSelector(getAuthUser)
+  console.log(groupmembers)
+console.log(allGroups)
+const mygroup = allGroups.filter(group => group.createdBy == authUser?.id )
+const othergroup = allGroups.filter(group => group.createdBy !== authUser?.id )
 
  useEffect(() => {
   dispatch(fetchGroups());
 }, [dispatch])
+useEffect(() => {
+  dispatch(fetchAsyncUser());
+}, [dispatch])
+useEffect(() => {
+  dispatch(fetchGroupMembers());
+}, [dispatch])
+
 
   return (
     <div id="tabs-vertical-4" className="" role="tabpanel" aria-labelledby="tabs-vertical-item-4">
       <div className="flex mt-4 justify-between " >
-  <div className="text-lg">Groups</div>
+  <div className="text-left font-mono text-2xl text-black-400">Groups</div>
   <div className='relative group'>
   <button
-        className="px-3 py-3 bg-purple-400 text-white rounded-md hover:bg-purple-600"
+        className="px-3 py-3 bg-violet-600 text-white rounded-md hover:bg-violet-800"
         onClick={toggleGroupModal}
       >
         <i className='bx bx-group bx-sm'></i>
-      </button></div>
-      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white text-sm rounded px-2 py-1">
-           Create new Group
+      </button>
+      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1">
+           Create 
          </div>
+      </div>
+      
 </div>
 <div className=' flex  w-full'>
 <i className='bx mt-5 bx-search'></i>
@@ -40,31 +57,43 @@ const Groups = () => {
 
 </div>
 
-<div className='mt-4 pt-4'>
+<h5 className='font-medium'>Group created by You</h5>
+<div className='mt-4  h-32 overflow-hidden px-2 overflow-y-auto'>
+{  mygroup?.map((group:GROUPS) =>
+             (
+              <div onClick={() => {setGroup(group)}} className="flex my-3 justify-between">
+              
+              <div className=' font-medium text-slate-500 py-2 text-md'>{capitalizeFirstLetter(group.name.toLowerCase())}</div>
+      
+            <div className='relative group'>
+             <button
+          className="relative rounded-md px-3 py-3 bg-violet-600 text-white  hover:bg-violet-500"
+          onClick={toggleAddContactToGroupModal}
+        >
+              <i className='bx bx-group bx-sm'></i>
+        </button> 
+        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full m-2 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-4">
+             Add  
+           </div> 
+           </div>
+           </div>
+                )
+         
+  )}
+  </div>
+<h2 className='font-medium'>Other Groups</h2>
+<div className=' h-32 overflow-hidden px-2 overflow-y-auto'>
   
-{allGroups && (<div>
-  {allGroups?.map((group:GROUPS) =>{
-          return (
-            <div onClick={() => setGroup(group)} className="flex  justify-between">
-            <div key={group.id} >
-            <img width="50px" height="50px"  src="https://img.freepik.com/premium-photo/ai-generated-images-build-user-profile-page_1290175-101.jpg" />
-            <strong>{group.name}</strong>
-          </div>
-          <div className='relative group'>
-          <button
-        className="relative rounded-md hover:bg-purple-600"
-        onClick={toggleAddContactToGroupModal}
-      >
-        Add
-      </button>
-      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white text-sm rounded px-2 py-1">
-           Add user to {group.name}
+{groupmembers?.map((user:GROUPMEMBERS) => (
+      othergroup?.map((group:GROUPS) => (
+            <div onClick={() => {setGroup(group)}} className="flex my-3 justify-between">
+             <div className=' font-medium text-slate-500 py-2 text-md' >{user?.group_id === group?.id && (capitalizeFirstLetter(group.name.toLowerCase()) )}</div> 
          </div>
-         </div>
-         </div>
+         )) 
               )
-       })}
-</div>)}
+       )}
+
+
 
 
     

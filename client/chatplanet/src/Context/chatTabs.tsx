@@ -27,6 +27,14 @@ export const  ChatTabsProvider = ({ children}:{ children: React.ReactNode } ) =>
    const [isAddContactToGroupModalOpen, setIsAddContactToGroupModalOpen] = useState(false);
    const [isPhoneCallModalOpen, setIsPhoneCallModalOpen] = useState(false);
    const [isVideoCallModalOpen, setIsVideoCallModalOpen] = useState(false);
+   const [updateBioModal, setUpdateBioModal] = useState(false);
+   const [updateProfileIMageModal, setUpdateProfileImageModal] = useState(false);
+   const [messageIMageModal, setMessageImageModal] = useState(false);
+   const [filesModal, setFilesModal] = useState(false);
+   const [groupIMageModal, setGroupImageModal] = useState(false);
+   const [groupFilesModal, setGroupFilesModal] = useState(false);
+   const [updateLocationModal, setUpdateLocationModal] = useState(false);
+   const [updateMobileModal, setUpdateMobileModal] = useState(false);
    
     // Check the theme in localStorage on initial load
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -43,18 +51,18 @@ export const  ChatTabsProvider = ({ children}:{ children: React.ReactNode } ) =>
   }, [isDarkMode]);
      // Tab content data
   // const Tab1 =   <i className='bx bx-message-rounded-dots bx-sm'></i>
-  const Tab3 = <i className='bx bx-message-square-dots bx-sm'></i>
-  const Tab2 =<i className='bx bxs-user bx-sm'></i>
-  const Tab4 = <i className='bx bx-group bx-sm' ></i>
-   const Tab5 = <i className='bx bxs-contact bx-sm' ></i>
-  const Tab6 = <i className='bx bx-cog bx-sm' ></i>
-  const Tab7 = <i className='bx bx-globe bx-sm'></i>
-  const Tab8 = <button
-  onClick={() => setIsDarkMode(!isDarkMode)}
-  className="rounded-full"
->
-   {isDarkMode ? <i className='bx bx-sun bx-sm'></i> : <i className='bx bx-moon bx-sm' ></i>} 
-</button>
+  const Tab3 = <i className='bx bx-message-square-dots  dark:bg-gray-800  dark:text-slate-500   bx-sm'></i>
+  const Tab2 =<i className='bx bxs-user   dark:bg-gray-800  dark:text-slate-500    bx-sm'></i>
+  const Tab4 = <i className='bx bx-group bx-sm  dark:bg-gray-800  dark:text-slate-500 ' ></i>
+   const Tab5 = <i className='bx bxs-contact bx-sm  dark:bg-gray-800  dark:text-slate-500 ' ></i>
+  const Tab6 = <i className='bx bx-cog bx-sm  dark:bg-gray-800  dark:text-slate-500 ' ></i>
+  const Tab7 = <i className='bx bx-globe bx-sm  dark:bg-gray-800  dark:text-slate-500 '></i>
+//   const Tab8 = <button
+//   onClick={() => setIsDarkMode(!isDarkMode)}
+//   className="rounded-full"
+// >
+//    {isDarkMode ? <i className='bx bx-sun bx-sm text-inherit dark:bg-gray-800  dark:text-gray-400 '></i> : <i className='bx bx-moon bx-sm' ></i>} 
+// </button>
 
  
   
@@ -69,7 +77,7 @@ export const  ChatTabsProvider = ({ children}:{ children: React.ReactNode } ) =>
         { label: Tab5, content: (<Contact  />), content2: (<PrivateMessages />), title:"Contact", },
         { label: Tab6, content: ( <Settings />), content2: (<PrivateMessages />), title:"Settings" },
         { label: Tab7, content: (<Languages />), content2: (<PrivateMessages />), title:"Languages" },
-        { label: Tab8, content: (<ChatMenu />), content2: (<PrivateMessages />), title:"Mode" },
+        // { label: Tab8,  content2: (<PrivateMessages />), title:"Dark/Light Mode" },
       ];
   
  
@@ -97,6 +105,33 @@ export const  ChatTabsProvider = ({ children}:{ children: React.ReactNode } ) =>
     setIsVideoCallModalOpen(!isVideoCallModalOpen);
   }
 
+  
+  const toggleBioModal = () => {
+    setUpdateBioModal(!updateBioModal);
+  }
+  const toggleProfileImageModal = () => {
+    setUpdateProfileImageModal(!updateProfileIMageModal);
+  }
+  const toggleMessageImageModal = () => {
+    setMessageImageModal(!messageIMageModal);
+  }
+  const toggleFilesModal = () => {
+    setFilesModal(!filesModal);
+  }
+ 
+  const toggleGroupImageModal = () => {
+    setGroupImageModal(!groupIMageModal);
+  }
+  const toggleGroupFilesModal = () => {
+    setGroupFilesModal(!groupFilesModal);
+  }
+
+  const toggleMobileModal = () => {
+    setUpdateMobileModal(!updateMobileModal);
+  }
+  const toggleLocationModal = () => {
+    setUpdateLocationModal(!updateLocationModal);
+  }
 
 
   return (
@@ -107,14 +142,30 @@ export const  ChatTabsProvider = ({ children}:{ children: React.ReactNode } ) =>
         tabData,
         toggleContactModal,
         toggleGroupModal,
-        isContactModalOpen,
-        isGroupModalOpen,
+        toggleBioModal,
+        toggleLocationModal,
+        toggleMobileModal,
+        toggleProfileImageModal,
         togglePhoneCallModal,
         toggleVideoCallModal,
         toggleAddContactToGroupModal,
+        toggleFilesModal,
+        toggleGroupImageModal,
+        toggleGroupFilesModal,
+        toggleMessageImageModal,
+        messageIMageModal,
+        filesModal,
+        groupFilesModal,
+        groupIMageModal,
+        isContactModalOpen,
+        isGroupModalOpen,
         isAddContactToGroupModalOpen,
         isPhoneCallModalOpen,
         isVideoCallModalOpen,
+        updateBioModal,
+        updateLocationModal,
+        updateProfileIMageModal,
+        updateMobileModal,
         setIsDarkMode,
         isDarkMode
       }}

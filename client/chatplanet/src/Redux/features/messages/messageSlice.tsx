@@ -1,5 +1,5 @@
 import { createSlice,  createAsyncThunk } from '@reduxjs/toolkit'
-import {  CHATMESSAGES} from '../../../utils/types'
+import {  CHATMESSAGES, CONTACTS, USER} from '../../../utils/types'
 import { RootState } from '../../app/store'
 import axios from 'axios'
 
@@ -7,6 +7,7 @@ import axios from 'axios'
 
 export interface messageState {
     privatemessages: CHATMESSAGES[] 
+    recentusers:USER[] 
     groupmessages:CHATMESSAGES[] 
     message:string,
     status:  'idle' | 'pending' | 'succeeded' | 'failed'
@@ -16,6 +17,7 @@ export interface messageState {
   // Define the initial value for the slice state
 const initialState: messageState = {
    privatemessages: [],
+   recentusers:[] ,
    groupmessages:[],
    status: 'idle' ,
    message:"",
@@ -53,7 +55,26 @@ export const fetchPrivateMessage = createAsyncThunk(
           });
     
 
+
+          export const fetchRecentChat = createAsyncThunk(
+            'message/fetchRecentChat ',  async () => {
+                const response= await axios.get(`${BASEURL}/get/recentchat`,{ withCredentials: true })
+                console.log(response.data)
+                return response.data
+              });
+
+              export const fetchAddRecentChat = createAsyncThunk(
+                'message/fetchAddRecentChat',  async (data:{receiver:CONTACTS}) => {
+                  const {receiver} = data
+                  const receiver_id = receiver.userid
+                    console.log(data)
+                    const response= await axios.post(`${BASEURL}/add/recentchat`, {receiver_id},{ withCredentials: true })
+                    console.log(response.data)
+                    return response.data
+                  });
     
+             
+             
             
 
      
@@ -88,7 +109,7 @@ export const messageSlice = createSlice({
         
       })
       .addCase(fetchGroupMessage.fulfilled, (state, action) => {
-           state.groupmessages= action.payload.privatemessages
+           state.groupmessages= action.payload.groupmessages
            state.message= action.payload.message
        
         })
@@ -97,7 +118,31 @@ export const messageSlice = createSlice({
           state.error = action.error.message;
           
         })
-
+        builder.addCase(fetchRecentChat.pending, (state) => {
+          state.status = 'pending'
+          
+        })
+        .addCase(fetchRecentChat.fulfilled, (state, action) => {
+             state.recentusers= action.payload.recentchat
+             state.message= action.payload.message
+         
+          })
+          .addCase(fetchRecentChat.rejected, (state, action) => {
+            state.status = 'failed'
+            state.error = action.error.message;
+            
+          })
+        .addCase(fetchAddRecentChat.pending, (state) => {
+          state.status = 'pending'
+          })
+          .addCase(fetchAddRecentChat.fulfilled, (state) => {
+            state.status = 'succeeded'
+            
+          })
+          .addCase(fetchAddRecentChat.rejected, (state, action) => {
+            state.status = 'failed'
+            state.error = action.error.message;
+          })
    
     
   },
@@ -106,5 +151,7 @@ export const messageSlice = createSlice({
 
 export const getPrivateMessages =(state:RootState) => state.message.privatemessages
 export const getGroupMessages = (state:RootState) => state.message.groupmessages
-// Export the slice reducer for use in the store configuration
+export const getRecentUser = (state:RootState) => state.message.recentusers
+
+
 export default messageSlice.reducer;

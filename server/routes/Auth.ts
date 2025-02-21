@@ -17,7 +17,7 @@ router.post('/', authenticateJWT,  getAuthUser  )
 router.post("/login", LoginUser );
 router.post("/login/2fa", authorizeJWT,  twoFactorLogin );
 router.post('/forgotpassword',  ForgotPassword )
-router.post('/resetpassword',  ResetPassword  )
+router.post('/resetpassword/:token',  ResetPassword  )
 
 
  

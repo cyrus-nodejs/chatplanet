@@ -6,13 +6,17 @@ import ContactModal from '../../components/modal/contactModal'
 import GroupModal from '../../components/modal/groupModal'
 import PhoneCallModal from '../../components/modal/phoneCallModal'
 import VideoCallModal from '../../components/modal/videoCallModal'
+import ProfileImageModal from '../../components/updateModal/profileImage'
+import AboutModal from '../../components/updateModal/about'
+import MobileModal from '../../components/updateModal/phoneNo'
+import LocationModal from '../../components/updateModal/location'
 import MenuIndex from './MenuIndex'
 import Login from '../Auth/Login'
 import Appbar from './Appbar'
 import AddGroupContactModal from '../../components/modal/AddGroupContactModal'
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook'
 
-const Index = ({isDarkMode, setIsDarkMode}) => {
+const Index = () => {
  
   const dispatch = useAppDispatch()
   const authUser = useAppSelector(getAuthUser)
@@ -35,8 +39,8 @@ const Index = ({isDarkMode, setIsDarkMode}) => {
   return (
     <section>
   {authUser && isAuthenticated ? (
-    <div className=" flex h-screen   overflow-hidden   bg-stone-200   ">
-        <Appbar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}/>
+    <div className=" flex h-screen   overflow-hidden   bg-stone-200   dark:bg-gray-800 text-black dark:text-white ">
+        <Appbar />
   <MenuIndex  />
 <ChatBox  />
 
@@ -45,6 +49,10 @@ const Index = ({isDarkMode, setIsDarkMode}) => {
 <PhoneCallModal />
 <VideoCallModal />
 <AddGroupContactModal />
+<ProfileImageModal />
+<MobileModal />
+<LocationModal />
+<AboutModal />
       </div>) : (
         <Login />
       )}

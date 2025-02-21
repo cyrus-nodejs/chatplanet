@@ -1,52 +1,133 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-import { useEffect,  useContext } from 'react'
+
+import { useEffect, useState, useContext } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../Redux/app/hook'
-import { fetchAsyncUser, getAuthUser } from '../../../Redux/features/auth/authSlice'
-import { fetchGroupMembers } from '../../../Redux/features/groups/groupSlice'
+import { convertTimestampToTime, capitalizeFirstLetter } from '../../../utils/helper';
+import EmojiPicker from '../../../components/Emoji/emoji';
 import { ChatContext } from '../../../Context/chatContext'
 import { ChatTabsContext } from '../../../Context/chatTabs'
+import { getAllUsers, fetchAllUsers,  fetchAsyncUser, getAuthUser  } from '../../../Redux/features/auth/authSlice'
+import { GROUPCHATMESSAGES, USER } from '../../../utils/types'
 
 //  import { getOnlineUsers, fetchOnlineUsers } from '../../../Redux/features/auth/authSlice'
 const GroupMessages = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let data;
   
-    const {  group,   groupMessages, groupMessage, setGroupMessage,  sendGroupMessage } = useContext(ChatContext)
+    const {  group,  dispatch,  groupMessages, currentGroupMessage,  sendGroupMessage } = useContext(ChatContext)
    const {togglePhoneCallModal, toggleVideoCallModal} = useContext(ChatTabsContext)
 
-   const dispatch = useAppDispatch()
-   
+   const reduxDispatch = useAppDispatch()
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const authUser = useAppSelector(getAuthUser)
-    //  const onlineusers= useAppSelector(getOnlineUsers)
-  // const groupmembers = useAppSelector(getGroupMembers)
-// const getPerson = (id: string | undefined) => {
-//   onlineusers.find(obj => obj.id === id)
-// }
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [filePreview, setFilePreview] = useState<string | null>(null);
+    const [showImage, setShowImage] = useState(false);
+    const [showFile, setShowFile] = useState(false);
+    const [error, setError] = useState('');
+
+
+
+
+   const allusers = useAppSelector(getAllUsers)
  
 
+   const handleEmojiSelect = (emoji:string ) => {
+    dispatch({ type: 'SET_CURRENTGROUP_MESSAGE', payload:  currentGroupMessage + emoji})
+    setShowEmojiPicker(false);
+  };
+
+
+  
+  const handleFileToggle = () => {
+    setShowFile(!showFile);
+  };
+
+  const handleImageToggle = () => {
+    setShowImage(!showImage);
+  };
+
+
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleImageChange = (e: any) => {
+    const file =  e.target.files[0] 
+    if (file) {
+      setError('');
+       // Validate file type
+       const validFileTypes = ['image/jpeg', 'image/png', 'image/avif', 'image/jpg', ];
+       if (!validFileTypes.includes(file.type)) {
+         setError('Invalid file type. Please upload a JPEG or PNG image.');
+         setImagePreview(null);
+         return;
+       }
  
+       // Validate file size (max 5MB)
+       const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+       if (file.size > maxSize) {
+         setError('File is too large. Please upload a file smaller than 5MB.');
+         setImagePreview(null);
+         return;
+       }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+        const base64Image  = reader.result as string
+        dispatch({ type: 'SET_CURRENTGROUP_MEDIA', payload: { image: base64Image }})
+      }
+      reader.readAsDataURL(file);
+    }
+ 
+  };
 
-console.log(groupMessage)
-console.log(groupMessages)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFileChange = (e: any) => {
+    
+    const file =  e.target.files[0] 
+    if (file) {
+      setError('');
+
+      // Validate file type for .doc and .docx
+      const validFileTypes = [  'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!validFileTypes.includes(file.type)) {
+        setError('Invalid file type. Please upload a .doc or .docx file.');
+        setFilePreview(null);
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      if (file.size > maxSize) {
+        setError('File is too large. Please upload a file smaller than 10MB.');
+        setFilePreview(null);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreview(reader.result as string);
+        const base64File  = reader.result as string
+        dispatch({ type: 'SET_CURRENTGROUP_MEDIA', payload: { Files: base64File }})
+      }
+      // reader.readAsText(file);
+      reader.readAsDataURL(file);
+   
+    }
+ 
+  };
+
+
+
+    console.log(allusers)
+     useEffect(() => {
+    
+      reduxDispatch(fetchAllUsers());
+    
+     }, [reduxDispatch])
+    
+
     useEffect(() => {
     
-      dispatch(fetchGroupMembers(group));
-    
-    }, [dispatch, group])
-    
-    // useEffect(() => {
-    
-    //   dispatch(fetchOnlineUsers());
-    
-    // }, [dispatch, ])
-    
-
-    useEffect(() => {
-    
-        dispatch(fetchAsyncUser());
+        reduxDispatch(fetchAsyncUser());
       
-      }, [dispatch])
+      }, [reduxDispatch])
       
   
   return (
@@ -54,11 +135,11 @@ console.log(groupMessages)
         <div className="flex sticky     top-0 flex-row ">
     <div className="basis-1/3">
     <div className="flex ">
-    <div className="flex-none w-10 pt-5 h-10 bg-slate-200 rounded-full  flex">
-    <img className='rounded-full' src="https://img.freepik.com/premium-photo/ai-generated-images-build-user-profile-page_1290175-101.jpg" alt="avatar " />
+    <div className='basis-2/2'>
+    <img width='50'  className='rounded-full border border-1' height='50' src={group.group_image} />
     </div>
     <div className="flex-grow pt-4 text-1xl h-16 px-3">
-  {group && (<strong> {group?.name?.toUpperCase()} Group </strong>) } 
+  {group && (<h5 className='text-slate-500 font-medium'> {capitalizeFirstLetter(group?.name?.toLowerCase())}  </h5>) } 
       
     </div>
   
@@ -78,39 +159,166 @@ console.log(groupMessages)
   
   </div>
 
-    <div className='chat-box relative  rounded-lg shadow-lg overflow-hidden'>
-    <div className={`max-h-screen flex-1 px-4 py-4 overflow-y-auto space-y-4 `}>
-      {groupMessages && (<div>
-        {groupMessages.map((msg, index) => (
-        <div key={index} className="">
-        <div className="rounded-bl-lg m-3 text-lg h-20 bg-violet-300 text-base-content/90" >
-        <strong>{
-            msg.sender_id === authUser?.id ? (authUser?.firstname) :
-        //  msg.sender_id === getPerson(msg.sender_id).id ? (getPerson(msg.sender_id).firstname):
-            ""
-        
-        }:</strong> {msg.message}
+  <div className='h-screen flex flex-col overflow-auto'>
+
+<div className=''>
+ <div className='h-screen'>
+
+  {groupMessages && (<div className='space-y-4 pb-64'>
+            {groupMessages.map((msg:GROUPCHATMESSAGES, index:number) => (
+           
+            <div className='flex' >
+            {allusers  && (    <div key={index}   className={`mb-3 p-2 w-full  flex-none  rounded-lg ${
+               msg.user_id? "bg-violet-200 dark:bg-violet-100 text-slate-700 dark:text-slate-700 border-1 font-medium  " : "bg-violet-600 dark:bg-violet-600 text-neutral-50 font-medium dark:text-neutral-50  "
+             }`}>{
+    allusers.map((user:USER) => (
+     <div className=' flex '>
+       {/* <div className='flex-none h-10 w-10' key={index}>{msg.sender_id === user?.id && (<img height='50'  width='50' className=' rounded-full bg-cover '  src={user?.profile_image} /> )}</div>  */}
+      <div className='flex-auto '>
+      <div className=''>
+       <div className='' >{msg.user_id === user?.id && (<span className='text-lf'>{msg.message}</span> )}  </div>
+       <div className='' >{msg.user_id === user?.id && (msg.media && <img src={msg.media} height='100' width='100' /> )}  </div>
+      
+       <div className='w-15' >{msg.user_id === user?.id && (msg.files && (
+          <div className="flex flex-col h-100 items-center p-6">
+          <h5 className="text-2xl font-semibold mb-4">Files</h5>
+          
+          {/* PDF viewer using iframe */}
+          <div className="mb-6">
+            <iframe
+              src={msg.files}
+              className="w-full h-96 border-2 border-gray-300 rounded-md"
+              title="Document Viewer"
+            ></iframe>
+          </div>
+    
         </div>
+       )
+         
+        )}  </div>
+ 
+       <div className=' mr-2'>{msg.user_id === user?.id && (<span className='text-xs font-light '><i className='bx bx-time'></i>{convertTimestampToTime(msg.timestamp)}</span> )}  </div>
+       </div>
+       <div>{msg.user_id === user?.id && (<span className='text-md font-light text-slate-800'>{user.firstname}</span> )}  </div>
+       
+       </div>
       </div>
-                         ))} 
-      </div>)}
-      </div>
+    ))
+    
+    }</div>)}
    
+            </div>
+           
+                             ))} 
+          </div>)}
+      </div>
+   </div>
       
   
-  <div className="flex w-4/6  mt-3 fixed bottom-0 ">
-  
-    <div className=" flex-grow p-3 "><input value={groupMessage} onChange={(e) => setGroupMessage(e.target.value)}  className="w-full h-10 border border-transparent rounded focus:outline-none  focus:ring-purple-600 focus:border-transparent focus: placeholder-gray-500   bg-gray-200" placeholder="Enter Message"/></div>
-   
+   <div className='flex flex-row sticky  bg-slate-100  dark:bg-gray-900  bottom-0'>
+         <div className='  basis-2/3 '> 
+          <input value={currentGroupMessage} onChange={(e) => dispatch({ type: 'SET_CURRENTGROUP_MESSAGE', payload: e.target.value })}  className=" w-full h-10 rounded-md py-2 m-3 focus:outline-none  focus:ring-purple-600 focus:border-transparent focus: placeholder-gray-500   bg-gray-200" placeholder="Enter Message"/>
+         </div>
+        
+          <div className='basis-1/3 '>
+          {showEmojiPicker && <EmojiPicker onSelect={handleEmojiSelect} />}
+           <div className="flex flex-row"> 
+         <div className='relative group m-2'>
+          <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className=' text-4xl rounded-md'>😐</button> 
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Emoji</div>
+         </div>
     
-    <div className="grid grid-flow-col pt-4 auto-rows-max w-64">
-    <div  className='p-2'>😐</div>
-    <div  className='p-2'><i className='bx bx-file bx-sm'></i></div>
-    <div className='p-2'><i className='bx bx-image bx-sm'></i></div>
-    <div>{authUser && (<button onClick={() => sendGroupMessage(group)}><i className='bx bx-play text-white   bg-purple-400 bx-md' ></i></button>)}</div>
-    </div>
-  
+         <div className='relative group m-2'  >  
+          
+          <label
+          htmlFor="file-upload"
+          className="cursor-pointer   bg-violet-600 text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300 "
+        >
+            <i className='bx bx-file  bx-md'></i>
+        </label>
+        {filePreview && (
+        <div  className="absolute  bottom-full mb-2  group-hover:block  text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">
+       
+             {!showFile && 
+            
+             <div   onClick={handleFileToggle} className="flex flex-col items-center p-6">
+      <h1 className="text-2xl font-semibold mb-4"> Document Viewer</h1>
+      
+      {/* PDF viewer using iframe */}
+      <div className="mb-6">
+        <iframe
+          src={filePreview}
+        
+          className="w-full h-96 border-2 border-gray-300 rounded-md"
+          title="Document Viewer"
+        ></iframe>
       </div>
+
+    
+    </div>
+              }
+      
+        </div>
+      )} 
+ 
+        <input
+          id="file-upload"
+          type="file"
+          onChange={handleFileChange} 
+          className="hidden"
+          accept="application/pdf"
+        />
+
+      {error && <div style={{ color: 'red' }}>{error}</div>}
+   {/* {fileName &&   <i onClick={handleFileUpload} className='bx bx-send bx-md'></i>  }   */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Attach File</div>
+         </div>
+  <div className='relative group m-2'>
+  
+     <label
+        htmlFor="image-upload"
+        className="cursor-pointer   bg-violet-600 text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300"
+      >
+          <i className='bx bx-image bx-md'></i>
+        <input
+          type="file"
+          id="image-upload"
+          onChange={handleImageChange} 
+          className="hidden"
+          name='image'
+             accept=".png, .jpg, .jpeg, avif"
+          
+        />
+
+      {error && <div style={{ color: 'red' }}>{error}</div>}
+      </label>
+
+       {imagePreview && (
+  
+        <div onClick={handleImageToggle} className="absolute  bottom-full mb-2  group-hover:block  text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">
+            {!showImage &&   <div className='h-32 w-32'> <img height='150'  width='150' src={imagePreview} className=" w-full h-full" /> </div>}
+        
+        </div>
+
+
+      )} 
+       {/* {image &&   <i onClick={handleImageUpload} className='bx bxs-send text-violet-400 bx-md'></i>  }    */}
+     <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Image</div>
+     </div>
+  <div className='relative group m-2'>    
+    {authUser && (<button className='  rounded-md' type='submit' onClick={() => sendGroupMessage(group)}><i className='bx bx-play text-white  bg-violet-600 bx-md' ></i></button>)}
+    <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Send </div>
+    </div>
+  </div>
+    </div>
+   
+
+  
+    </div>
+      
+      
+ 
+      
   </div>
   </section>
   )

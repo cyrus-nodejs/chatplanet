@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import {  useEffect, useContext } from 'react'
 import { useAppDispatch, } from '../../Redux/app/hook'
 import { fetchAsyncUser,  } from '../../Redux/features/auth/authSlice'
@@ -27,7 +29,7 @@ const ChatBox = () => {
 
 
   return (
-    <div  className=" w-full h-screen flex-initial   overflow-hidden text-dark-400  border-4 pt-4  bg-slate-50 ">
+    <div  className=" w-full h-screen flex-initial   overflow-hidden text-dark-400  border-1 pt-4   bg-slate-50  dark:bg-gray-900 text-black dark:text-white ">
   
     <div className='relative  '>
     {tabData[activeTab].content2}

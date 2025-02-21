@@ -7,9 +7,6 @@ export const addContact = (req:any, res:any) => {
     const { email} = req.body
     console.log(req.user)
   
-           
-    pool.connect(async (err) => {
-                if (err) throw err;
                 const sqlSearch = "Select * from users where email = ?"
                 const search_query = mysql.format(sqlSearch,[email])            
         pool.query (search_query, (err, result:any)=> {
@@ -22,19 +19,19 @@ export const addContact = (req:any, res:any) => {
             console.log(err)
           return res.json({success:false, message:"User not saved."}) 
           }
-          console.log(`This is ${ result.affectedRows}`)
+          console.log(`contact added to database`)
           res.json({success:true, message:"Contact added to database!"})
          })   
                         })
                         
-                       }
-            )
+                       
+          
         }
 
     
 
 
-//Rerieve User contactlist
+//Retrieve User contactlist
 export const getContact = async (req:any, res:any) => {
     const user = req.user.id
     console.log("I am getting contact")
@@ -43,10 +40,7 @@ export const getContact = async (req:any, res:any) => {
     if (!user){
         res.json({success:false, message:"No user found!"})
     }
-            pool.connect(async (err) => {
-                if (err) {
-                  return  res.json({success:false, message:"Connection Error "})   
-                }
+   
                 pool.query(search_query, async (err, result:any) => {
                     if (err) {
                       return  res.json({success:false, message:"No contacts found "})   
@@ -55,6 +49,6 @@ export const getContact = async (req:any, res:any) => {
              res.json({success:true, message:"Contacts ", contacts:result})     
                 })
             
-                })
+                
             
 }

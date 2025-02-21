@@ -2,15 +2,20 @@ import express from 'express';
 import { authenticateJWT } from '../middlewares/jwt/jwt';
 const router = express.Router();
 import {
-   updateProfile, getProfile, getOnlineUsers
+    getOnlineUsers, getAllUsers, updateAbout, updateLocation, UpdateProfileImage, updatePhoneContact
  } from "../controllers/User";
+import { upload } from '../utils/storage';
 
 
+ 
 
-
- router.put("/updateprofile", authenticateJWT, updateProfile);
+ router.post("/updateimage", authenticateJWT, upload.fields([{ name: 'image', maxCount: 1 }]), UpdateProfileImage);
+ router.post("/updatebio", authenticateJWT, updateAbout);
+ router.post("/updatelocation", authenticateJWT, updateLocation);
+ router.post("/updatemobile", authenticateJWT, updatePhoneContact);
  router.get('/onlineusers', authenticateJWT, getOnlineUsers )
-router.get('/getprofile', authenticateJWT,  getProfile )
+ router.get('/allusers', authenticateJWT, getAllUsers )
+
 
  
   

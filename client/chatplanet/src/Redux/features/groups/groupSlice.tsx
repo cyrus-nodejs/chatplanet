@@ -27,7 +27,7 @@ const BASEURL = import.meta.env.VITE_APP_BASE_URL
 console.log(BASEURL)
 
 export const fetchAddGroup = createAsyncThunk(
-    'contact/fetchAddGroup', async (data:{ name:string, description:string } ) => {
+    'group/fetchAddGroup', async (data:{ name:string, description:string } ) => {
      const { name, description} = data
 
         const response= await axios.post(`${BASEURL}/creategroup`,{name,description,},{ withCredentials: true })
@@ -36,7 +36,7 @@ export const fetchAddGroup = createAsyncThunk(
       });
 
       export const fetchAddGroupMembers = createAsyncThunk(
-        'contact/fetchAddGroupMembers', async (data:{ group:GROUPS, contact:CONTACTS } ) => {
+        'group/fetchAddGroupMembers', async (data:{ group:GROUPS, contact:CONTACTS } ) => {
    console.log(data)
           const {group, contact} = data
        const group_id = group.id
@@ -48,17 +48,15 @@ export const fetchAddGroup = createAsyncThunk(
           });
     
 export const fetchGroups = createAsyncThunk(
-    'contact/fetchGroups', async () => {
+    'group/fetchGroups', async () => {
         const response= await axios.get(`${BASEURL}/getgroups`, { withCredentials: true })
         console.log(response.data)
         return response.data
       });
 
       export const fetchGroupMembers = createAsyncThunk(
-        'contact/fetchGroupMembers', async (group:GROUPS) => {
-          // const {group} = data
-          const group_id = group?.id
-          const response= await axios.get(`${BASEURL}/getgroupmembers/${group_id}`, { withCredentials: true })
+        'group/fetchGroupMembers', async () => {
+          const response= await axios.get(`${BASEURL}/get/groupmembers`, { withCredentials: true })
             console.log(response.data)
             return response.data
           });

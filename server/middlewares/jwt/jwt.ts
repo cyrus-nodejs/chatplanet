@@ -18,9 +18,9 @@ export const create2FAtoken = (data:{id:string, email:string, firstname:string, 
   
 
 // Create Forgot Password JWT 
-  export const forgotPasswordToken = (id:any) => {
+  export const forgotPasswordToken = (id:string) => {
     return jwt.sign({id}, process.env.FORGOT_PASSWORD_TOKEN!,  {
-      expiresIn:'5m',
+      expiresIn:'35m',
     })
     }
   

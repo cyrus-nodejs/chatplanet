@@ -1,5 +1,5 @@
 import { ChatTabsContext } from "../../Context/chatTabs";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../Redux/app/hook";
 import { CONTACTS } from "../../utils/types";
 import { getGroupMessage} from "../../Redux/features/groups/groupSlice";
@@ -17,7 +17,19 @@ let data;
    const {group} = useContext(ChatContext)
 
     const {isAddContactToGroupModalOpen, toggleAddContactToGroupModal} = useContext(ChatTabsContext)
+    const [isLoading, setLoading] = useState(false);
 
+    useEffect(() => {
+      function simulateNetworkRequest() {
+        return new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+  
+      if (isLoading) {
+        simulateNetworkRequest().then(() => {
+          setLoading(false);
+        });
+      }
+    }, [isLoading]);
     useEffect(() => {
     
       dispatch(fetchContacts());

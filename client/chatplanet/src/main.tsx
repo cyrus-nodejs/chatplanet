@@ -7,7 +7,7 @@ import {ChatProvider} from './Context/chatContext.tsx'
 import { ChatTabsProvider } from './Context/chatTabs.tsx';
 import App from './App.tsx'
 import { IStaticMethods } from 'flyonui/flyonui';
-
+import './i18n'; // Import the i18n configuration
 declare global {
   interface Window {
     HSStaticMethods: IStaticMethods;

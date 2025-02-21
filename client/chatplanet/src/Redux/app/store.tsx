@@ -5,12 +5,14 @@ import type { Action, ThunkAction } from '@reduxjs/toolkit'
 import messageReducer from '../features/messages/messageSlice'
 import contactReducer from '../features/contacts/contactSlice'
 import groupReducer from '../features/groups/groupSlice'
+import  updateProfileReducer  from '../features/updateProfile/updateProfileSlice';
 export const store = configureStore({
   reducer: {
     auth:authReducer,
     message:messageReducer,
     contact:contactReducer,
-    group:groupReducer
+    group:groupReducer,
+    updateprofile:updateProfileReducer,
   
   }
 })

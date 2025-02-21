@@ -152,38 +152,34 @@ export const ForgotPassword = async (req:any, res:any ) => {
        const search_query = mysql.format(sqlSearch,[email])
      
        pool.query (search_query, async (err, result:any) => {
-      
-        
-        if (err) throw (err)
-        if (result.length == 0) {
-         console.log("--------> User does not exist")
-         res.json({
-        success: false,
-        message: "Email  not registered!",
-      });
-
-        } 
-        else {
+        if (err) {
+          return  res.json({success:false, message:"User does not exist "})   
+        }
         const user = result[0]
+        console.log(user)
            const token = forgotPasswordToken(user.id)
-           const sqlUpdate = `UPDATE users SET resettoken=${token}  `
-//  const insert_query = mysql.format(sqlInsert,[token])
-           pool.query(sqlUpdate, async (err, result) => {
-             if (err) throw err;
+           console.log(token)
+           const sqlUpdate = `UPDATE users SET resettoken=?  `
+  const insert_query = mysql.format(sqlUpdate,[token])
+           pool.query(insert_query, async (err, result) => {
+            if (err) {
+              return  res.json({success:false, message:"Token reset error "})   
+            }
              console.log(result + " record(s) updated");
+             await contactEmail.sendMail({
+              from: '"SoundPlanet 👻" adeyemiemma45@gmail.com>', // sender address
+              to: `${email}`, // list of receivers
+              subject: "Forgot Password Link", // Subject line
+              text: "Hello world?", // plain text body
+              html: `Hello ${user.firstname}, We have received a request to reset your password. Please reset your password using the link below.",
+                ${process.env.FRONTEND_URL}/resetpassword/${token},
+                Reset Password`, // html body
+            });
+           
+            res.json({success:true, message:"A password reset link has been sent to your email.", token:token }); 
            });
-       await contactEmail.sendMail({
-        from: '"SoundPlanet 👻" adeyemiemma45@gmail.com>', // sender address
-        to: `${email}`, // list of receivers
-        subject: "Forgot Password Link", // Subject line
-        text: "Hello world?", // plain text body
-        html: `Hello ${user.firstname}, We have received a request to reset your password. Please reset your password using the link below.",
-          ${process.env.FRONTEND_URL}/resetpassword/${token},
-          Reset Password`, // html body
-      });
-     
-      res.json({success:true, message:"A password reset link has been sent to your email.", token:token }); 
-        }//end of User exists i.e. results.length==0
+      
+        //end of User exists i.e. results.length==0
        }) //end of connection.query()
       })
   }catch (error){
@@ -195,7 +191,8 @@ export const ForgotPassword = async (req:any, res:any ) => {
 
 // reset password
 export const ResetPassword = async (req:any, res:any  ) => {
-  const {token, password} = req.body
+  const { password} = req.body
+  const { token} = req.params;
   console.log(token, password)
 
   try {
