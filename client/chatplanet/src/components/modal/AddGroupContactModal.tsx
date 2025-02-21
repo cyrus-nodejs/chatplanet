@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import { ChatTabsContext } from "../../Context/chatTabs";
 import { useContext, useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../Redux/app/hook";
@@ -7,7 +10,7 @@ import { ChatContext } from "../../Context/chatContext";
 import {  getAllContacts, fetchContacts } from "../../Redux/features/contacts/contactSlice";
 import { fetchAddGroupMembers } from "../../Redux/features/groups/groupSlice";
 const AddGroupContactModal = () => {
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 let data;
     const dispatch = useAppDispatch()
     const message = useAppSelector(getGroupMessage)

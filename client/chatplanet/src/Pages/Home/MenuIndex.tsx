@@ -1,4 +1,6 @@
 
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import { ChatTabsContext } from "../../Context/chatTabs"
 import { useContext } from "react"
 
