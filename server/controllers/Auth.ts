@@ -17,10 +17,7 @@ const salt = await bcrypt.genSalt();
 const hashedPassword = await bcrypt.hash(password, salt);
 
 //connect to Mysql server
-pool.connect(async (err) => {
-if (err) {
-  return res.json({success:false, message:"Connection error!"}) 
-}
+
  const sqlInsert = "INSERT INTO users(id, firstname, lastname, email, password) VALUES (?,?,?,?,?)"
  const insert_query = mysql.format(sqlInsert,[uuidv4(), firstname, lastname, email, hashedPassword])
         pool.query (insert_query, (err, result:any)=> {
@@ -34,17 +31,13 @@ if (err) {
          })
       
         
-    })
+    
 }
 
-// email passoerd authrntication
+// email password authrntication
 export const LoginUser  = async (req:any, res:any, next:any) =>{
     const { email, password} = req.body
     console.log(email, password)
-      pool.connect(async (err) => {
-        if (err) {
-          return res.json({success:false, message:"Connection error!"}) 
-        }
           const sqlSearch = "Select * from users where email = ?"
           const search_query = mysql.format(sqlSearch,[email]) //mysql prepared statement
            pool.query (search_query, async (err, result:any) => {
@@ -55,7 +48,7 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
         const secret = speakeasy.generateSecret({name: "Chatplanet"});
       const mfaCode = speakeasy.totp({secret: secret.base32,encoding: 'base32'});
                await contactEmail.sendMail({
-                  from: '"ChatPlanet 👻" adeyemiemma45@gmail.com>', // sender address
+                  from: `ChatPlanet 👻  ${process.env.Email} >`, // sender address
                   to: `${result[0].email}`, // list of receivers
                   subject: "2FA CODE", // Subject line
                   text: "Hello world?", // plain text body
@@ -77,9 +70,7 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
               }
                
         }  ) 
-        }
-           
-        )
+    
     
    
  
@@ -145,9 +136,7 @@ export const ForgotPassword = async (req:any, res:any ) => {
   const {email} = req.body
 
   try {
-    pool.connect(async (err) => {
-      if (err) throw err
-      // let sql = `INSERT INTO users (firstname, lastname, email, password) VALUES (${firstname}, ${lastname}, ${email},${hashedPassword})`;
+    
       const sqlSearch = "SELECT * FROM users WHERE email = ?"
        const search_query = mysql.format(sqlSearch,[email])
      
@@ -181,7 +170,7 @@ export const ForgotPassword = async (req:any, res:any ) => {
       
         //end of User exists i.e. results.length==0
        }) //end of connection.query()
-      })
+    
   }catch (error){
       console.log(error)
       
@@ -201,9 +190,7 @@ export const ResetPassword = async (req:any, res:any  ) => {
         if(err){
           return res.json({success:false,  message:`Invalid token or expired!`})
       }
-      pool.connect(async (err) => {
-        if (err) throw err
-       
+   
         const sqlSearch = "SELECT * FROM users WHERE resttoken = ?"
          const search_query = mysql.format(sqlSearch,[token])
         pool.query(search_query, async (err, result:any) => {
@@ -233,7 +220,7 @@ export const ResetPassword = async (req:any, res:any  ) => {
                 })
                }
               })
-        })
+        
     })
   }
   

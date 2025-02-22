@@ -3,70 +3,7 @@ import { Request, Response, NextFunction } from 'express'
 import mysql from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
 import { uploadToCloudinary } from '../utils/cloudinary';
-// API to get chat history between users
-export const getPrivateMessages = (req:any, res:any) => {
-    const { sender_id, receiver_id } = req.params;
- 
-    console.log(`get private message; ${sender_id}`, `${receiver_id}`)
-    try{
-    
 
-        
-     pool.connect(async (err:any) => {
-       if (err) throw err;
-       pool.query(
-         'SELECT * FROM private_messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY timestamp ASC',
-         [sender_id, receiver_id, receiver_id, sender_id],
-         (err, results) => {
-          if (err) {
-            return  res.json({success:false, message:"No private messages founnd"})   
-          }
-           console.log(`privateChatHistory: ${results}`)
-         res.json({success:true, message:'success', privatemessages:results})
-         }
-       );
-     
-     })
-     }catch (err){
-      console.log(err)
-           return  res.json({success:false, message:"Network error!"})  
-     }
-        
-}
-
-
-// API to get group chat history between users
-export const getGroupMessages = (req:any, res:any) => {
-    const { sender_id, group_id } = req.params;
- 
-    console.log(`get group message; ${sender_id}`, `${group_id}`)
-    // Emit groupchat history when a user connects
-
-  try{
-  pool.connect(async (err:any) => {
-    if (err) throw err;
-    pool.query(
-      'SELECT * FROM group_messages WHERE group_id = ?  ORDER BY timestamp ASC',
-      [group_id],
-      (err, results) => {
-        if (err) {
-          return  res.json({success:false, message:"No group messages found!"})   
-        }
-         console.log(`groupchathistory: ${results}`)
-        res.json({success:true, message:'success', groupmessages:results})
-      
-      }
-    );
-  })
-}catch (err){
-  console.log(err)
-  return  res.json({success:false, message:"Network error!"})  
-}
-
-
- 
-
-}
 
 
 export const addRecentChat = async (req:any, res:any) => {

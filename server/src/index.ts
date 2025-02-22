@@ -16,6 +16,7 @@ import cors from "cors"
 import { authenticateJWT } from '../middlewares/jwt/jwt';
 import cookieParser from 'cookie-parser';
 import { uploadToCloudinary } from '../utils/cloudinary';
+
 dotenv.config()
 // const crypto = require("crypto")
 // let token = crypto.randomBytes(64).toString('hex');
