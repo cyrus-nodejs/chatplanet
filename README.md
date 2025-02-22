@@ -1,4 +1,4 @@
-# MERN App with Group and Private Messaging
+# MYSQL MERN Chatting App with Group and Private Messaging
 
 ## Overview
 This is a full-stack MERN application with group and private messaging features. It uses MySQL for relational data storage and provides users with real-time communication in a modern chat application. The app allows users to send messages to groups or privately to other users.
