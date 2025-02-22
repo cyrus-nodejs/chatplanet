@@ -38,13 +38,13 @@ Backend Setup:
 Navigate to the backend directory and install dependencies:
 
 bash
-Copy
+copy
 cd server
 npm install
 Create a .env file in the backend folder with the following content (modify accordingly):
 
 bash
-Copy
+copy
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=yourpassword
@@ -52,22 +52,25 @@ v=messaging_app
 JWT_SECRET=your_jwt_secret
 
 Set up your MySQL database with the following structure:
+
 sql
-Copy
+copy
 CREATE DATABASE messaging_app;
 -- Add tables for users, private_messages, and group_messages
 
 Start the backend server:
+
 bash
-Copy
+copy
 cd server
 npm start
 
 
 Frontend Setup:
 Navigate to the frontend directory and install dependencies:
+
 bash
-Copy
+copy
 cd client/chatpanet
 npm install
 
@@ -99,7 +102,7 @@ message_text (TEXT)
 timestamp (TIMESTAMP)
 
 bash
-Copy
+copy
 groupchat
 id (INT, PK)
 group_name (VARCHAR)
@@ -125,7 +128,7 @@ Establish a WebSocket connection for real-time messaging using Socket.IO on both
 
 Example Event:
 bash
-Copy
+copy
 Private Messaging:
 Client emits: socket.emit('private_message', {receiverId, message});
 Server listens: socket.on('private_message', (data) => { // handle message });
