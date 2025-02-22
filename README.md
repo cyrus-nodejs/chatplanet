@@ -36,11 +36,13 @@ This is a full-stack MERN application with group and private messaging features.
 Backend Setup:
 
 Navigate to the backend directory and install dependencies:
+
 bash
 Copy
 cd server
 npm install
 Create a .env file in the backend folder with the following content (modify accordingly):
+
 bash
 Copy
 DB_HOST=localhost
@@ -48,50 +50,64 @@ DB_USER=root
 DB_PASSWORD=yourpassword
 v=messaging_app
 JWT_SECRET=your_jwt_secret
+
 Set up your MySQL database with the following structure:
 sql
 Copy
 CREATE DATABASE messaging_app;
 -- Add tables for users, private_messages, and group_messages
+
 Start the backend server:
 bash
 Copy
+cd server
 npm start
-Frontend Setup:
 
+
+Frontend Setup:
 Navigate to the frontend directory and install dependencies:
 bash
 Copy
-cd frontend
+cd client/chatpanet
 npm install
+
 Start the frontend server:
-bash
-Copy
 npm start
 Access the Application:
 
 The frontend will run on http://localhost:3000
 The backend will run on http://localhost:5000
-Database Schema
+
+Database Schema:
+bash
+Copy
 Users
 id (INT, PK)
 username (VARCHAR)
 email (VARCHAR)
 password (VARCHAR, hashed)
 avatar_url (VARCHAR, optional)
+
+
 private_messages
+
 id (INT, PK)
 sender_id (INT, FK to Users)
 receiver_id (INT, FK to Users, NULLABLE for group messages)
 group_id (INT, FK to Groups, NULLABLE for private messages)
 message_text (TEXT)
 timestamp (TIMESTAMP)
+
+bash
+Copy
 groupchat
 id (INT, PK)
 group_name (VARCHAR)
 created_at (TIMESTAMP)
 created_by (INT, FK to Users)
-API Endpoints
+
+
+API Endpoints:
 Authentication
 POST /api/register: User registration
 POST /api/login: User login
@@ -102,10 +118,14 @@ POST /api/add/groupmembers: Add groupmember
 GET /api/groups: Get all uer group
 GET /api/get/groupmembers: Get group members
 
+
 Real-Time Features
 Socket.IO
 Establish a WebSocket connection for real-time messaging using Socket.IO on both the client and server sides.
+
 Example Event:
+bash
+Copy
 Private Messaging:
 Client emits: socket.emit('private_message', {receiverId, message});
 Server listens: socket.on('private_message', (data) => { // handle message });
