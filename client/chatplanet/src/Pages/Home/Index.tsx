@@ -15,7 +15,8 @@ import Login from '../Auth/Login'
 import Appbar from './Appbar'
 import AddGroupContactModal from '../../components/modal/AddGroupContactModal'
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook'
-
+import MessageImageModal from '../../components/updateModal/ImageModal'
+import FilesModal from '../../components/updateModal/fileModal'
 const Index = () => {
  
   const dispatch = useAppDispatch()
@@ -53,6 +54,8 @@ const Index = () => {
 <MobileModal />
 <LocationModal />
 <AboutModal />
+<MessageImageModal />
+<FilesModal />
       </div>) : (
         <Login />
       )}

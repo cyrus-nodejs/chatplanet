@@ -26,6 +26,7 @@ interface FormValues {
   email: string;
   password: string;
   confirmPassword: string;
+  mobile:string;
 }
 
 
@@ -41,6 +42,10 @@ interface FormValues {
    .max(100, 'Name must not be more than 100 characters')
    .required('Name is required'),
    email: Yup.string().email('Invalid email').required('Email is required'),
+   mobile: Yup.string()
+   .matches(/^[0-9]{10}$/,  // Simple regex for 10 digit phone numbers
+      "Phone number must be 10 digits")
+  .required("Phone number is required"),
    password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
     .required('Password is required'),
@@ -70,6 +75,7 @@ interface FormValues {
       email: '',
       password: '',
       confirmPassword: '',
+      mobile:"",
     },
     validationSchema,
     onSubmit: handleSubmit,
@@ -83,14 +89,14 @@ interface FormValues {
    
 
 
- <div className=" flex bg-slate-50  m-auto h-screen  ">
- <div className="m-auto p-auto w-96 ">
+ <div className=" flex bg-slate-50  mx-auto h-screen  ">
+ <div className="mx-auto px-auto w-96 ">
 
                 
-  <h4 className="text-2xl  text-center mb-3 font-semibold" >Register</h4>
-  <p className='text-center pb-5'>Get your ChatPlanet account now. </p>
+  <h6 className=" text-xl text-center  font-semibold pb-1" >Register</h6>
+  <p className='text-center text-sm pb-1'>Get your ChatPlanet account now. </p>
 
-  <form className='bg-white p-6' onSubmit={formik.handleSubmit}>
+  <form className='bg-white p-3' onSubmit={formik.handleSubmit}>
   <div className="input-group border max-w-sm  bg-slate-50 ">
   <span className="input-group-text">
     <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-user w-1/6 px-6 bx-xs ' ></i></span>
@@ -117,6 +123,19 @@ interface FormValues {
       <br />
       <div className="input-group border rounded bg-slate-50 max-w-sm">
   <span className="input-group-text">
+    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bxs-phone w-1/6 px-6 bx-xs'></i></span>
+  </span>
+  <label className="sr-only" htmlFor="leadingIconDefault">Mobile</label>
+  <input   value={formik.values.mobile} onChange={formik.handleChange}  name="mobile"  placeholder="Phone number"    type="tel"   className="input grow input focus:outline-none h-12 bg-white w-5/6"  id="" />
+</div>
+    
+      {formik.touched.email && formik.errors.mobile && (
+            <div className="error ">{formik.errors.mobile}</div>
+          )}
+      
+      <br />
+      <div className="input-group border rounded bg-slate-50 max-w-sm">
+  <span className="input-group-text">
     <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-envelope w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Email</label>
@@ -133,7 +152,7 @@ interface FormValues {
     <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-lock-alt w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Password</label>
-  <input   value={formik.values.password}  onChange={formik.handleChange}  name="password"     type="password" placeholder="Password"   className="input input focus:outline-none   h-12 bg-white  grow w-5/6"  id="leadingIconDefault" />
+  <input   value={formik.values.password}  onChange={formik.handleChange}  name="password"     type="password" placeholder="Password"   className="input input focus:outline-none   h-12 bg-white  grow w-5/6"  id="leading" />
 </div>
 
       {formik.touched.password && formik.errors.password && (

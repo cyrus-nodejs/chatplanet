@@ -20,8 +20,8 @@ const { toggleGroupModal, toggleAddContactToGroupModal } = useContext(ChatTabsCo
   const authUser = useAppSelector(getAuthUser)
   console.log(groupmembers)
 console.log(allGroups)
-const mygroup = allGroups.filter(group => group.createdBy == authUser?.id )
-const othergroup = allGroups.filter(group => group.createdBy !== authUser?.id )
+const mygroup = allGroups.filter(group => group.createdby == authUser?.id )
+const othergroup = allGroups.filter(group => group.createdby !== authUser?.id )
 
  useEffect(() => {
   dispatch(fetchGroups());
@@ -33,7 +33,7 @@ useEffect(() => {
   dispatch(fetchGroupMembers());
 }, [dispatch])
 
-
+console.log(mygroup)
   return (
     <div id="tabs-vertical-4" className="" role="tabpanel" aria-labelledby="tabs-vertical-item-4">
       <div className="flex mt-4 justify-between " >

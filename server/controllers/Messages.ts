@@ -9,15 +9,15 @@ import { uploadToCloudinary } from '../utils/cloudinary';
 export const addRecentChat = async (req:any, res:any) => {
     const { receiver_id} = req.body
      const userid = req.user?.id
-     const sqlInsert = `INSERT INTO recentchat( receiver_id, user_id) VALUES (?,?)`             
-     const insert_query = mysql.format(sqlInsert,[ receiver_id, userid ])
+     const sqlInsert = `INSERT INTO recentchat( receiver_id, user_id) VALUES ($1,$2)`             
+     
     console.log(`add recentchat: ${receiver_id}`, {userid})
-  
-    const userExists :any =  pool.query('SELECT * FROM recentchat WHERE receiver_id = ?', [receiver_id]);
+    const values = [ receiver_id, userid ]
+    const userExists :any = await  pool.query('SELECT * FROM recentchat WHERE receiver_id = $1', [receiver_id]);
     if (userExists.length > 0) {
         return res.json({success:true, message: 'success' });
     }
-        pool.query (insert_query, (err, result:any)=> {
+        pool.query (sqlInsert, values, (err, result:any)=> {
           if (err){
             console.log(err)
           return res.json({success:false, message:"Cannot add to recentchat!"}) 
@@ -36,14 +36,14 @@ export const getRecentChat = (req:any, res:any) => {
 try{
 
   pool.query(
-    'SELECT  * FROM recentchat WHERE user_id = ?  ORDER BY timestamp ASC',
+    'SELECT  * FROM recentchat WHERE user_id = $1  ORDER BY timestamp ASC',
     [userid],
     (err, results) => {
       if (err) {
         return  res.json({success:false, message:"Failed to fetch Data!"})   
       }
-       console.log(`recentchat: ${results}`)
-      res.json({success:true, message:'success', recentchat:results})
+       console.log(`recentchat: ${results.rowCount}`)
+      res.json({success:true, message:'success', recentchat:results.rows})
     
     }
   );

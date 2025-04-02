@@ -39,7 +39,7 @@ console.log(myuser)
 </div>
 
 <div
- style={{ backgroundImage: `url(${myuser[0].profile_image})` }}
+ style={{ backgroundImage: `url(${myuser[0]?.profile_image})` }}
  className=" bg-cover bg-center  rounded-full  w-32 h-32 bg-slate-400 m-auto">
 </div>
 
@@ -71,7 +71,7 @@ console.log(myuser)
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className=''></div>
-    <div className=" text-sm ">{convertTimestampDate(myuser[0].last_seen)}</div>
+    <div className=" text-sm ">{convertTimestampDate(myuser[0]?.last_seen)}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
       <div className='flex  justify-between'> 

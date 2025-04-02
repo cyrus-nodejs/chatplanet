@@ -14,16 +14,17 @@
         const date = new Date(timestamp);
 
         // Get the formatted date in YYYY-MM-DD format
-        const formattedDate = date.toISOString().split('T')[0]; // "2025-02-17"
+        const formattedDate = date?.toISOString().split('T')[0]; // "2025-02-17"
         
         // Get the day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-        const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' }); // "Monday"
+        const dayOfWeek = date?.toLocaleString('en-US', { weekday: 'long' }); // "Monday"
 
         return `${dayOfWeek}, ${formattedDate}`;
       };
 
 
-      export const capitalizeFirstLetter = (word:string) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      export const capitalizeFirstLetter = (word:any) => {
+        return word?.charAt(0).toUpperCase() + word?.slice(1);
       }
       

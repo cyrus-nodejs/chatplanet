@@ -21,8 +21,8 @@ const userid = req.user.id
          const image = req.files['image'][0].path
          console.log(image)
        
-       const sqlSearch = `INSERT INTO groupchat(id, name, description, createdBy, group_image) VALUES (?,?,?,?,?)`
-   
+       const sqlSearch = `INSERT INTO groupchat(id, name, description, createdBy, group_image) VALUES ($1,$2,$3,$4,$5)`
+     
        try{
            let imageData = {}
      if(image){
@@ -30,17 +30,15 @@ const userid = req.user.id
          imageData = results
      }
      console.log(imageData)
-               pool.connect(async (err) => {
-                   if (err) throw err;
-                   const search_query = mysql.format(sqlSearch,[uuidv4(), name, description, userid, imageData])
-                   pool.query(search_query, async (err, result:any) => {
+                   const values = [uuidv4(), name, description, userid, imageData]
+                   pool.query(sqlSearch, values, async (err, result:any) => {
                        if (err) {
                            console.log(err)
-                           return  res.json({success:false, message:"Update  failed!"})   
+                           return  res.json({success:false, message:"!"})   
                          }
-                             console.log('profile image update success')
-                            res.json({success:true, message:"Profile Image Update successful!"}) 
-                   })
+                             console.log('Group created successful!')
+                            res.json({success:true, message:"Group created successful!"}) 
+                  
                    })
        }catch(err){
            console.log(err)
@@ -55,25 +53,26 @@ const userid = req.user.id
            const {group_id, user_id} = req.body
         console.log(`addgroup member ${req.body}`)
        
-        const sqlSearch = `SELECT * FROM group_member WHERE group_id = ? AND user_id = ?`
-     const search_query = mysql.format(sqlSearch,[group_id, user_id])
-
-                pool.query(search_query, async (err, result:any) => {
+        const sqlSearch = `SELECT * FROM group_member WHERE group_id = $1 AND user_id = $2`
+   
+               const values = [group_id, user_id]
+                pool.query(sqlSearch, values, async (err, result:any) => {
                     if (err) {
                       console.log(err)
                       return  res.json({success:false, message:'Cannot fetch groups!'})   
                     }else if (result.length > 0){
                           return res.json({success:true, message: 'Contact exist already in group' });
                         }else{
-                        const sqlInsert = `INSERT INTO group_member(group_id, user_id) VALUES (?,?)`           
-                        const insert_query = mysql.format(sqlInsert, [group_id, user_id])
-                    pool.query (insert_query, (err, result:any)=> {
+                        const sqlInsert = `INSERT INTO group_member(group_id, user_id) VALUES ($1, $2)`           
+                       
+                        const values = [group_id, user_id]
+                    pool.query (sqlInsert, values, (err, result:any)=> {
                       if (err){
                         console.log(err)
                       return res.json({success:false, message:`${err}: error contacting `}) 
                       }
                       console.log('contact added to group')
-                      res.json({success:true, message:"contact added to group", groupContact:result})
+                      res.json({success:true, message:"contact added to group", groupContact:result.rows})
                      })        
                         }    
                 })
@@ -107,8 +106,8 @@ export const getGroups = async (req:any, res:any) => {
                       return  res.json({success:false, message:"No groups found "})   
                     }
                          console.log('group success')
-                       
-                res.json({success:true, message:"get groups success !", groups:result})     
+                       console.log(result.rows)
+                res.json({success:true, message:"get groups success !", groups:result.rows})     
                 })
                 
                 })
@@ -116,18 +115,18 @@ export const getGroups = async (req:any, res:any) => {
 }
 
 
-// Retreive group c
+// Retreive group 
 export const getGroupMember = async (req:any, res:any) => {
   const userid = req.user.id
   console.log("I am getting group")
-  const sqlSearch = `SELECT * FROM group_member WHERE user_id  = ?`
-   const search_query = mysql.format(sqlSearch,[userid])
-              pool.query(search_query, async (err, result:any) => {
+  const sqlSearch = `SELECT * FROM group_member WHERE user_id  = $1`
+              const values = [userid]
+              pool.query(sqlSearch, values, async (err, result:any) => {
                   if (err) {
                     return  res.json({success:false, message:"no group members found "})   
                   }
                        console.log(`groupmember: ${result}`)
-              res.json({success:true, message:" Fetch group members!!", groupmembers:result})     
+              res.json({success:true, message:" Fetch group members!!", groupmembers:result.rows})     
               })
             
               

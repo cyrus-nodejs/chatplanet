@@ -17,7 +17,7 @@ const ChatMenu = () => {
  console.log(recentChat)
 console.log(onlineusers)
 
-const recentusers = recentChat.filter((value:any, index, self) => 
+const recentusers = recentChat?.filter((value:any, index, self) => 
  
   index === self.findIndex((t:any) => (
     t?.receiver_id === value?.receiver_id

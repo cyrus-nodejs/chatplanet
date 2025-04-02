@@ -91,7 +91,7 @@ app.use("/", groupRoutes );
 const connectDB = () => {
   pool.connect(async (err:any) => {
     if (err) throw err;
-    console.log("DB connected successful: " );
+    console.log("Connected to the PostgreSQL database! " );
     
   })
 }
@@ -117,9 +117,10 @@ io.on('connection', (socket) => {
   users[sender_id] = socket.id;
 
     // Update online Users status in database
-     const sqlUpdate = `UPDATE users   SET status = 'online', last_seen = NOW()  WHERE  id = '${sender_id}'`
+     const sqlUpdate = `UPDATE users   SET status = 'online', last_seen = NOW()  WHERE  id = $1`
     //  const insert_query = mysql.format(sqlUpdate,["online",  sender_id])
-     pool.query(sqlUpdate, async (err:any, result:any) => {
+    const values = [sender_id]
+     pool.query(sqlUpdate, values, async (err:any, result:any) => {
       if (err) throw err;
           //  console.log(`${sender_id} socket active`)
       })
@@ -134,12 +135,12 @@ try{
  socket.on('requestChatHistory', (data) => {
   const {sender_id, receiver_id} = data
   pool.query(
-    'SELECT * FROM private_messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY timestamp ASC',
+    'SELECT * FROM private_messages WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $3 AND receiver_id = $4) ORDER BY timestamp ASC',
     [sender_id, receiver_id, receiver_id, sender_id],
     (err, results) => {
       if (err) throw err;
       // console.log(`privateChatHistory: ${results}`)
-      socket.emit('chatHistory', results);
+      socket.emit('chatHistory', results.rows);
     }
   );
 
@@ -153,11 +154,11 @@ console.log(err)
  socket.on('private_message', (messageData) => {
   try{
   const {  receiver_id, message, sender_id } = messageData;
-     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, message, status) VALUES (?,?,?,?,?)"
-     const insert_query = mysql.format(sqlInsert,[uuidv4(), sender_id, receiver_id, message, 'delivered'])
-            pool.query (insert_query, (err, result:any)=> {
+     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, message, status) VALUES ($1,$2,$3,$4,$5)"
+     const values =[uuidv4(), sender_id, receiver_id, message, 'delivered']
+            pool.query (sqlInsert, values, (err, result:any)=> {
               if (err) throw err;
-              console.log(`This is ${ result.affectedRows}`)
+              console.log(`This is ${ result.rows}`)
             
              })
    if (users[receiver_id]) {
@@ -181,11 +182,12 @@ console.log(err)
   const {  receiver_id, media, sender_id } = mediaData
 
   const image = media.image
-     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, media, status) VALUES (?,?,?,?,?)"
-     const insert_query = mysql.format(sqlInsert,[uuidv4(), sender_id, receiver_id, image, 'delivered'])
-            pool.query (insert_query, (err, result:any)=> {
+     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, media, status) VALUES ($1,$2,$3,$4,$5)"
+     
+     const values = [uuidv4(), sender_id, receiver_id, image, 'delivered']
+            pool.query (sqlInsert, values, (err, result:any)=> {
               if (err) throw err;
-              console.log(`This is ${ result.affectedRows}`)
+              console.log(`This is ${ result.rows}`)
             
              })
    if (users[receiver_id]) {
@@ -204,11 +206,12 @@ console.log(err)
   try{
   const {  receiver_id, files, sender_id } = fileData;
   const file = files.Files
-     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, files, status) VALUES (?,?,?,?,?)"
-     const insert_query = mysql.format(sqlInsert,[uuidv4(), sender_id, receiver_id, file, 'delivered'])
-            pool.query (insert_query, (err, result:any)=> {
+     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, files, status) VALUES ($1,$2,$3,$4,$5)"
+     
+     const values = [uuidv4(), sender_id, receiver_id, file, 'delivered']
+            pool.query (sqlInsert, values, (err, result:any)=> {
               if (err) throw err;
-              console.log(`This is ${ result.affectedRows}`)
+              console.log(`This is ${ result.rows}`)
             
              })
    if (users[receiver_id]) {
@@ -236,9 +239,10 @@ console.log(err)
     const { user_id, group_id, message } = messageData;
     console.log(`socket ${messageData}`)
 
-       const sqlInsert = "INSERT INTO group_messages( group_id, user_id, message) VALUES (?,?,?)"
-       const insert_query = mysql.format(sqlInsert,[ group_id, user_id, message])
-              pool.query (insert_query, (err, result:any)=> {
+       const sqlInsert = "INSERT INTO group_messages( group_id, user_id, message) VALUES ($1,$2,$3)"
+      
+       const values = [ group_id, user_id, message]
+              pool.query (sqlInsert, values, (err, result:any)=> {
                 if (err) throw err;
               // console.log(`group message: ${result}`)
                })
@@ -251,9 +255,10 @@ console.log(err)
       const { user_id, group_id, media } = mediaData;
       console.log(`socket ${mediaData}`)
   
-         const sqlInsert = "INSERT INTO group_messages( group_id, user_id, media) VALUES (?,?,?)"
-         const insert_query = mysql.format(sqlInsert,[ group_id, user_id, media])
-                pool.query (insert_query, (err, result:any)=> {
+         const sqlInsert = "INSERT INTO group_messages( group_id, user_id, media) VALUES ($1,$2,$3)"
+         
+         const values = [ group_id, user_id, media]
+                pool.query (sqlInsert,values, (err, result:any)=> {
                   if (err) throw err;
                 // console.log(`group message: ${result}`)
                  })
@@ -266,9 +271,9 @@ console.log(err)
     const { user_id, group_id, files } = fileData;
     console.log(`socket ${fileData}`)
 
-       const sqlInsert = "INSERT INTO group_messages( group_id, user_id, files) VALUES (?,?,?)"
-       const insert_query = mysql.format(sqlInsert,[ group_id, user_id, files])
-              pool.query (insert_query, (err, result:any)=> {
+       const sqlInsert = "INSERT INTO group_messages( group_id, user_id, files) VALUES ($1,$2,$3)"
+       const values = [ group_id, user_id, files]
+              pool.query (sqlInsert, values, (err, result:any)=> {
                 if (err) throw err;
               // console.log(`group message: ${result}`)
                })
@@ -282,12 +287,12 @@ console.log(err)
   try{
 
     pool.query(
-      'SELECT * FROM group_messages WHERE group_id = ?  ORDER BY timestamp ASC',
+      'SELECT * FROM group_messages WHERE group_id = $1  ORDER BY timestamp ASC',
       [group_id],
       (err, results) => {
         if (err) throw err;
         // console.log(`groupchathistory: ${results}`)
-        socket.emit('groupChatHistory', results);
+        socket.emit('groupChatHistory', results.rows);
       }
     );
   
@@ -303,6 +308,43 @@ console.log(err)
     socket.leave(group_id);
     // console.log(`User left group: ${group_id}`);
   });
+
+  // Handle events for video call signaling, such as:
+  socket.on('offer', (offer) => {
+    socket.broadcast.emit('offer', offer);
+  });
+
+  socket.on('answer', (answer) => {
+    socket.broadcast.emit('answer', answer);
+  });
+
+  socket.on('ice-candidate', (candidate) => {
+    socket.broadcast.emit('ice-candidate', candidate);
+  });
+
+  //  // Handle incoming offer
+  //  socket.on("offer", (offer, toUserId) => {
+  //   const toSocketId = users[toUserId];
+  //   if (toSocketId) {
+  //     io.to(toSocketId).emit("offer", offer);
+  //   }
+  // });
+
+  // // Handle incoming answer
+  // socket.on("answer", (answer, toUserId) => {
+  //   const toSocketId = users[toUserId];
+  //   if (toSocketId) {
+  //     io.to(toSocketId).emit("answer", answer);
+  //   }
+  // });
+
+  // // Handle ICE candidates
+  // socket.on("ice-candidate", (candidate, toUserId) => {
+  //   const toSocketId = users[toUserId];
+  //   if (toSocketId) {
+  //     io.to(toSocketId).emit("ice-candidate", candidate);
+  //   }
+  // });
 
   // Handle disconnect
 

@@ -1,3 +1,5 @@
+import { MutableRefObject } from "react";
+import { Socket } from "socket.io-client";
 
 
 export type tabsType = {
@@ -104,7 +106,7 @@ export interface GROUPS {
   id: string,
   name: string,
   description:string,
-  createdBy:string
+  createdby:string
   members: CONTACTS[],
  timestamp:string,
  group_image:string
@@ -188,6 +190,7 @@ export type chatType = {
    currentGroupFile:File
   state:State
   dispatch: React.Dispatch<Action>
+  socket:MutableRefObject<void | Socket | null>
 
 }
   

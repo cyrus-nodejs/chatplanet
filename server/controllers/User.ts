@@ -8,20 +8,20 @@ export const getOnlineUsers = (req:any, res:any) => {
 
    const userId = req.user.id
    console.log(`userid ${userId}`)
-    const sqlSearch = "SELECT * FROM users WHERE status = ? AND NOT id = ?"
-    const search_query = mysql.format(sqlSearch,['online', userId] )
-
+    const sqlSearch = "SELECT * FROM users WHERE status = $1 AND NOT id = $2"
+    
+    const value = ['online', userId] 
     try{
             pool.connect(async (err) => {
                 if (err) throw err;
-                pool.query(search_query, async (err, result:any) => {
+                pool.query(sqlSearch, value, async (err, result:any) => {
                     if (err) {
                         return  res.json({success:false, message:"No useronline found "})   
                       }
                     console.log('onlineUsers found!')
                        
 
-                         res.json({success:true, message:"online Users found!!", users:result}) 
+                         res.json({success:true, message:"online Users found!!", users:result.rows}) 
                 })
                 
                 })
@@ -34,8 +34,7 @@ export const getOnlineUsers = (req:any, res:any) => {
 
 export const getAllUsers = (req:any, res:any) => {
 
-     const sqlSearch = "SELECT * FROM users   "
- 
+     const sqlSearch = "SELECT * FROM users"
  
      try{
              pool.connect(async (err) => {
@@ -46,7 +45,7 @@ export const getAllUsers = (req:any, res:any) => {
                       }
                      console.log('allusers found!')
                     //  console.log(result)
-         res.json({success:true, message:"online Users found!", users:result}) 
+         res.json({success:true, message:"online Users found!", users:result.rows}) 
                  })
                  
                  })
@@ -74,7 +73,7 @@ export const UpdateProfileImage = async (req:any, res:any) => {
       const image = req.files['image'][0].path
       console.log(image)
     const userid = req.user.id
-    const sqlSearch = `UPDATE users   SET profile_image = ?  WHERE  id = ?`
+    const sqlSearch = `UPDATE users   SET profile_image = $1 WHERE  id = $2`
 
     try{
         let imageData = {}
@@ -84,8 +83,9 @@ export const UpdateProfileImage = async (req:any, res:any) => {
   }
   console.log(imageData)
           
-                const search_query = mysql.format(sqlSearch,[imageData, userid])
-                pool.query(search_query, async (err, result:any) => {
+                
+                const values = [imageData, userid]
+                pool.query(sqlSearch, values, async (err, result:any) => {
                     if (err) {
                         console.log(err)
                         return  res.json({success:false, message:"Update  failed!"})   
@@ -106,9 +106,8 @@ export const UpdateProfileImage = async (req:any, res:any) => {
 export const updateAbout = (req:any, res:any) => {
     const { about } = req.body
     const userid = req.user.id
-    const sqlUpdate = `UPDATE users   SET about = ?  WHERE id = ?`
-    const insert_query = mysql.format(sqlUpdate,[about, userid])
-  
+    const sqlUpdate = `UPDATE users   SET about = $1  WHERE id = $2`
+    const values = [about, userid]
     try{
         if (!userid){
             res.json({success:false, message:"No user found!"})
@@ -116,7 +115,7 @@ export const updateAbout = (req:any, res:any) => {
             
                 
 
-                pool.query(insert_query, async (err, result:any) => {
+                pool.query(sqlUpdate, values, async (err, result:any) => {
                     if (err) {
                         console.log(err)
                         return  res.json({success:false, message:"Update  failed!"})   
@@ -143,16 +142,16 @@ export const updateLocation = (req:any, res:any) => {
     const { location } = req.body
     console.log(location)
     const userid = req.user.id
-    const sqlUpdate = `UPDATE users   SET country = ?  WHERE   id = ?`
-    const insert_query = mysql.format(sqlUpdate,[location, userid])
-  
+    const sqlUpdate = `UPDATE users   SET country = $1  WHERE   id = $2`
+    
+    const values = [location, userid]
     try{
         if (!userid){
             res.json({success:false, message:"No user found!"})
         }else{
            
 
-                pool.query(insert_query, async (err, result:any) => {
+                pool.query(sqlUpdate,values, async (err, result:any) => {
                     if (err) {
                         console.log(err)
                         return  res.json({success:false, message:"Update  failed!"})   
@@ -183,16 +182,16 @@ export const updatePhoneContact = (req:any, res:any) => {
     const { mobile } = req.body
     console.log(mobile)
     const userid = req.user.id
-    const sqlUpdate = `UPDATE users SET mobile = ?  WHERE id = ?`
-    const insert_query = mysql.format(sqlUpdate,[mobile, userid])
-  
+    const sqlUpdate = `UPDATE users SET mobile = $1  WHERE id = $2`
+   
+    const values = [mobile, userid]
     try{
         if (!userid){
             res.json({success:false, message:"No user found!"})
         }else{
          
 
-                pool.query(insert_query, async (err, result:any) => {
+                pool.query(sqlUpdate, values, async (err, result:any) => {
                     if (err) {
                         console.log(err)
                         return  res.json({success:false, message:"Update  failed!"})   
