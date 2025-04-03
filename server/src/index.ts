@@ -54,19 +54,28 @@ app.use(express.urlencoded({ extended: true }));
  app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 
 
+ const corsOptions = {
+  origin: process.env!.FRONTEND_URL,
+ credentials: true, 
+ optionSuccessStatus: 200,
+ methods: ['GET', 'PUT', 'POST', 'DELETE'],
 
-const allowedOrigins = [ process.env!.FRONTEND_URL];
+}
+// app.use(cors(corsOptions))
 
-const corsOptions = {
-  origin: function (origin:any, callback:any) {
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true); // allow the request
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-};
+
+// const allowedOrigins = [process.env!.FRONTEND_URL];
+
+// const corsOptions = {
+//   origin: function (origin:any, callback:any) {
+//     if (allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true); // allow the request
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true
+// };
 
 // Use the CORS middleware with specific options
 app.use(cors(corsOptions));
