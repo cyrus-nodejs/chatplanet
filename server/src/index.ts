@@ -29,7 +29,7 @@ const httpServer = createServer(app);
 const port = process.env.PORT ;
 const io = new Server(httpServer,  {
   cors: {
-    origin: process.env!.FRONTEND_URL,  // replace with your React app's URL
+    origin:process.env!.FRONTEND_URL,  // replace with your React app's URL
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true
