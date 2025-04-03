@@ -29,7 +29,7 @@ const httpServer = createServer(app);
 const port = process.env.PORT ;
 const io = new Server(httpServer,  {
   cors: {
-    origin: 'http://localhost:5173',  // replace with your React app's URL
+    origin: process.env!.FRONTEND_URL,  // replace with your React app's URL
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true
@@ -55,7 +55,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = [ process.env!.FRONTEND_URL];
 
 const corsOptions = {
   origin: function (origin:any, callback:any) {

@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-window.HSStaticMethods.autoInit();
+window.HSStaticMethods?.autoInit();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
 
