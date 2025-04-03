@@ -60,7 +60,7 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
                 });
                 const data = {id: result.rows[0]?.id,  email:result.rows[0]?.email, firstname: result.rows[0]?.firstname, lastname:result.rows[0]?.lastname, key:secret.base32}
                 const token = create2FAtoken(data)
-              res.cookie("token", token , {withCredentials:true, httpOnly:true, secure:true, sameSite:"none" });
+              res.cookie("token", token ,  process.env.NODE_ENV === 'production' ? {withCredentials:true, httpOnly:true, secure:true, sameSite:"none" } : {withCredentials:true, httpOnly:false });
                  res.json({success:true, message:`MFA code sent to ${result.rows[0]?.email}`})
                 } 
                 else{
@@ -108,11 +108,11 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
             // Successful 2FA, proceed to authentication
             const user = {id: data.id,  email:data.email, firstname: data.firstname, lastname:data.lastname}
                  const accessToken = createAccessToken(user)
-                   res.cookie("accessToken", accessToken, {
+                   res.cookie("accessToken", accessToken, process.env.NODE_ENV === 'production' ?  {
                      withCredentials:true, 
                      httpOnly:true, 
                      secure:true, sameSite:"none" 
-                 });
+                 }: {withCredentials:true, httpOnly:false } );
 
                  console.log('token matches!')
                res.json({success:true, message:`2fAcode Matches! Login success. `, token:accessToken})

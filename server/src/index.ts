@@ -27,17 +27,6 @@ const app: Express = express();
 
 const httpServer = createServer(app);
 const port = process.env.PORT ;
-const io = new Server(httpServer,  {
-  cors: {
-    origin:process.env!.FRONTEND_URL,  // replace with your React app's URL
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true
-  },
-  perMessageDeflate: {
-    threshold: 1024,
-  },
-});
 
 
 //  console.log(authenticator.generateKey())
@@ -53,34 +42,61 @@ app.use(express.urlencoded({ extended: true }));
  app.use(bodyParser.json({ limit: "100mb"}));
  app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 
+ if (process.env.NODE_ENV === 'production') {
 
- const corsOptions = {
-  origin: process.env!.FRONTEND_URL,
- credentials: true, 
- optionSuccessStatus: 200,
- methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  const corsOptions = {
+    origin: process.env!.FRONTEND_URL,
+   credentials: true, 
+   optionSuccessStatus: 200,
+   methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  
+  }
+  
+  app.use(cors(corsOptions));
+  
+  
+ }
+ else{
 
-}
-// app.use(cors(corsOptions))
+  const corsOptions = {
+    origin: process.env!.FRONTEND_URL2,
+   credentials: true, 
+   optionSuccessStatus: 200,
+   methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  
+  }
+  
+  app.use(cors(corsOptions));
+  
+ }
+ const io = new Server(httpServer,
+  process.env.NODE_ENV === 'production' ?
+  {
+  
+  cors: {
+    origin:process.env!.FRONTEND_URL,  // replace with your React app's URL
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true
+  },
+  perMessageDeflate: {
+    threshold: 1024,
+  },
+}: {
+  
+  cors: {
+    origin:process.env!.FRONTEND_URL2,  // replace with your React app's URL
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true
+  },
+  perMessageDeflate: {
+    threshold: 1024,
+  },
+});
 
 
-// const allowedOrigins = [process.env!.FRONTEND_URL];
-
-// const corsOptions = {
-//   origin: function (origin:any, callback:any) {
-//     if (allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true); // allow the request
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true
-// };
-
-// Use the CORS middleware with specific options
-app.use(cors(corsOptions));
-
-
+ 
 
 app.set('trust proxy', 1) 
 
