@@ -13,16 +13,13 @@ export const addRecentChat = async (req:any, res:any) => {
      
     console.log(`add recentchat: ${receiver_id}`, {userid})
     const values = [ receiver_id, userid ]
-    const userExists :any = await  pool.query('SELECT * FROM recentchat WHERE receiver_id = $1', [receiver_id]);
-    if (userExists.length > 0) {
-        return res.json({success:true, message: 'success' });
-    }
         pool.query (sqlInsert, values, (err, result:any)=> {
           if (err){
-            console.log(err)
+            console.log(err.stack)
           return res.json({success:false, message:"Cannot add to recentchat!"}) 
           }
           console.log(`recentchat added!`)
+          console.log(result.rows)
           res.json({success:true, message:"recentchat added"})
          })   
          
@@ -42,7 +39,7 @@ try{
       if (err) {
         return  res.json({success:false, message:"Failed to fetch Data!"})   
       }
-       console.log(`recentchat: ${results.rowCount}`)
+       console.log(`recentchat: ${results.rows}`)
       res.json({success:true, message:'success', recentchat:results.rows})
     
     }
