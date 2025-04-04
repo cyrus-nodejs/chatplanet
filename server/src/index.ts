@@ -269,7 +269,8 @@ console.log(err)
        const values = [ group_id, user_id, message]
               pool.query (sqlInsert, values, (err, result:any)=> {
                 if (err) throw err;
-              // console.log(`group message: ${result}`)
+              console.log(`group message: ${result.rows}`)
+                
                })
           
     io.to(group_id).emit("group_message", messageData); // Broadcast to group

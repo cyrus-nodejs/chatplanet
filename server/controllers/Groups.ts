@@ -68,8 +68,8 @@ const userid = req.user.id
                         const values = [group_id, user_id]
                     pool.query (sqlInsert, values, (err, result:any)=> {
                       if (err){
-                        console.log(err)
-                      return res.json({success:false, message:`${err}: error contacting `}) 
+                        console.log(err.stack)
+                      return res.json({success:false, message:`cannaot add member to group`}) 
                       }
                       console.log('contact added to group')
                       res.json({success:true, message:"contact added to group", groupContact:result.rows})
@@ -95,7 +95,7 @@ export const getGroups = async (req:any, res:any) => {
     const userId = req.user.id
     console.log("I am getting group")
     const sqlSearch = `SELECT * FROM groupchat`
-     const search_query = mysql.format(sqlSearch,[userId])
+    //  const search_query = mysql.format(sqlSearch,[userId])
 
             pool.connect(async (err) => {
                 if (err) {
