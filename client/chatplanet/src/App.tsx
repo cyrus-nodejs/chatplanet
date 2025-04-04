@@ -1,6 +1,6 @@
 import Index from './Pages/Home/Index'
- 
-
+// import { useEffect} from 'react';
+// import { useLocation } from 'react-router-dom';
 import './App.css'
 import ResetPassword from "./Pages/Auth/ResetPassword";
 import ForgotPassword from "./Pages/Auth/ForgotPassword";
@@ -9,7 +9,7 @@ import Login from "./Pages/Auth/Login";
 import TwoFactorAuth from './Pages/Auth/TwoFactorAuth';
 import ErrorPage from './Pages/Auth/Error';
 
-import { useEffect } from 'react';
+
 
 import {
   createBrowserRouter,
@@ -24,18 +24,17 @@ import {
 
 
 function App() {
-  useEffect(() => {
-    // Check if HSStaticMethods is available
-    if (window.HSStaticMethods && window.HSStaticMethods.autoInit) {
-      window.HSStaticMethods.autoInit();
-    } else {
-      console.error('HSStaticMethods is not available or autoInit is undefined');
-    }
-  }, []); // Empty dependency array to run this once after the component mounts
-
   
   
   
+  
+  // useEffect(() => {
+  //   const loadFlyonui = async () => {
+  //     await import('flyonui/flyonui');
+     
+  //   };
+  //   loadFlyonui();
+  // },  );
 
 
  

@@ -9,6 +9,7 @@ const allUsers = useAppSelector(getAllUsers)
 
 const myuser  = allUsers.filter(users=> users.id ===authUser?.id)
 
+console.log(myuser)
 useEffect(() => {
   dispatch(fetchAsyncUser)
 
@@ -79,7 +80,7 @@ const [isOpen4, setIsOpen4] = useState(false);
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className='text-slate-500'>Created on</div>
-    <div className="text-sm">{convertTimestampDate(myuser[0]?.created_at)}</div>
+    <div className="text-sm">{convertTimestampDate(myuser[0]?.date_created)}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
       <div className='text-slate-500'>Location</div>

@@ -50,7 +50,7 @@ export interface USER {
     about:string,
     mobile:string
     status:string,
-    created_at:string,
+    date_created:string, 
     last_seen:string,
     country:string,
     resettoken:string

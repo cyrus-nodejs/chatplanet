@@ -159,12 +159,12 @@ const GroupMessages = () => {
   
   </div>
 
-  <div className='h-screen flex flex-col overflow-auto'>
+  <div className='flex flex-col h-screen'>
 
-<div className=''>
- <div className='h-screen'>
+<div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100'>
+ <div className=''>
 
-  {groupMessages && (<div className='space-y-4 pb-64'>
+  {groupMessages && (<div className='space-y-2 pb-64'>
             {groupMessages.map((msg:GROUPCHATMESSAGES, index:number) => (
            
             <div className='flex' >

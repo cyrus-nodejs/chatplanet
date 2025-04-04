@@ -13,7 +13,7 @@ const Appbar = () => {
    const isAuthenticated = useAppSelector(getIsAuthenticated)
 //   // const authUser = useAppSelector(getAuthUser)
 
-  const {tabData,activeTab, setIsDarkMode, isDarkMode,  setActiveTab} = useContext(ChatTabsContext)
+  const {tabData, activeTab, setIsDarkMode, isDarkMode,  setActiveTab} = useContext(ChatTabsContext)
 
   
  useEffect(() => {
@@ -26,8 +26,7 @@ const Appbar = () => {
 <div className=" flex-none hidden lg:block h-screen    bg-slate-50  dark:bg-gray-800 text-black dark:text-white" >
   
 <div className="flex">
-      {/* Vertical Tab List */}
-       {/* Tab headers */}
+    
       <div className="w-4/4  p-4 my-4 space-y-5 rounded-lg">
        
        
@@ -42,8 +41,8 @@ const Appbar = () => {
             onClick={() => setActiveTab(index)}
             className={`block w-full py-2 px-4 text-left text-sm font-semibold rounded-lg ${
               activeTab === index
-                ? "bg-violet-600 dark:bg-white text-white  "
-                : "text-slate-500 hover:bg-gray-200  dark:bg-gray-800  "
+                ? "bg-violet-600 dark:bg-white text-white "
+                : "text-slate-500 hover:bg-gray-200  dark:bg-gray-800 "
             }`}
           >
             {tab.label}
