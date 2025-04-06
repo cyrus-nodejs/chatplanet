@@ -157,6 +157,8 @@ export const authSlice = createSlice({
       })
       .addCase(fetch2FAUser.fulfilled, (state, action) => {
         state.twoFaUser= action.payload.user
+        state.authUser= action.payload.user
+        state.isAuthenticated = true
         state.message= action.payload.message
         })
         .addCase(fetch2FAUser.rejected, (state, action) => {

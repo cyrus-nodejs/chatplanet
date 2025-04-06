@@ -111,7 +111,8 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
                    res.cookie("accessToken", accessToken, process.env.NODE_ENV === 'production' ?  {
                      withCredentials:true, 
                      httpOnly:true, 
-                     secure:true, sameSite:"none" 
+                     secure:true, 
+                     sameSite:"none" 
                  }: {withCredentials:true, httpOnly:false } );
 
                  console.log('token matches!')

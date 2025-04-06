@@ -9,13 +9,13 @@ This is a full-stack MERN application with group and private messaging features.
 - **Private Messaging**: Send direct, private messages to other users.
 - **Real-time Messaging**: WebSockets (Socket.IO) for real-time communication.
 - **Responsive UI**: Designed with React for a smooth user experience on both desktop and mobile devices.
-- **MySQL Database**: MySQL is used for storing user profiles, messages, and group data.
+- **MySQL Database**: POSTGRESQL is used for storing user profiles, messages, and group data.
 - **User Profiles**: Each user has a profile with a customizable username and avatar.
 
 ## Tech Stack
 - **Frontend**: React.js, Redux (optional for state management)
 - **Backend**: Node.js, Express.js
-- **Database**: MySQL
+- **Database**: POSTRGESLQ
 - **Authentication**: JSON Web Tokens (JWT)
 - **Real-time Communication**: Socket.IO
 - **Styling**: Tailwind Css
