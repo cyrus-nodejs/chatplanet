@@ -1,7 +1,8 @@
 // import mysql, { createPool } from 'mysql2';
 import dotenv from "dotenv";
 import {Client, Pool} from 'pg'
-
+import fs from 'fs'
+import path from 'path'
 dotenv.config();
 
       //   const dbConfig = {
@@ -28,6 +29,7 @@ dotenv.config();
         password: process.env.password,  // Replace with your password
         port: 23756, // Default PostgreSQL port
         ssl: {
-          rejectUnauthorized: true// Set to true for extra security or if required by your cloud provider
+          rejectUnauthorized: false,// Set to true for extra security or if required by your cloud provider
+          // ca: fs.readFileSync(path.join(__dirname, '../certs/ca.pem')).toString(),
         }
       });
