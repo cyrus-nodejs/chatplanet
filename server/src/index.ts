@@ -42,33 +42,23 @@ app.use(express.urlencoded({ extended: true }));
  app.use(bodyParser.json({ limit: "100mb"}));
  app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 
- if (process.env.NODE_ENV === 'production') {
+ // Cors configuration for server  Local host & web hosting services
+ const corsOptions = process.env.NODE_ENV !== 'development' ? {
+  origin: process.env!.FRONTEND_URL,
+ credentials: true, 
+ optionSuccessStatus: 200,
+ methods: ['GET', 'PUT', 'POST', 'DELETE'],
 
-  const corsOptions = {
-    origin: process.env!.FRONTEND_URL,
-   credentials: true, 
-   optionSuccessStatus: 200,
-   methods: ['GET', 'PUT', 'POST', 'DELETE'],
-  
-  }
-  
-  app.use(cors(corsOptions));
-  
-  
- }
- else{
+} : {
 
-  const corsOptions = {
     origin: process.env!.FRONTEND_URL2,
    credentials: true, 
    optionSuccessStatus: 200,
    methods: ['GET', 'PUT', 'POST', 'DELETE'],
-  
-  }
-  
-  app.use(cors(corsOptions));
-  
- }
+}
+
+app.use(cors(corsOptions));
+ // 
  const io = new Server(httpServer,
   process.env.NODE_ENV === 'production' ?
   {

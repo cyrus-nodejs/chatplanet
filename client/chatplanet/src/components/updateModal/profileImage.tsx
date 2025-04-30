@@ -10,7 +10,7 @@ import * as Yup from 'yup';
 const BASEURL = import.meta.env.VITE_APP_BASE_URL
 
 const ProfileImageModal = () => {
-  
+  console.log(BASEURL)
      const message = useAppSelector(getUpdateMessage)
     const [submitting, setSubmitting] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);

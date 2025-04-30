@@ -26,7 +26,7 @@ dotenv.config();
         host: process.env.host,      // Replace with your database host
         database: process.env.database,  // Replace with your database name
         password: process.env.password,  // Replace with your password
-        port: 5432, // Default PostgreSQL port
+        port: 23756, // Default PostgreSQL port
         ssl: {
           rejectUnauthorized: true// Set to true for extra security or if required by your cloud provider
         }

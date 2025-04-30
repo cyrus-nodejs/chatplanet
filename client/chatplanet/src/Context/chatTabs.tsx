@@ -57,14 +57,7 @@ export const  ChatTabsProvider = ({ children}:{ children: React.ReactNode } ) =>
    const Tab5 = <i className='bx bxs-contact bx-sm  dark:bg-gray-800  dark:text-slate-500 ' ></i>
   const Tab6 = <i className='bx bx-cog bx-sm  dark:bg-gray-800  dark:text-slate-500 ' ></i>
   const Tab7 = <i className='bx bx-globe bx-sm  dark:bg-gray-800  dark:text-slate-500 '></i>
-//   const Tab8 = <button
-//   onClick={() => setIsDarkMode(!isDarkMode)}
-//   className="rounded-full"
-// >
-//    {isDarkMode ? <i className='bx bx-sun bx-sm text-inherit dark:bg-gray-800  dark:text-gray-400 '></i> : <i className='bx bx-moon bx-sm' ></i>} 
-// </button>
 
- 
   
  
  
