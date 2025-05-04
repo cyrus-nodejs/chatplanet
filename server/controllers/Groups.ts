@@ -97,10 +97,7 @@ export const getGroups = async (req:any, res:any) => {
     const sqlSearch = `SELECT * FROM groupchat`
     //  const search_query = mysql.format(sqlSearch,[userId])
 
-            pool.connect(async (err) => {
-                if (err) {
-                  return  res.json({success:false, message:"Connection Error "})   
-                }
+         
                 pool.query(sqlSearch, async (err, result:any) => {
                     if (err) {
                       return  res.json({success:false, message:"No groups found "})   
@@ -110,7 +107,7 @@ export const getGroups = async (req:any, res:any) => {
                 res.json({success:true, message:"get groups success !", groups:result.rows})     
                 })
                 
-                })
+                
             
 }
 

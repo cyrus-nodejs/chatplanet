@@ -45,28 +45,25 @@ app.use(express.urlencoded({ extended: true }));
  // Cors configuration for server  Local host & web hosting services
 const corsOptions = {
   //  origin: process.env!.FRONTEND_URL2,
-   origin: process.env!.FRONTEND_URL,
+   origin: process.env!.FRONTEND_URL2,
  credentials: true, 
  optionSuccessStatus: 200,
  methods: ['GET', 'PUT', 'POST', 'DELETE'],
+ allowedHeaders: ['Content-Type', 'Authorization']
 
 }
 
+
+
+// Apply CORS middleware
 app.use(cors(corsOptions));
- // 
 
 
- const io = new Server(httpServer,
-  
+
+
+const io = new Server(httpServer, 
   {
-  
-  cors: {
-    origin:process.env!.FRONTEND_URL,  // replace with your React app's URL
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true
-  }
- 
+    cors:corsOptions
 });
 
 

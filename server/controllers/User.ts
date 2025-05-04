@@ -12,8 +12,8 @@ export const getOnlineUsers = (req:any, res:any) => {
     
     const value = ['online', userId] 
     try{
-            pool.connect(async (err) => {
-                if (err) throw err;
+    
+         
                 pool.query(sqlSearch, value, async (err, result:any) => {
                     if (err) {
                         return  res.json({success:false, message:"No useronline found "})   
@@ -24,7 +24,7 @@ export const getOnlineUsers = (req:any, res:any) => {
                          res.json({success:true, message:"online Users found!!", users:result.rows}) 
                 })
                 
-                })
+                
     }catch(err){
 
     }
@@ -37,8 +37,7 @@ export const getAllUsers = (req:any, res:any) => {
      const sqlSearch = "SELECT * FROM users"
  
      try{
-             pool.connect(async (err) => {
-                 if (err) throw err;
+         
                  pool.query(sqlSearch, async (err, result:any) => {
                     if (err) {
                         return  res.json({success:false, message:"No allusers found !"})   
@@ -48,7 +47,7 @@ export const getAllUsers = (req:any, res:any) => {
          res.json({success:true, message:"online Users found!", users:result.rows}) 
                  })
                  
-                 })
+                
      }catch(err){
  
      }
