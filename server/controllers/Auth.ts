@@ -23,7 +23,7 @@ const hashedPassword = await bcrypt.hash(password, salt);
         pool.query (sqlInsert, values , (err, result:any)=> {
           if (err){
             console.log(err)
-          return res.json({success:false, message:err.stack}) 
+          return res.json({success:false, message:'User Canot be reigistered!'}) 
           }
           console.log(`This is ${ result.rows}`)
           res.json({success:true, message:"User Saved! Success!"})

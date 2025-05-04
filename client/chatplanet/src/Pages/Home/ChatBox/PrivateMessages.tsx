@@ -30,7 +30,7 @@ const PrivateMessages = () => {
     const [showFile, setShowFile] = useState(false);
     const [error, setError] = useState('');
 
-    const myuser  = allusers.filter(users=> users.id ===receiver?.userid)
+    const myuser  = allusers?.filter(users=> users.id ===receiver?.userid)
 
   const handleEmojiSelect = (emoji:string ) => {
     dispatch({ type: 'SET_CURRENTMESSAGE', payload:  currentMessage + emoji})
