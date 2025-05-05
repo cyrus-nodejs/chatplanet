@@ -59,8 +59,8 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
                 });
                 const data = {id: result.rows[0]?.id,  email:result.rows[0]?.email, firstname: result.rows[0]?.firstname, lastname:result.rows[0]?.lastname, key:secret.base32}
                 const token = create2FAtoken(data)
-                 res.cookie("token", token ,  {withCredentials:true, httpOnly:true, secure:true, sameSite:"none" } )
-                 res.json({success:true, message:`MFA code sent to ${result.rows[0]?.email}`})
+                 res.cookie("token", token ,  {withCredentials:true, httpOnly:true, secure:true, sameSite:"none" } );
+                 res.json({success:true, message:`MFA code sent to ${result.rows[0]?.email}`});
                 } 
                 else{
             
@@ -194,7 +194,7 @@ export const ResetPassword = async (req:any, res:any  ) => {
           return res.json({success:false,  message:`Invalid token or expired!`})
       }
    
-        const sqlSearch = "SELECT * FROM users WHERE resettoken = ?"g
+        const sqlSearch = "SELECT * FROM users WHERE resettoken = ?"
         const values = [token]
         pool.query(sqlSearch, values, async (err, result:any) => {
             if (err) throw (err)
