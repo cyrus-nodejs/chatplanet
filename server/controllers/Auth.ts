@@ -57,7 +57,7 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
              });
              const data = {id: result.rows[0]?.id,  email:result.rows[0]?.email, firstname: result.rows[0]?.firstname, lastname:result.rows[0]?.lastname, key:secret.base32}
              const token = create2FAtoken(data)
-             res.cookie("token", token , {  withCredentials:true, httpOnly:true,  secure: false,  sameSite:"lax" } 
+             res.cookie("token", token , {  withCredentials:true, httpOnly:true,  secure: true,  sameSite:"none" } 
              );
               res.json({success:true, message:`MFA code sent to ${result.rows[0]?.email}`});
              } 
@@ -107,7 +107,7 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
                  console.log(accessToken)
                  res.cookie("accessToken", accessToken ,
                   // {withCredentials:true, httpOnly:true, secure:true, sameSite:"none" } ,
-                     {  withCredentials:true, httpOnly:true, secure:true, sameSite:"lax" } );
+                     {  withCredentials:true, httpOnly:true, secure:true, sameSite:"none" } );
   
                  console.log('token matches!')
                res.json({success:true, message:`2fAcode Matches! Login success. ` , user:user})
