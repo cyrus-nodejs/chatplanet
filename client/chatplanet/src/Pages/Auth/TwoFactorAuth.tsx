@@ -1,25 +1,23 @@
 
 import "../../index.css"
 
- import {  useNavigate } from 'react-router-dom';
+ import {  Navigate, useNavigate, redirect } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-// import { Navigate } from "react-router-dom";
-
-import {  useState, useEffect} from 'react';
+import { useState, useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook';
-import  {getMessage,fetchAsyncUser,      fetch2FaLogin} from '../../Redux/features/auth/authSlice';
+import  {getMessage,fetchAsyncUser, getIsAuthenticated, getAuthUser,     fetch2FaLogin} from '../../Redux/features/auth/authSlice';
 
 
 const TwoFactorAuth = () => {
   
-  const navigate = useNavigate()
+   const navigate = useNavigate()
 
     
-        // const isAuthenticated = useAppSelector(getIsAuthenticated)
+        const isAuthenticated = useAppSelector(getIsAuthenticated)
       
-        //  const authUser = useAppSelector(getAuthUser)
+         const user= useAppSelector(getAuthUser)
     
       
     const dispatch = useAppDispatch()
@@ -36,6 +34,16 @@ useEffect(() => {
 
 }, [dispatch])
 
+useEffect(() =>{
+  if (isAuthenticated ){
+    navigate('/')
+  }else{
+    redirect("/login")
+  }
+
+    }, [isAuthenticated,  navigate])
+
+    
 
 interface FormValues {
   mfacode:string,
@@ -84,13 +92,10 @@ interface FormValues {
    
           
           <div className="flex bg-slate-50  m-auto h-screen ">
-  
-   {/* { isAuthenticated && authUser  ? (
-         <Navigate to="/" replace={true} /> 
-        ): (<Navigate to="/login" replace={true} />)} 
-          
-            */}
-          
+
+           {isAuthenticated && user &&(
+          <Navigate to="/" replace={true} />
+        )}
          
               <div className="m-auto p-auto w-96">
               <p className="text-2xl  text-center mb-3 font-semibold">Verify Your Identity</p>
