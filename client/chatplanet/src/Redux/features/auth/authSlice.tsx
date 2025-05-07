@@ -86,7 +86,7 @@ export const fetchAsyncUser = createAsyncThunk(
 
   export const fetchAsyncLogout = createAsyncThunk(
     'auth/fetchAsyncLogout',  async () => {
-        const response= await axios.post(`${BASEURL}/logout`,{}, { withCredentials: true })
+        const response= await axios.get(`${BASEURL}/logout`, { withCredentials: true })
         console.log(response.data)
         return response.data
       });
