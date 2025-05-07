@@ -35,13 +35,13 @@ useEffect(() => {
 }, [dispatch])
 
 useEffect(() =>{
-  if (user){
+  if (user && isAuthenticated){
     navigate('/')
   }else{
     redirect("/login")
   }
 
-    }, [user,  navigate])
+    }, [user, isAuthenticated, navigate])
 
     
 
@@ -60,7 +60,7 @@ interface FormValues {
     try {
       setSubmitting(true);
       dispatch(fetch2FaLogin(values))
-      navigate('/')
+      // navigate('/')
       console.log(values);
       // Set submitting to false after successful submission
       setSubmitting(false);
