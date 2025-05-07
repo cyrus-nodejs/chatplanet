@@ -240,6 +240,23 @@ export const  getAuthUser = async (req:any,  res:any) => {
 
   }
   
+  //Retrieve authenticated User
+export const  LogOut = async (req:any,  res:any) => {
+  if (!req.user){
+   return res.json({ success: false, message:`No User Found`})
+  }else{
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: true, // set to true if using HTTPS
+      sameSite: 'None' // or 'Lax'/'None' as needed
+    });
+    res.status(200).json({ message: 'Cookie cleared' });
+  }
+
+
+  }
+  
+  
   
 
 

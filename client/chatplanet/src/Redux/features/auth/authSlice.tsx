@@ -174,8 +174,9 @@ export const authSlice = createSlice({
       
       })
       
-      .addCase(fetchAsyncLogout.fulfilled, (state) => {
+      .addCase(fetchAsyncLogout.fulfilled, (state, action) => {
       state.status = 'succeeded'
+      state.message= action.payload.message
       })
       .addCase(fetchAsyncLogout.rejected, (state, action) => {
         state.status = 'failed'
