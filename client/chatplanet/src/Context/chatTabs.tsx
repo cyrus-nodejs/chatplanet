@@ -53,7 +53,7 @@ export const  ChatTabsProvider = ({ children}:{ children: React.ReactNode } ) =>
   // const Tab1 =   <i className='bx bx-message-rounded-dots bx-sm'></i>
   const Tab3 = <i className='bx bx-message-square-dots bg-white text-gray-700  dark:bg-gray-800  dark:text-slate-500   bx-sm'></i>
   const Tab2 =<i className='bx bxs-user bg-white text-gray-700    dark:bg-gray-800  dark:text-slate-500    bx-sm'></i>
-  const Tab4 = <i className='bx bx-group bx-sm  dark:bg-gray-800  dark:text-slate-500 ' ></i>
+  const Tab4 = <i className='bx bx-group bx-sm bg-white text-gray-700  dark:bg-gray-800  dark:text-slate-500 ' ></i>
    const Tab5 = <i className='bx bxs-contact bx-sm bg-white text-gray-700  dark:bg-gray-800  dark:text-slate-500 ' ></i>
   const Tab6 = <i className='bx bx-cog bx-sm bg-white text-gray-700   dark:bg-gray-800  dark:text-slate-500 ' ></i>
   const Tab7 = <i className='bx bx-globe bx-sm bg-white text-gray-700   dark:bg-gray-800  dark:text-slate-500 '></i>
