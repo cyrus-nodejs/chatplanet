@@ -169,7 +169,7 @@ console.log(group)
            
             <div className='flex' >
             {allusers  && (    <div key={index}   className={`mb-3 p-2 w-full  flex-none  rounded-lg ${
-               msg.user_id? "bg-violet-200 dark:bg-violet-100 text-slate-700 dark:text-slate-700 border-1 font-medium  " : "bg-violet-600 dark:bg-violet-600 text-white font-medium dark:text-white  "
+               msg.user_id? "bg-violet-200 dark:bg-violet-100 text-slate-700 dark:text-slate-700 border-1 font-medium  " : "bg-violet-600 dark:bg-violet-600 text-neutral-50 font-medium dark:text-neutral-50  "
              }`}>{
     allusers.map((user:USER) => (
      <div className=' flex '>
