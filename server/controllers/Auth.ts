@@ -22,7 +22,7 @@ const hashedPassword = await bcrypt.hash(password, salt);
         pool.query (sqlInsert, values , (err, result:any)=> {
           if (err){
             console.log(err)
-          return res.json({success:false, message:'User Canot be reigistered!'}) 
+          return res.json({success:false, message:'User Cannot  be registered! Please retry'}) 
           }
           console.log(`This is ${ result.rows}`)
           res.json({success:true, message:"User Saved! Success!"})
@@ -40,37 +40,41 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
           const values = [email] 
            //Postgresql prepared statement
            pool.query (sqlSearch, values, async (err, result:any) => {
-              if (err){
-    return res.json({success:false, message:err.stack}) 
-              }else{
-                 console.log(result.rows[0]?.password)
-                 if ( await bcrypt.compare(password,  result.rows[0]?.password)) {
-        const secret = speakeasy.generateSecret({name: "Chatplanet"});
-      const mfaCode = speakeasy.totp({secret: secret.base32,encoding: 'base32'});
-               await contactEmail.sendMail({
-                  from: `ChatPlanet 👻  ${process.env.Email} >`, // sender address
-                  to: `${result.rows[0]?.email}`, // list of receivers
-                  subject: "2FA CODE", // Subject line
-                  text: "Hello world?", // plain text body
-                  html: `You are receiving this email because a request was made for a one-time code that can be used for authentication.
-      Please enter the following code for verification:
-      ${mfaCode} . MFA Code valid for 15 minutes
-      If you did not request this change, please change your password or use the chat in the ChatPlanet Interface to contact us.`, // html body
-                });
-                const data = {id: result.rows[0]?.id,  email:result.rows[0]?.email, firstname: result.rows[0]?.firstname, lastname:result.rows[0]?.lastname, key:secret.base32}
-                const token = create2FAtoken(data)
-                 res.cookie("token", token ,  {withCredentials:true, httpOnly:true, secure:true, sameSite:"none" } );
-                 res.json({success:true, message:`MFA code sent to ${result.rows[0]?.email}`});
-                } 
-                else{
-            
-                res.json({success:false, message:"Password doesn't match"})
-                }
-                
-                
+            try{
+              if (result){
+              if ( await bcrypt.compare(password,  result.rows[0]?.password)) {
+     const secret = speakeasy.generateSecret({name: "Chatplanet"});
+   const mfaCode = speakeasy.totp({secret: secret.base32,encoding: 'base32'});
+            await contactEmail.sendMail({
+               from: `ChatPlanet 👻  ${process.env.Email} >`, // sender address
+               to: `${result.rows[0]?.email}`, // list of receivers
+               subject: "2FA CODE", // Subject line
+               text: "Hello world?", // plain text body
+               html: `You are receiving this email because a request was made for a one-time code that can be used for authentication.
+   Please enter the following code for verification:
+   ${mfaCode} . MFA Code valid for 15 minutes
+   If you did not request this change, please change your password or use the chat in the ChatPlanet Interface to contact us.`, // html body
+             });
+             const data = {id: result.rows[0]?.id,  email:result.rows[0]?.email, firstname: result.rows[0]?.firstname, lastname:result.rows[0]?.lastname, key:secret.base32}
+             const token = create2FAtoken(data)
+             res.cookie("token", token , {  withCredentials:true, httpOnly:true,  secure: false,  sameSite:"lax" } 
+             );
+              res.json({success:true, message:`MFA code sent to ${result.rows[0]?.email}`});
+             } 
+             else{
+           console.log("Password doesn't match")
+             res.json({success:false, message:"Incorrect username or password"})
+             }
+            }else{
+              console.log(err)
+              res.json({success:false, message:"Cannot get user"})
+            }
+            }catch (err){
+ console.log(err)
+            }
               }
                
-        }  ) 
+          ) 
     
     
    
@@ -81,21 +85,14 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
     export const twoFactorLogin  = async (req:any, res:any, next:any) =>{
          const {mfacode} = req.body
          console.log(`mfacode = ${mfacode}`)
-        const token = req.cookies?.token
-         try{
+         const data = req.user
+         console.log(data)
          if(!mfacode){
+          console.log("N0 mfacode")
           res.json({success:false,  message:`Please enter MFA code!!`})
          }else{
-        if (!token){
-           return res.json({success:false,  message:"Login required"})
-        }else{
-          console.log(`2fwt == ${token}`)
-        jwt.verify(token, process.env.TWOFACODE_TOKEN!, async (err:any, data:any) => {
-           if(err){
-            console.log('expired!')
-               return res.json({success:false,  message:`Invalid or expired!`})
-           }else{
-            console.log(data.key, mfacode)
+         try{
+            console.log(data, mfacode)
             const isValid = speakeasy.totp.verify({
               secret: data.key,
               encoding: 'base32',
@@ -107,30 +104,24 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
             // Successful 2FA, proceed to authentication
             const user = {id: data.id,  email:data.email, firstname: data.firstname, lastname:data.lastname}
                  const accessToken = createAccessToken(user)
-                   res.cookie("accessToken", accessToken,   {
-                     withCredentials:true, 
-                     httpOnly:true, 
-                     secure:true, 
-                     sameSite:"none" 
-                 } );
-
+                 console.log(accessToken)
+                 res.cookie("accessToken", accessToken ,
+                  // {withCredentials:true, httpOnly:true, secure:true, sameSite:"none" } ,
+                     {  withCredentials:true, httpOnly:true, secure:true, sameSite:"lax" } );
+  
                  console.log('token matches!')
-               res.json({success:true, message:`2fAcode Matches! Login success. `, token:accessToken})
+               res.json({success:true, message:`2fAcode Matches! Login success. ` , user:user})
         } else {
             // Invalid 2FA code
-            res.status(400).json({ success: false, message: 'Invalid 2FA code' });
+            res.status(400).json({ success: false, message: 'Invalid or expired 2FA code' });
         }
         next()
-           }
-         
-        })
-      }
-      }
+           
       }catch(err){
-        
+        console.log(err)
       }
       
-    
+         }
     }
 
    
@@ -241,8 +232,11 @@ export const ResetPassword = async (req:any, res:any  ) => {
 export const  getAuthUser = async (req:any,  res:any) => {
   if (!req.user){
    return res.json({ success: false, message:`No User Found`})
+  }else{
+    console.log(`could be  ${req.user}`)
+    res.json({ success: true, message:`Welcome ${req.user.firstname}`, user: req.user })
   }
-   res.json({ success: true, message:`Welcome ${req.user.firstname}`, user: req.user })
+
 
   }
   

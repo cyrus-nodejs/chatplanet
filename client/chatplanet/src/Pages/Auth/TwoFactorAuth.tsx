@@ -4,12 +4,12 @@ import "../../index.css"
  import {  useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
+// import { Navigate } from "react-router-dom";
 
 import {  useState, useEffect} from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook';
-import  {getMessage,fetchAsyncUser,       fetch2FaLogin} from '../../Redux/features/auth/authSlice';
+import  {getMessage,fetchAsyncUser,      fetch2FaLogin} from '../../Redux/features/auth/authSlice';
 
 
 const TwoFactorAuth = () => {
@@ -17,10 +17,9 @@ const TwoFactorAuth = () => {
   const navigate = useNavigate()
 
     
-      //  const isAuthenticated = useAppSelector(getIsAuthenticated)
-
+        // const isAuthenticated = useAppSelector(getIsAuthenticated)
       
-      //   const authUser = useAppSelector(getAuthUser)
+        //  const authUser = useAppSelector(getAuthUser)
     
       
     const dispatch = useAppDispatch()
@@ -53,11 +52,11 @@ interface FormValues {
     try {
       setSubmitting(true);
       dispatch(fetch2FaLogin(values))
+      navigate('/')
       console.log(values);
       // Set submitting to false after successful submission
-      navigate('/')
-     
       setSubmitting(false);
+
     } catch (error) {
       // Handle form submission error
       console.error(error);
@@ -77,15 +76,7 @@ interface FormValues {
 
           
          
-  // useEffect(() => {
-  //   if (isAuthenticated  && authUser)  {
-  
-  //   }else{
-  //     redirect('/login')
-  //   }
-   
-  
-  // }, [authUser, isAuthenticated, navigate])
+
 
   return (
   
@@ -94,11 +85,11 @@ interface FormValues {
           
           <div className="flex bg-slate-50  m-auto h-screen ">
   
-  {/* { isAuthenticated && authUser  ? (
+   {/* { isAuthenticated && authUser  ? (
          <Navigate to="/" replace={true} /> 
         ): (<Navigate to="/login" replace={true} />)} 
           
-           */}
+            */}
           
          
               <div className="m-auto p-auto w-96">

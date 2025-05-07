@@ -83,14 +83,16 @@ export const UpdateProfileImage = async (req:any, res:any) => {
   console.log(imageData)
           
                 
-                const values = [imageData, userid]
+                const values = [JSON.stringify(imageData), userid]
                 pool.query(sqlSearch, values, async (err, result:any) => {
                     if (err) {
                         console.log(err)
                         return  res.json({success:false, message:"Update  failed!"})   
+                      }else{
+                        console.log('profile image update success')
+                        res.json({success:true, message:"Profile Image Update successful!"}) 
                       }
-                          console.log('profile image update success')
-                         res.json({success:true, message:"Profile Image Update successful!"}) 
+                          
                 })
             
     }catch(err){

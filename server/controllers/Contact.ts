@@ -47,10 +47,13 @@ export const getContact = async (req:any, res:any) => {
                 pool.query(search_query, async (err, result:any) => {
                     if (err) {
                       return  res.json({success:false, message:"No contacts found "})   
+                    }else{
+                      console.log(result.rows)
+                      console.log("get contact success")
+          res.json({success:true, message:"Contacts ", contacts:result.rows})
                     }
-                    console.log(result.rows)
-                         console.log("get contact success")
-             res.json({success:true, message:"Contacts ", contacts:result.rows})     
+
+                       
                 })
             
                 

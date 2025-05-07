@@ -3,7 +3,7 @@
 import { fetchAsyncUser, getAuthUser, getIsAuthenticated } from "../../Redux/features/auth/authSlice"
 import {useEffect,  useContext } from "react"
  import { useAppSelector, useAppDispatch } from "../../Redux/app/hook";
-import { Logout } from "../Auth/Logout";
+import { handleLogout } from "../../Redux/features/auth/authSlice";
 import { ChatTabsContext } from "../../Context/chatTabs";
 
 const Appbar = () => {
@@ -63,7 +63,9 @@ const Appbar = () => {
            Dark/Light Mode
          </div>
 </div> 
-   <div className="w-4/4 space-y-5 my-5 rounded-lg text-center"><button  type="button" className="tab active-tab:tab-active active" id="tabs-vertical-item-1" data-tab="#tabs-vertical-9" aria-controls="tabs-vertical-8" role="tab" aria-selected="true"> {authUser && isAuthenticated ? (<span onClick={() => Logout()}> Logout</span>) : (<i  className='bx bx-log-in bx-sm'></i>)}</button></div> 
+   <div className="w-4/4 space-y-5 my-5 rounded-lg text-center"><button  type="button" className="tab active-tab:tab-active active" id="tabs-vertical-item-1" data-tab="#tabs-vertical-9" aria-controls="tabs-vertical-8" role="tab" aria-selected="true"> {authUser && isAuthenticated ? (<span onClick={() => dispatch(handleLogout())}> Logout</span>) : (<i  className='bx bx-log-in bx-sm'></i>)}</button></div> 
+   
+   
 </div>
   )
 }

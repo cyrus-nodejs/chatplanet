@@ -36,20 +36,27 @@ export const create2FAtoken = (data:{id:string, email:string, firstname:string, 
       //verify JWT accessToken
 export const authenticateJWT = (req:any, res:any, next:any) => {
   const accessToken = req.cookies.accessToken
+  console.log(`na this be ${accessToken}`)
 if (!accessToken){
-  return res.json({success:false,  message:"No  token found, authorization denied!"})
-}
+  console.log('No  token found, authorization denied!')
+  return res.json({success:false,  message:""})
+}else{
  // Verify the token using the secret key
-  jwt.verify(accessToken, process.env.ACCESSTOKEN!, async (err:any, user:any) => {
-    if(err){
-      res.json({ success: false, message:`Invalid or expired token` })
-    }
-         // Attach the user to req.user
-      req.user = user
-       next(); 
-       // Proceed to the next middleware or route handle
-    
- })
+ jwt.verify(accessToken, process.env.ACCESSTOKEN!, async (err:any, user:any) => {
+  if(err){
+    res.json({ success: false, message:`Invalid or expired token` })
+  }
+     else{
+    // Attach the user to req.user
+    req.user = user
+    console.log(req.user)
+     next(); 
+     // Proceed to the next middleware or route handle  
+     }  
+  
+})
+}
+
 
 };
 
@@ -57,22 +64,33 @@ if (!accessToken){
  
 
 export const authorizeJWT = (req:any,  res:any, next:any) => {
-  // Fetching Token from request header
   const token = req.cookies.token
+try{
+  // Fetching Token from request header
 
-if (!token){
-   return res.json({success:false,  message:"Login required!"})
-}else{
+console.log(token)
+console.log('getting login token')
+if (token){
   jwt.verify(token, process.env.TWOFACODE_TOKEN!, async (err:any, user:any) => {
     if(err){
-        return res.json({success:false,  message:`Invalid or expired access token!`})
+      res.json({success:false,  message:`Invalid or expired access token!`})
     }
-    next(); 
+         // Attach the user to req.user
+         req.user = user
+         console.log(req.user)
+         next(); 
     // Proceed to the next middleware or route handle
  })
+  
+}else{
+  res.json({success:false,  message:"Login required!"})
 }
 
 
+}catch (err){
+console.log(err)
+}
+  
 }
 
 

@@ -6,7 +6,7 @@ import { useFormik } from 'formik';
 import axios from "axios";
 // import { getContactMessage} from "../../Redux/features/contacts/contactSlice";
 import * as Yup from 'yup';
-
+const BASEURL = import.meta.env.VITE_APP_BASE_URL
 const MessageImageModal = () => {
   
      const message = useAppSelector(getUpdateMessage)
@@ -53,7 +53,7 @@ const MessageImageModal = () => {
          formData.append('title', values.title );
     console.log(values)
     console.log(formData)
-        const response = await axios.post('http://localhost:5000/updateimage', formData, {
+        const response = await axios.post(`${BASEURL}/updateimage`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

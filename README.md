@@ -9,7 +9,7 @@ This is a full-stack MERN application with group and private messaging features.
 - **Private Messaging**: Send direct, private messages to other users.
 - **Real-time Messaging**: WebSockets (Socket.IO) for real-time communication.
 - **Responsive UI**: Designed with React for a smooth user experience on both desktop and mobile devices.
-- **MySQL Database**: POSTGRESQL is used for storing user profiles, messages, and group data.
+- **POSTGRESQL Database**: POSTGRESQL is used for storing user profiles, messages, and group data.
 - **User Profiles**: Each user has a profile with a customizable username and avatar.
 
 ## Tech Stack
@@ -24,7 +24,7 @@ This is a full-stack MERN application with group and private messaging features.
 
 ### Prerequisites
 - Node.js (v16 or later)
-- MySQL Database
+- POSTGRESQL Database
 - npm or yarn
 
 ### Setup Instructions
@@ -144,12 +144,12 @@ Socket.IO for real-time messaging
 MySQL for relational database management
 JWT for secure authentication
 React for building the frontend UI
-pgsql
+POSTGRESQL
 Copy
 
 ### Customization
 - Replace `your-username` in the clone URL with your GitHub username.
-- Modify the `.env` file settings based on your local MySQL configuration.
+- Modify the `.env` file settings based on your local POSTGRESQL configuration.
 - If you have other specific dependencies or features, add them to the README.
 
 Feel free to modify it according to your project’s exact structure!

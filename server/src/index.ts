@@ -48,7 +48,7 @@ const corsOptions = {
  credentials: true, 
  optionSuccessStatus: 200,
  methods: ['GET', 'PUT', 'POST', 'DELETE'],
- allowedHeaders: ['Content-Type', 'Authorization']
+ 
 
 }
 
@@ -62,11 +62,12 @@ app.use(cors(corsOptions));
 
 const io = new Server(httpServer, 
   {
-    cors:corsOptions
+    cors:corsOptions,
+    transports: ["websocket", "polling"]
 });
 
 
- 
+
 
 app.set('trust proxy', 1) 
 

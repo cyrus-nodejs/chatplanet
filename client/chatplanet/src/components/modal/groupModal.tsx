@@ -7,6 +7,7 @@ import { getGroupMessage} from "../../Redux/features/groups/groupSlice";
 import * as Yup from 'yup';
 import {  getAllContacts } from "../../Redux/features/contacts/contactSlice";
 
+const BASEURL = import.meta.env.VITE_APP_BASE_URL
 const GroupModal = () => {
 
 
@@ -60,7 +61,7 @@ const GroupModal = () => {
 
     console.log(values)
     console.log(formData)
-        const response = await axios.post('http://localhost:5000/creategroup', formData, {
+        const response = await axios.post(`${BASEURL}/creategroup`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

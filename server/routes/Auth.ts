@@ -12,7 +12,7 @@ import {
 
 
 
-router.post('/', authenticateJWT,  getAuthUser  )
+router.get('/user', authenticateJWT,  getAuthUser  )
  router.post("/register", RegisterUser);
 router.post("/login", LoginUser );
 router.post("/login/2fa", authorizeJWT,  twoFactorLogin );

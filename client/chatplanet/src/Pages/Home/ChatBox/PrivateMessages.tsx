@@ -31,7 +31,7 @@ const PrivateMessages = () => {
     const [error, setError] = useState('');
 
     const myuser  = allusers?.filter(users=> users.id ===receiver?.userid)
-
+console.log(receiver)
   const handleEmojiSelect = (emoji:string ) => {
     dispatch({ type: 'SET_CURRENTMESSAGE', payload:  currentMessage + emoji})
     setShowEmojiPicker(false);
@@ -133,7 +133,7 @@ const PrivateMessages = () => {
       
       }, [reduxDispatch])
      
-    
+    console.log(myuser)
       console.log(currentMessage)
       console.log(messages)
   return (
@@ -162,7 +162,7 @@ const PrivateMessages = () => {
 
     <div className='flex flex-col h-screen' >
 
-       <div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100'>
+       <div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100  dark:bg-gray-700'>
         <div className=''>
 
          {messages && (<div className='space-y-2 pb-16'>

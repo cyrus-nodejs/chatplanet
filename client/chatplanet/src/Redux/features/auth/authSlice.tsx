@@ -18,6 +18,7 @@ export interface AuthState {
     twoFaUser:USER | null | undefined 
     isAuthenticated: boolean
     status:  'idle' | 'pending' | 'succeeded' | 'failed'
+    success:boolean
     error:string | null | undefined
     message:string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,6 +34,7 @@ const initialState: AuthState = {
     isAuthenticated: false,
     message:"",
     status: 'idle' ,
+    success:false,
     token:null,
     error:null
   }
@@ -44,17 +46,17 @@ console.log(BASEURL)
 
 export const fetchAsyncUser = createAsyncThunk(
     'auth/fetchAsyncUser', async () => {
-        const response= await axios.post(`${BASEURL}`,{}, { withCredentials: true })
+        const response= await axios.get(`${BASEURL}/user`, { withCredentials: true })
         console.log(response.data)
         return response.data
       });
 
-      export const fetch2FAUser = createAsyncThunk(
-        'auth/fetch2FAUser', async () => {
-            const response= await axios.post(`${BASEURL}/2fa/verify`,{}, { withCredentials: true } )
-            console.log(response.data)
-            return response.data
-          });
+      // export const fetch2FAUser = createAsyncThunk(
+      //   'auth/fetch2FAUser', async () => {
+      //       const response= await axios.post(`${BASEURL}/2fa/verify`,{}, { withCredentials: true } )
+      //       console.log(response.data)
+      //       return response.data
+      //     });
 
       export const fetchLogin = createAsyncThunk(
         'auth/fetchLogin', async (data:{email:string, password:string}) => {
@@ -151,21 +153,21 @@ export const authSlice = createSlice({
         state.error = action.error.message;
         
       })
-      builder.addCase(fetch2FAUser.pending, (state) => {
-        state.status = 'pending'
+      // builder.addCase(fetch2FAUser.pending, (state) => {
+      //   state.status = 'pending'
         
-      })
-      .addCase(fetch2FAUser.fulfilled, (state, action) => {
-        state.twoFaUser= action.payload.user
-        state.authUser= action.payload.user
-        state.isAuthenticated = true
-        state.message= action.payload.message
-        })
-        .addCase(fetch2FAUser.rejected, (state, action) => {
-          state.status = 'failed'
-          state.error = action.error.message;
+      // })
+      // .addCase(fetch2FAUser.fulfilled, (state, action) => {
+      //   state.twoFaUser= action.payload.user
+      //   state.authUser= action.payload.user
+      //   state.isAuthenticated = true
+      //   state.message= action.payload.message
+      //   })
+      //   .addCase(fetch2FAUser.rejected, (state, action) => {
+      //     state.status = 'failed'
+      //     state.error = action.error.message;
           
-        })
+      //   })
       .addCase(fetchAsyncLogout.pending, (state) => {
       state.status = 'pending'
       state.authUser= null
@@ -185,6 +187,7 @@ export const authSlice = createSlice({
         .addCase(fetchLogin.fulfilled, (state, action) => {
           state.token = action.payload.token
           state.message= action.payload.message
+          state.success = action.payload.success
           
           
         })
@@ -280,6 +283,7 @@ export const getAuthStatus = (state:RootState) => state.auth.status
 export const getOnlineUsers = (state:RootState) => state.auth.onlineUsers
 export const getAllUsers = (state:RootState) => state.auth.allUsers
 export const getMessage =(state:RootState) => state.auth.message
+export const getSuccessStatus =(state:RootState) => state.auth.success
 
 export const {handleLogout} = authSlice.actions
 // Export the slice reducer for use in the store configuration

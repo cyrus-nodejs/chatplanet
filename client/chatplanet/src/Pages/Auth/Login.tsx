@@ -8,10 +8,10 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 
-import {  useState, useEffect } from 'react';
+import {  useState, } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook';
-import  {getMessage,   fetchLogin, fetch2FAUser} from '../../Redux/features/auth/authSlice';
+import  {getMessage,   fetchLogin} from '../../Redux/features/auth/authSlice';
 
 
 const Login = () => {
@@ -24,6 +24,7 @@ const Login = () => {
       
     const dispatch = useAppDispatch()
   const message = useAppSelector(getMessage)
+  // const success = useAppSelector(getSuccessStatus)
   const [submitting, setSubmitting] = useState(false);
 
 
@@ -47,7 +48,9 @@ interface FormValues {
     try {
       setSubmitting(true);
       dispatch(fetchLogin(values))
-      navigate('/2facode/verify')
+        navigate('/2facode/verify')
+      
+     
       // Set submitting to false after successful submission
       setSubmitting(false);
     } catch (error) {
@@ -66,11 +69,11 @@ interface FormValues {
     onSubmit: handleSubmit,
   });
 
-  useEffect(() => {
+//   useEffect(() => {
     
-    dispatch(fetch2FAUser());
+//     dispatch(fetch2FAUser());
 
-}, [dispatch])
+// }, [dispatch])
 
 // useEffect(() => {
 //   if (mfauser)  {

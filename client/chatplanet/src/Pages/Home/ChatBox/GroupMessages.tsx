@@ -23,7 +23,7 @@ const GroupMessages = () => {
     const [showFile, setShowFile] = useState(false);
     const [error, setError] = useState('');
 
-
+console.log(group)
 
 
    const allusers = useAppSelector(getAllUsers)
@@ -161,7 +161,7 @@ const GroupMessages = () => {
 
   <div className='flex flex-col h-screen'>
 
-<div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100'>
+<div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100  dark:bg-gray-700'>
  <div className=''>
 
   {groupMessages && (<div className='space-y-2 pb-64'>
