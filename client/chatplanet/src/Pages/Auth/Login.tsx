@@ -53,7 +53,7 @@ const Login = () => {
     try {
       setSubmitting(true);
       dispatch(fetchLogin(values))
-        // navigate('/2facode/verify')
+         navigate('/2facode/verify')
       
      
       // Set submitting to false after successful submission
