@@ -35,13 +35,13 @@ useEffect(() => {
 }, [dispatch])
 
 useEffect(() =>{
-  if (isAuthenticated ){
+  if (user){
     navigate('/')
   }else{
     redirect("/login")
   }
 
-    }, [isAuthenticated,  navigate])
+    }, [user,  navigate])
 
     
 

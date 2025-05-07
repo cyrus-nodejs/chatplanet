@@ -1,5 +1,5 @@
 
-import {  useNavigate,  } from 'react-router-dom';
+import {  useNavigate, redirect } from 'react-router-dom';
 import "../../index.css"
 
 
@@ -8,31 +8,36 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 
-import {  useState, } from 'react';
+import {  useState, useEffect} from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook';
-import  {getMessage,   fetchLogin} from '../../Redux/features/auth/authSlice';
+import  {getMessage, fetchAsyncUser, getAuthUser, fetchLogin} from '../../Redux/features/auth/authSlice';
 
 
 const Login = () => {
+  interface FormValues {
+    password: string;
+    email:string,
+  }
    const navigate = useNavigate()
-  
+   const dispatch = useAppDispatch()
   
   //  const mfauser = useAppSelector(getTwoFaUser)
 
+         const user= useAppSelector(getAuthUser)
 
       
-    const dispatch = useAppDispatch()
   const message = useAppSelector(getMessage)
   // const success = useAppSelector(getSuccessStatus)
   const [submitting, setSubmitting] = useState(false);
 
 
+  useEffect(() => {
+    
+    dispatch(fetchAsyncUser());
+  
+  }, [dispatch])
 
-interface FormValues {
-  password: string;
-  email:string,
-}
 
 
 
@@ -48,7 +53,7 @@ interface FormValues {
     try {
       setSubmitting(true);
       dispatch(fetchLogin(values))
-        navigate('/2facode/verify')
+        // navigate('/2facode/verify')
       
      
       // Set submitting to false after successful submission
@@ -75,15 +80,15 @@ interface FormValues {
 
 // }, [dispatch])
 
-// useEffect(() => {
-//   if (mfauser)  {
-//    navigate("/2facode/verify")
-//   }else{
-//     redirect('/login')
-//   }
+useEffect(() => {
+  if (user)  {
+   navigate("/2facode/verify")
+  }else{
+    redirect('/login')
+  }
  
 
-// }, [navigate, mfauser])
+}, [navigate, user])
   
          
 
