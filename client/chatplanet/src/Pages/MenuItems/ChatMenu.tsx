@@ -37,7 +37,7 @@ useEffect(() => {
 }, [dispatch])
 console.log(recentChat)
   return (
-    <div id="tabs-vertical-3" className=' dark:bg-gray-800 text-black dark:text-white' role="tabpanel" aria-labelledby="tabs-vertical-item-3">
+    <div id="tabs-vertical-3" className=' ' role="tabpanel" aria-labelledby="tabs-vertical-item-3">
       <p className="text-left font-mono text-2xl text-black-400">Chats</p>
       
       <div className=' flex my-4 rounded'><input className="w-full h-10 border border-transparent rounded focus:outline-none  focus:ring-purple-600 focus:border-transparent focus: placeholder-gray-500   bg-gray-200" placeholder="Search messages or users"/></div>
