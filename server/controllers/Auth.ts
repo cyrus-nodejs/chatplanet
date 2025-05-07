@@ -250,7 +250,8 @@ export const  LogOut = async (req:any,  res:any) => {
       secure: true, // set to true if using HTTPS
       sameSite: 'None' // or 'Lax'/'None' as needed
     });
-    res.status(200).json({ message: 'Cookie cleared' });
+    console.log('Cookie cleared')
+    res.status(200).json({ message: 'Logout success!' });
   }
 
 
