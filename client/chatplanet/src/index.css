@@ -16,6 +16,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+*{
+  color: #21284cf7; 
+}
 /* width */
 ::-webkit-scrollbar {
   width: 5px;
