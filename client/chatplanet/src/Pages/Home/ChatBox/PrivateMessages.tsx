@@ -170,7 +170,7 @@ console.log(receiver)
           
            <div className='' >
            {allusers  && (    <div key={index}   className={`mb- p-2 w-full    rounded-lg ${
-              msg.sender_id === authUser?.id ? "bg-violet-200 dark:bg-violet-100 text-slate-700 dark:text-slate-700 border-1 font-medium    " : "bg-violet-400 dark:bg-violet-400 text-white font-medium dark:text-white  "
+              msg.sender_id === authUser?.id ? "bg-violet-200 dark:bg-violet-100 text-slate-700 dark:text-slate-700 border-1 font-medium    " : "bg-violet-700 dark:bg-violet-700 text-white font-medium dark:text-white  "
             }`}>{
    allusers.map((user:USER) => (
     <div className=' flex '>
