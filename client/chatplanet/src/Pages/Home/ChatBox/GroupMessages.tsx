@@ -176,7 +176,7 @@ console.log(group)
        {/* <div className='flex-none h-10 w-10' key={index}>{msg.sender_id === user?.id && (<img height='50'  width='50' className=' rounded-full bg-cover '  src={user?.profile_image} /> )}</div>  */}
       <div className='flex-auto '>
       <div className=''>
-       <div className='' >{msg.user_id === user?.id && (<span className='text-lf'>{msg.message}</span> )}  </div>
+       <div className='' >{msg.user_id === user?.id && (<span className=''>{msg.message}</span> )}  </div>
        <div className='' >{msg.user_id === user?.id && (msg.media && <img src={msg.media} height='100' width='100' /> )}  </div>
       
        <div className='w-15' >{msg.user_id === user?.id && (msg.files && (
