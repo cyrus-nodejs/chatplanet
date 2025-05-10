@@ -25,7 +25,7 @@ const hashedPassword = await bcrypt.hash(password, salt);
           return res.json({success:false, message:'User Cannot  be registered! Please retry'}) 
           }
           console.log(`This is ${ result.rows}`)
-          res.json({success:true, message:"User Saved! Success!"})
+       return   res.json({success:true, message:"User Saved! Success!"})
          })
       
         
@@ -59,15 +59,15 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
              const token = create2FAtoken(data)
              res.cookie("token", token , {  withCredentials:true, httpOnly:true,  secure: true,  sameSite:"None" } 
              );
-              res.json({success:true, message:`MFA code sent to ${result.rows[0]?.email}`});
+           return   res.json({success:true, message:`MFA code sent to ${result.rows[0]?.email}`});
              } 
              else{
            console.log("Password doesn't match")
-             res.json({success:false, message:"Incorrect username or password"})
+          return   res.json({success:false, message:"Incorrect username or password"})
              }
             }else{
               console.log(err)
-              res.json({success:false, message:"Cannot get user"})
+             return res.json({success:false, message:"Cannot get user"})
             }
             }catch (err){
  console.log(err)
@@ -110,7 +110,7 @@ export const LoginUser  = async (req:any, res:any, next:any) =>{
                      {  withCredentials:true, httpOnly:true, secure:true, sameSite:"none" } );
   
                  console.log('token matches!')
-               res.json({success:true, message:`2fAcode Matches! Login success. ` , user:user})
+           return    res.json({success:true, message:'2fAcode Matches! Login success', user:user})
         } else {
             // Invalid 2FA code
             res.status(400).json({ success: false, message: 'Invalid or expired 2FA code' });
@@ -159,7 +159,7 @@ export const ForgotPassword = async (req:any, res:any ) => {
                 Reset Password`, // html body
             });
            
-            res.json({success:true, message:"A password reset link has been sent to your email.", token:token }); 
+          return  res.json({success:true, message:"A password reset link has been sent to your email.", token:token }); 
            });
       
         //end of User exists i.e. results.length==0
@@ -193,7 +193,7 @@ export const ResetPassword = async (req:any, res:any  ) => {
                 if (result.length == 0) {
                  
                  console.log("------> No token found")
-                 res.json({success:false, message:"No token found"}) 
+              return   res.json({success:false, message:"No token found"}) 
                 } 
                 else {
                   const sqlUpdate = `UPDATE users SET password=${password} `
@@ -210,7 +210,7 @@ export const ResetPassword = async (req:any, res:any  ) => {
                     if (err) throw (err)
                       console.log('reset token deleted!')
                   })
-                 res.json({success:true, message:"Paasword reset success!"})
+              return   res.json({success:true, message:"Paasword reset success!"})
                 })
                }
               })
@@ -234,7 +234,7 @@ export const  getAuthUser = async (req:any,  res:any) => {
    return res.json({ success: false, message:`No User Found`})
   }else{
     console.log(`could be  ${req.user}`)
-    res.json({ success: true, message:`Welcome ${req.user.firstname}`, user: req.user })
+  return  res.json({ success: true, message:`Welcome ${req.user.firstname}`, user: req.user })
   }
 
 
@@ -251,7 +251,7 @@ export const  LogOut = async (req:any,  res:any) => {
       sameSite: 'None' // or 'Lax'/'None' as needed
     });
     console.log('Cookie cleared')
-    res.status(200).json({ message: 'Logout success!' });
+ return   res.status(200).json({ message: 'Logout success!' });
   }
 
 

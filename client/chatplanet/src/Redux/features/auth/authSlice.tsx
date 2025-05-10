@@ -200,6 +200,8 @@ export const authSlice = createSlice({
           state.status = 'pending'
           })
           .addCase(fetch2FaLogin.fulfilled, (state, action) => {
+            state.authUser= action.payload.user
+            state.isAuthenticated = true
             state.message= action.payload.message
           })
           .addCase(fetch2FaLogin.rejected, (state, action) => {
