@@ -3,13 +3,7 @@ import { USER } from '../../../utils/types'
 import { RootState } from '../../app/store'
 import axios from 'axios'
 
-import Cookies from 'js-cookie';
 
-
-const token = Cookies.get('token'); 
-const token2 = Cookies.get('accessToken') 
-console.log(token)
-console.log(token2)
 
 export interface AuthState {
   onlineUsers:USER[]
@@ -129,12 +123,7 @@ export const authSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    handleLogout: (state) => {
-      Cookies.remove('accessToken')
-      Cookies.remove('token')
-      state.authUser = null
-      state.isAuthenticated = false
-     }
+  
   },
    extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -288,6 +277,6 @@ export const getAllUsers = (state:RootState) => state.auth.allUsers
 export const getMessage =(state:RootState) => state.auth.message
 export const getSuccessStatus =(state:RootState) => state.auth.success
 
-export const {handleLogout} = authSlice.actions
+
 // Export the slice reducer for use in the store configuration
 export default authSlice.reducer;

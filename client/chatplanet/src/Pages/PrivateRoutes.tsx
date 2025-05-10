@@ -6,7 +6,7 @@ const PrivateRoute = ({ children }:{ children: React.ReactNode }) => {
      const user = useAppSelector(getAuthUser)
      const isAuthenticated = useAppSelector(getIsAuthenticated)
 
-  return user && isAuthenticated ? children : <Navigate to="/register" replace />;
+  return user && isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;
