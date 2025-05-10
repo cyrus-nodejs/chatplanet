@@ -8,7 +8,7 @@ import Register from "./Pages/Auth/Register";
 import Login from "./Pages/Auth/Login";
 import TwoFactorAuth from './Pages/Auth/TwoFactorAuth';
 import ErrorPage from './Pages/Auth/Error';
-
+import PrivateRoute from './Pages/PrivateRoutes';
 
 
 import {
@@ -42,7 +42,11 @@ function App() {
   const router = createBrowserRouter([
     {
     path: "/",
-    element: <Index />,
+    element: (
+      <PrivateRoute>
+        <Index />
+      </PrivateRoute>
+    ),
     errorElement: <ErrorPage />
   },
   {
