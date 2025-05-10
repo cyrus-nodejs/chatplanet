@@ -48,7 +48,7 @@ let data:any
 
 </div>
 <div className=' flex  w-full'>
-<i className='bx mt-5 bx-search'></i>
+<i className='bx mt-5 bx-search text-slate-500'></i>
 <input className="   mt-4 bg-gray-300 placeholder:text-green  w-5/6 m-2 h-10"  />
 
 </div>
