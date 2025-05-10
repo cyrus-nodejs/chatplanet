@@ -78,12 +78,12 @@ console.log(recentChat)
    <div className='basis-2/12' key={index}>{data?.receiver_id === user?.id && (<img width='100'  className='rounded-full border border-1' height='100' src={user?.profile_image} /> )}</div>
   <div className="w-48 mx-1 flex-none ">
   <div className="flex flex-col text-sm ">
-  <div className='font-medium'>{data.receiver_id === user?.id && (<span>{user?.firstname} {user.lastname}</span>)}</div>
+  <div className='font-medium text-slate-500'>{data.receiver_id === user?.id && (<span>{user?.firstname} {user.lastname}</span>)}</div>
   <div className='text-slate-500'>{data.receiver_id === user?.id && (<span>{user?.about} </span>)}</div>
   
 </div>
   </div>
-  <div className="w-16 flex-none text-sm mx-1">{data.receiver_id === user?.id && (<span>{convertTimestampToTime(user?.last_seen)} </span>)}</div>
+  <div className="w-16 flex-none text-sm mx-1 text-slate-500">{data.receiver_id === user?.id && (<span>{convertTimestampToTime(user?.last_seen)} </span>)}</div>
 </div>
     </div>
  

@@ -3,7 +3,7 @@
 const Homechat = () => {
     return (
       <div id="tabs-vertical-1" className='' role="tabpanel" aria-labelledby="tabs-vertical-item-1">
-        <p className="text-left font-mono text-2xl text-black-400">Chats</p>
+        <p className="text-left font-mono text-2xl text-slate-500">Chats</p>
         
         <div className=' flex mt-4 rounded'><input className="w-full h-10 border border-transparent rounded focus:outline-none  focus:ring-purple-600 focus:border-transparent focus: placeholder-gray-500   bg-gray-200" placeholder="Search messages or users"/></div>
         <div className=' flex mt-4 rounded' >

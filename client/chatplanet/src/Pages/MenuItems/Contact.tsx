@@ -56,7 +56,7 @@ let data:any
 {allContacts && (<div>
   {allContacts?.map((receiver:CONTACTS, id:number) =>{
           return (
-        <div key={id} onClick={() => {setReceiver(receiver); dispatch(fetchAddRecentChat(data={receiver})) }} className=" pt-3 text-left text-slate-700 font-medium   w-full">{capitalizeFirstLetter(receiver.firstname.toLowerCase())} {capitalizeFirstLetter(receiver.lastname.toLowerCase())} </div>
+        <div key={id} onClick={() => {setReceiver(receiver); dispatch(fetchAddRecentChat(data={receiver})) }} className=" pt-3 text-left font-medium text-slate-500  w-full">{capitalizeFirstLetter(receiver.firstname.toLowerCase())} {capitalizeFirstLetter(receiver.lastname.toLowerCase())} </div>
               )
        })}
 </div>)}

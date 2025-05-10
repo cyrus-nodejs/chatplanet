@@ -37,7 +37,7 @@ console.log(mygroup)
   return (
     <div id="tabs-vertical-4" className="" role="tabpanel" aria-labelledby="tabs-vertical-item-4">
       <div className="flex mt-4 justify-between " >
-  <div className="text-left font-mono text-2xl text-black-400">Groups</div>
+  <div className="text-left font-mono text-2xl text-slate-500">Groups</div>
   <div className='relative group'>
   <button
         className="px-3 py-3 bg-violet-600 text-white rounded-md hover:bg-violet-800"
@@ -63,7 +63,7 @@ console.log(mygroup)
              (
               <div onClick={() => {setGroup(group)}} className="flex my-3 justify-between">
               
-              <div className=' font-medium text-slate-500 py-2 text-md'>{capitalizeFirstLetter(group.name.toLowerCase())}</div>
+              <div className=' font-medium  py-2 text-md text-slate-500'>{capitalizeFirstLetter(group.name.toLowerCase())}</div>
       
             <div className='relative group'>
              <button

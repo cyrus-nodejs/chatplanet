@@ -34,7 +34,7 @@ console.log(myuser)
   return (
     <div id="" >
 <div className="flex mt-4 justify-between " >
-  <div className="text-left font-mono text-2xl text-black-400">My Profile</div>
+  <div className="text-left font-mono text-2xl text-slate-5000">My Profile</div>
   <div><i className='bx bx-dots-vertical-rounded' ></i></div>
 </div>
 
@@ -63,15 +63,15 @@ console.log(myuser)
           <div className='max-h-screen flex-1 px-4 py-4 overflow-y-auto space-y-4 '>
     <div className="grid grid-flow-row auto-rows-max  my-2 " >
       <div className='text-slate-500'>Name</div>
-    <div className="text-sm ">{myuser[0]?.firstname.toUpperCase()} {myuser[0]?.lastname.toUpperCase()}</div>
+    <div className="text-sm text-slate-500 ">{myuser[0]?.firstname.toUpperCase()} {myuser[0]?.lastname.toUpperCase()}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max  my-4">
     <div className='text-slate-500'>Email</div>
-    <div className=" text-sm ">{myuser[0]?.email}</div>
+    <div className=" text-sm text-slate-500 ">{myuser[0]?.email}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className=''></div>
-    <div className=" text-sm ">{convertTimestampDate(myuser[0]?.last_seen)}</div>
+    <div className=" text-sm text-slate-500 ">{convertTimestampDate(myuser[0]?.last_seen)}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
       <div className='flex  justify-between'> 
@@ -85,21 +85,21 @@ console.log(myuser)
     <div className='text-slate-500'>Bio</div>
     <div className='text-slate-500 text-sm' onClick={toggleBioModal}>Edit </div>
     </div>
-    <div className="text-sm ">{myuser[0]?.about}</div>
+    <div className="text-sm text-slate-500">{myuser[0]?.about}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className='flex  justify-between'> 
     <div className='text-slate-500'>Phone No</div>
     <div className='text-slate-500 text-sm' onClick={toggleMobileModal}>Edit </div>
     </div>
-    <div className="text-sm ">{myuser[0]?.mobile}</div>
+    <div className="text-sm text-slate-500">{myuser[0]?.mobile}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className='flex  justify-between'> 
       <div className='text-slate-500'>Location</div>
       <div className='text-slate-500 text-sm' onClick={toggleLocationModal}>Edit </div>
       </div>
-    <div className="text-sm ">{myuser[0]?.country}</div>
+    <div className="text-sm text-slate-500 ">{myuser[0]?.country}</div>
     </div>
   </div>
 </div>

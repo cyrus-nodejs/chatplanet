@@ -47,7 +47,7 @@ const [isOpen4, setIsOpen4] = useState(false);
   return (
     <div className='' >
 <div className="flex mt-4 justify-between " >
-  <div className="text-xl">Settings</div>
+  <div className="text-xl text-slate-500">Settings</div>
 
 </div>
 
@@ -113,7 +113,7 @@ const [isOpen4, setIsOpen4] = useState(false);
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className='text-slate-500'>Status</div>
-    <div className="text-sm">{authUser ? ('online'): ('offline')}</div>
+    <div className="text-sm text-slate-500">{authUser ? ('online'): ('offline')}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
       <div className='text-slate-500'>Read Receipts</div>
