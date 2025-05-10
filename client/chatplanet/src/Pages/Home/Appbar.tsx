@@ -63,7 +63,7 @@ const Appbar = () => {
            Dark/Light Mode
          </div>
 </div> 
-   <div className="w-4/4 space-y-5 my-5 rounded-lg text-center"><button  type="button" className="tab active-tab:tab-active active" id="tabs-vertical-item-1" data-tab="#tabs-vertical-9" aria-controls="tabs-vertical-8" role="tab" aria-selected="true"> {authUser && isAuthenticated ? (<span onClick={() => dispatch(fetchAsyncLogout())}> Logout</span>) : (<i  className='bx bx-log-in bx-sm'></i>)}</button></div> 
+   <div className="w-4/4 space-y-5 my-5 rounded-lg text-center"><button  type="button" className="tab active-tab:tab-active active" id="tabs-vertical-item-1" data-tab="#tabs-vertical-9" aria-controls="tabs-vertical-8" role="tab" aria-selected="true"> {authUser && isAuthenticated ? (<span className='text-slate-500' onClick={() => dispatch(fetchAsyncLogout())}> Logout</span>) : (<i  className='bx bx-log-in bx-sm'></i>)}</button></div> 
    
    
 </div>
