@@ -56,14 +56,14 @@ const [isOpen4, setIsOpen4] = useState(false);
 </div>
 
 
-  <p className='text-lg text-center'>{capitalizeFirstLetter(myuser[0]?.firstname.toLowerCase())}</p>
-  <p className='text-lg text-center '>{myuser[0]?.status}</p>
+  <p className='text-lg text-center text-slate-500'>{capitalizeFirstLetter(myuser[0]?.firstname.toLowerCase())}</p>
+  <p className='text-lg text-center text-green-500 '>{myuser[0]?.status}</p>
 
 
 <div className='overflow-y-auto h-64'>
   <div className="  flex-col    mt-4 w-full ">
   <div  className="border flex justify-between  w-full "  >
-  <div className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4 ">Personal </div> 
+  <div className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4 text-slate-500">Personal </div> 
     <div  className="icon-[tabler--chevron-down] flex  m-3  size-4"><i onClick={toggleCollapse1} className={`bx bx-chevron-down ${
           isOpen1 ? 'rotate-180' : ''}  `}></i></div>
   </div>
@@ -72,19 +72,19 @@ const [isOpen4, setIsOpen4] = useState(false);
         }   rounded-b-md`}  role="menu" aria-orientation="vertical" aria-labelledby="dropdown-default">
     <div className="grid grid-flow-row auto-rows-max  my-2 " >
       <div className='text-slate-500'>Name</div>
-    <div className="text-sm">{capitalizeFirstLetter(myuser[0]?.firstname.toLowerCase())} {capitalizeFirstLetter(myuser[0]?.lastname.toLowerCase())}</div>
+    <div className="text-sm text-slate-500">{capitalizeFirstLetter(myuser[0]?.firstname.toLowerCase())} {capitalizeFirstLetter(myuser[0]?.lastname.toLowerCase())}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max  my-4">
     <div className='text-slate-500'>Email</div>
-    <div className="text-sm">{myuser[0]?.email}</div>
+    <div className="text-sm text-slate-500">{myuser[0]?.email}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className='text-slate-500'>Created on</div>
-    <div className="text-sm">{convertTimestampDate(myuser[0]?.date_created)}</div>
+    <div className="text-sm text-slate-500">{convertTimestampDate(myuser[0]?.date_created)}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
       <div className='text-slate-500'>Location</div>
-    <div className="text-sm">{myuser[0]?.country}</div>
+    <div className="text-sm text-slate-500">{myuser[0]?.country}</div>
     </div>
   </div>
 </div>
@@ -92,7 +92,7 @@ const [isOpen4, setIsOpen4] = useState(false);
 
 <div className="  flex-col    mt-4 w-full ">
   <div id="dropdown-default"  className="border flex justify-between  w-full " aria-haspopup="menu" >
-  <div className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4"> Privacy</div> 
+  <div className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4 text-slate-500"> Privacy</div> 
     <div  className="icon-[tabler--chevron-down] flex  m-3 dropdown-open:rotate-180 size-4"><i onClick={toggleCollapse2} className={`bx bx-chevron-down ${
           isOpen2 ? 'rotate-180' : ''}  `}></i></div>
   </div>
@@ -100,7 +100,7 @@ const [isOpen4, setIsOpen4] = useState(false);
           isOpen2 ? 'max-h-96  w-full' : 'max-h-0'
         }   rounded-b-md`}  role="menu" aria-orientation="vertical" aria-labelledby="dropdown-default">
     <div className="grid grid-flow-row auto-rows-max  my-2 " >
-      <div className='text-slate-500'>Profile Photo</div>
+      <div className='text-slate-500 '>Profile Photo</div>
       <div className="">{<img src={myuser[0].profile_image} height='50' width='50'/>}</div>
       <div className='flex justify-center'>
    
@@ -109,11 +109,11 @@ const [isOpen4, setIsOpen4] = useState(false);
     </div>
     <div className="grid grid-flow-row auto-rows-max  my-4">
     <div className='text-slate-500'>Last Seen</div>
-    <div className="text-sm">{convertTimestampToTime(myuser[0]?.last_seen)}</div>
+    <div className="text-sm text-slate-500">{convertTimestampToTime(myuser[0]?.last_seen)}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className='text-slate-500'>Status</div>
-    <div className="text-sm text-slate-500">{authUser ? ('online'): ('offline')}</div>
+    <div className="text-sm text-green-500">{authUser ? ('online'): ('offline')}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
       <div className='text-slate-500'>Read Receipts</div>
@@ -124,7 +124,7 @@ const [isOpen4, setIsOpen4] = useState(false);
 
 <div className="  flex-col    mt-4 w-full ">
   <div id="dropdown-default"  className="border flex justify-between  w-full " aria-haspopup="menu" >
-  <div className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4 ">Security</div> 
+  <div className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4 text-slate-500">Security</div> 
     <div  className="icon-[tabler--chevron-down] flex  m-3 dropdown-open:rotate-180 size-4"><i onClick={toggleCollapse3} className={`bx bx-chevron-down ${
           isOpen3 ? 'rotate-180' : ''}  `}></i></div>
   </div>
@@ -140,7 +140,7 @@ const [isOpen4, setIsOpen4] = useState(false);
 
 <div className="  flex-col    mt-4 w-full ">
   <div  className="border flex justify-between  w-full "  >
-  <div  className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4  ">Help</div> 
+  <div  className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4  text-slate-500">Help</div> 
     <div  className="icon-[tabler--chevron-down] flex  m-3 dropdown-open:rotate-180 size-4"><i onClick={toggleCollapse4} className={`bx bx-chevron-down ${
           isOpen4 ? 'rotate-180' : ''}  `}></i></div>
   </div>
@@ -153,7 +153,7 @@ const [isOpen4, setIsOpen4] = useState(false);
     </div>
     <div className="grid grid-flow-row auto-rows-max  my-4">
     <div className='text-slate-500'>Contact</div>
-    <div className="text-sm">{myuser[0]?.email}</div>
+    <div className="text-sm text-slate-500">{myuser[0]?.email}</div>
     </div>
     <div className="grid grid-flow-row auto-rows-max my-4">
     <div className='text-slate-500'>Terms & Privacy Policy</div>

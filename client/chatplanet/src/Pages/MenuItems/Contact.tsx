@@ -34,7 +34,7 @@ let data:any
   return (
     <div id="tabs-vertical-5" className="" role="tabpanel" aria-labelledby="tabs-vertical-item-5">
       <div className="flex mt-4 justify-between " >
-  <div className="text-left font-mono text-2xl text-black-400">Contacts</div>
+  <div className="text-left font-mono text-2xl text-slate-500">Contacts</div>
  <div className='relative group'><button
         className="px-3 py-3 bg-violet-600 text-white rounded-md hover:bg-violet-800"
         onClick={toggleContactModal}

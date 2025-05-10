@@ -57,7 +57,7 @@ console.log(mygroup)
 
 </div>
 
-<h5 className='font-medium'>Group created by You</h5>
+<h5 className='font-medium text-slate-500'>Group created by You</h5>
 <div className='mt-4  h-32 overflow-hidden px-2 overflow-y-auto'>
 {  mygroup?.map((group:GROUPS) =>
              (
@@ -81,7 +81,7 @@ console.log(mygroup)
          
   )}
   </div>
-<h2 className='font-medium'>Other Groups</h2>
+<h2 className='font-medium text-slate-500'>Other Groups</h2>
 <div className=' h-32 overflow-hidden px-2 overflow-y-auto'>
   
 {groupmembers?.map((user:GROUPMEMBERS) => (

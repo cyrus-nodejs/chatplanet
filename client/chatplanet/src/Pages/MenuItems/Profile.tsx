@@ -34,7 +34,7 @@ console.log(myuser)
   return (
     <div id="" >
 <div className="flex mt-4 justify-between " >
-  <div className="text-left font-mono text-2xl text-slate-5000">My Profile</div>
+  <div className="text-left font-mono text-2xl text-slate-500">My Profile</div>
   <div><i className='bx bx-dots-vertical-rounded' ></i></div>
 </div>
 
@@ -44,15 +44,15 @@ console.log(myuser)
 </div>
 
 
-  <p className='text-md font-medium text-center'>{capitalizeFirstLetter(myuser[0]?.firstname.toLowerCase())} {capitalizeFirstLetter(myuser[0]?.lastname.toLowerCase())}</p>
-  <p className='text-sm text-slate-500 text-center '>{myuser[0]?.status && ('Active')}</p>
+  <p className='text-md font-medium text-center text-slate-500'>{capitalizeFirstLetter(myuser[0]?.firstname.toLowerCase())} {capitalizeFirstLetter(myuser[0]?.lastname.toLowerCase())}</p>
+  <p className='text-sm text-green-500 text-center '>{myuser[0]?.status && ('Active')}</p>
 
 <p className='text-sm text-center text-slate-500 m-auto' >
 {myuser[0]?.about}
 </p>
 <div className="  flex-col    mt-4 w-full ">
   <div id="dropdown-default"  className="border flex justify-between   w-full " aria-haspopup="menu" >
-  <div className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4"><i className='bx mr-3 bx-user font-medium' >About</i></div> 
+  <div className="icon-[tabler--chevron-down] m-3 dropdown-open:rotate-180 size-4 text-slate-500"><i className='bx mr-3 bx-user font-medium text-slate-500' >About</i></div> 
     <div  className="icon-[tabler--chevron-down] flex  m-3 dropdown-open:rotate-180 size-4"><i onClick={toggleCollapse} className={`bx bx-chevron-down ${
           isOpen ? 'rotate-180' : ''}  `}></i></div>
   </div>

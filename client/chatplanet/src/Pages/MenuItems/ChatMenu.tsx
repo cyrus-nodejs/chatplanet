@@ -38,7 +38,7 @@ useEffect(() => {
 console.log(recentChat)
   return (
     <div id="tabs-vertical-3" className=' ' role="tabpanel" aria-labelledby="tabs-vertical-item-3">
-      <p className="text-left font-mono text-2xl text-black-400">Chats</p>
+      <p className="text-left font-mono text-2xl text-slate-500">Chats</p>
       
       <div className=' flex my-4 rounded'><input className="w-full h-10 border border-transparent rounded focus:outline-none  focus:ring-purple-600 focus:border-transparent focus: placeholder-gray-500   bg-gray-200" placeholder="Search messages or users"/></div>
      
@@ -62,7 +62,7 @@ console.log(recentChat)
  
 
      
-      <p className="text-left my-3 font-mono text-2xl text-black-400">Recent Chat</p>
+      <p className="text-left my-3 font-mono text-2xl text-slate-500">Recent Chat</p>
 
    <div className='h-64 overflow-hidden overflow-y-auto justify-between'>
       {recentusers && (  
