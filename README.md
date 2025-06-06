@@ -1,155 +1,190 @@
-# MYSQL MERN Chatting App with Group and Private Messaging
+# 💬 ChatPlanet – MERN Chat App (with PostgreSQL)
 
-## Overview
-This is a full-stack MERN application with group and private messaging features. It uses MySQL for relational data storage and provides users with real-time communication in a modern chat application. The app allows users to send messages to groups or privately to other users.
+A full-featured real-time chat application built using the **MERN stack** (React, Node, Express) with **PostgreSQL** as the database. Supports group and private messaging, JWT authentication, and Socket.IO-based live messaging.
 
-## Features
-- **User Authentication**: Sign up, log in, and JWT-based authentication.
-- **Group Messaging**: Create and join groups to send messages in real-time.
-- **Private Messaging**: Send direct, private messages to other users.
-- **Real-time Messaging**: WebSockets (Socket.IO) for real-time communication.
-- **Responsive UI**: Designed with React for a smooth user experience on both desktop and mobile devices.
-- **POSTGRESQL Database**: POSTGRESQL is used for storing user profiles, messages, and group data.
-- **User Profiles**: Each user has a profile with a customizable username and avatar.
+---
 
-## Tech Stack
-- **Frontend**: React.js, Redux (optional for state management)
-- **Backend**: Node.js, Express.js
-- **Database**: POSTRGESLQ
-- **Authentication**: JSON Web Tokens (JWT)
-- **Real-time Communication**: Socket.IO
-- **Styling**: Tailwind Css
+## 📚 Table of Contents
 
-## Installation
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Installation](#-installation)
+- [Database Schema](#-database-schema)
+- [API Endpoints](#-api-endpoints)
+- [Socket.IO Events](#-socketio-events)
+- [License](#-license)
+
+---
+
+## ✨ Features
+
+- ✅ User Authentication (JWT)
+- 📬 Real-Time Private Messaging
+- 👥 Real-Time Group Messaging
+- 🎨 Responsive React UI with Tailwind CSS
+- 👤 User Profiles with avatars
+- ⚡ Socket.IO WebSocket Communication
+- 🛡️ Secure, scalable PostgreSQL backend
+
+---
+
+## 🧱 Tech Stack
+
+| Layer       | Tech Stack              |
+|-------------|--------------------------|
+| Frontend    | React.js, Tailwind CSS   |
+| Backend     | Node.js, Express.js      |
+| Database    | PostgreSQL               |
+| Auth        | JWT (JSON Web Tokens)    |
+| Realtime    | Socket.IO                |
+| State (Opt) | Redux (optional)         |
+
+---
+
+## 📦 Installation
 
 ### Prerequisites
-- Node.js (v16 or later)
-- POSTGRESQL Database
-- npm or yarn
 
-### Setup Instructions
+- Node.js (v16+)
+- PostgreSQL
+- `npm` or `yarn`
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/cyrus-nodejs/chatplanet.git
-   cd chatplanet
-Backend Setup:
+### Clone the Repository
 
-Navigate to the backend directory and install dependencies:
+```bash
 
-bash
-copy
+git clone https://github.com/your-username/chatplanet.git
+cd chatplanet
 cd server
 npm install
-Create a .env file in the backend folder with the following content (modify accordingly):
 
-bash
-copy
+```
+
+```
 DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=yourpassword
-v=messaging_app
+DB_USER=your_pg_user
+DB_PASSWORD=your_pg_password
+DB_NAME=messaging_app
 JWT_SECRET=your_jwt_secret
 
-Set up your MySQL database with the following structure:
+```
 
-sql
-copy
-CREATE DATABASE messaging_app;
--- Add tables for users, private_messages, and group_messages
+### Start the backend server:
 
-Start the backend server:
-
-bash
-copy
-cd server
+```
 npm start
 
+```
 
-Frontend Setup:
-Navigate to the frontend directory and install dependencies:
+### Frontend Setup:
 
-bash
-copy
-cd client/chatpanet
+```
+cd client
 npm install
-
-Start the frontend server:
 npm start
-Access the Application:
 
-The frontend will run on http://localhost:3000
-The backend will run on http://localhost:5000
+```
 
-Database Schema:
-bash
-Copy
-Users
-id (INT, PK)
-username (VARCHAR)
-email (VARCHAR)
-password (VARCHAR, hashed)
-avatar_url (VARCHAR, optional)
+```
+The app will be available at:
 
+Frontend: http://localhost:5173
 
-private_messages
+Backend: http://localhost:5000
+```
 
-id (INT, PK)
-sender_id (INT, FK to Users)
-receiver_id (INT, FK to Users, NULLABLE for group messages)
-group_id (INT, FK to Groups, NULLABLE for private messages)
-message_text (TEXT)
-timestamp (TIMESTAMP)
+### Database Schema (PostgreSQL)
+```
+CREATE DATABASE messaging_app;
 
-bash
-copy
-groupchat
-id (INT, PK)
-group_name (VARCHAR)
-created_at (TIMESTAMP)
-created_by (INT, FK to Users)
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255),
+  email VARCHAR(255),
+  password VARCHAR(255),
+  avatar_url VARCHAR(255)
+);
 
+CREATE TABLE groupchat (
+  id SERIAL PRIMARY KEY,
+  group_name VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_by INT REFERENCES users(id)
+);
 
-API Endpoints:
-Authentication
-POST /api/register: User registration
-POST /api/login: User login
+CREATE TABLE private_messages (
+  id SERIAL PRIMARY KEY,
+  sender_id INT REFERENCES users(id),
+  receiver_id INT REFERENCES users(id),
+  group_id INT REFERENCES groupchat(id),
+  message_text TEXT,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-Groups
-POST /api/groups/create: Create a new group
-POST /api/add/groupmembers: Add groupmember
-GET /api/groups: Get all uer group
-GET /api/get/groupmembers: Get group members
+```
 
+## API Endpoints
 
-Real-Time Features
-Socket.IO
-Establish a WebSocket connection for real-time messaging using Socket.IO on both the client and server sides.
+### Authentication
 
-Example Event:
-bash
-copy
-Private Messaging:
-Client emits: socket.emit('private_message', {receiverId, message});
-Server listens: socket.on('private_message', (data) => { // handle message });
-Clients listen for incoming messages using socket.on('new_message', (message) => { // display message });
-Contributing
-Feel free to open issues or submit pull requests for bug fixes, enhancements, or new features.
+```
+POST /api/register
+POST /api/login
+```
+### Authentication
 
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
+```
+POST /api/groups/create
+POST /api/add/groupmembers
+GET  /api/groups
+GET  /api/get/groupmembers
 
-Acknowledgements
-Socket.IO for real-time messaging
-MySQL for relational database management
-JWT for secure authentication
-React for building the frontend UI
-POSTGRESQL
-Copy
+```
+ 
+## Socket.IO Events
 
-### Customization
-- Replace `your-username` in the clone URL with your GitHub username.
-- Modify the `.env` file settings based on your local POSTGRESQL configuration.
-- If you have other specific dependencies or features, add them to the README.
+### Example: Private Messaging
 
-Feel free to modify it according to your project’s exact structure!
+#### Client emits:
+
+```
+socket.emit('private_message', {
+  receiverId: '123',
+  message: 'Hello there!'
+});
+
+```
+
+### Server listens
+
+```
+socket.on('private_message', (data) => {
+  // Save to DB and emit to receiver
+});
+
+```
+
+### Receiver client:
+
+```
+socket.on('private_message', (data) => {
+  // Save to DB and emit to receiver
+});
+
+```
+
+## 📄 License
+This project is licensed under the MIT License.
+See the LICENSE file for more information.
+
+## 🌐 Live Demo
+
+- [ChatPlanet Live Demo](https://wen-chat.netlify.app)
+
+## 📎 Related Links
+
+- [React](https://reactjs.org/)
+- [Socket.IO](https://socket.io/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [JWT](https://jwt.io/)
