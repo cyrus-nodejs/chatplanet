@@ -10,7 +10,7 @@ return jwt.sign(data, process.env.ACCESSTOKEN!,  {
 } 
 
  //Create JWT for Two factor Authentication
-export const create2FAtoken = (data:{id:string, email:string, firstname:string, lastname:string, key:string|undefined}) => {
+export const create2FAtoken = (data:{id:string, email:string, firstname:string, lastname:string}) => {
   return jwt.sign(data, process.env.TWOFACODE_TOKEN!,  {
     expiresIn:process.env.TWOFACODE_EXPIRATION!,
   })

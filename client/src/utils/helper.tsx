@@ -15,7 +15,7 @@
 
      
         // Get the formatted date in YYYY-MM-DD format
-        const formattedDate = date?.toISOString().split('T')[0]; // "2025-02-17"
+        const formattedDate = date?.toISOString()?.split('T')[0]; // "2025-02-17"
         
         // Get the day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
         const dayOfWeek = date?.toLocaleString('en-US', { weekday: 'long' }); // "Monday"

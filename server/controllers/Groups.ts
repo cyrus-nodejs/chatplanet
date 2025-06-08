@@ -1,131 +1,144 @@
 import { pool } from '../models/connectDb'
 import { v4 as uuidv4 } from 'uuid';
 import { uploadToCloudinary } from '../utils/cloudinary';
-import mysql from 'mysql2';
-
-//Create Group by User
-export const createGroup = async (req:any, res:any) => {
-     
-    const { name, description} = req.body
-    console.log(req.body)
-const userid = req.user.id
-    if (!req.files) {
-           // No file was uploaded
-           return res.json({ success:false, message: "No file uploaded" });
-         }
-       
-       console.log(req.files)
-       
-    
-         // File upload successful
-         const image = req.files['image'][0].path
-         console.log(image)
-       
-       const sqlSearch = `INSERT INTO groupchat(id, name, description, createdBy, group_image) VALUES ($1,$2,$3,$4,$5)`
-     
-       try{
-           let imageData = {}
-     if(image){
-         const results = await uploadToCloudinary(image, "chatplanetassets")
-         imageData = results
-     }
-     console.log(imageData)
-                   const values = [uuidv4(), name, description, userid, imageData]
-                   pool.query(sqlSearch, values, async (err, result:any) => {
-                       if (err) {
-                           console.log(err)
-                           return  res.json({success:false, message:"!"})   
-                         }
-                             console.log('Group created successful!')
-                            res.json({success:true, message:"Group created successful!"}) 
-                  
-                   })
-       }catch(err){
-           console.log(err)
-           return  res.json({success:false, message:"Network error!"})  
-       }
-        }
 
 
+// Create Group by User
+export const createGroup = async (req: any, res: any) => {
+  const { name, description } = req.body;
+  const userid = req.user.id;
 
-        export const addGroupMember = (req:any, res:any) => {
-          const userid = req.user.id
-           const {group_id, user_id} = req.body
+  if (!req.files || !req.files['image'] || !req.files['image'][0]) {
+    return res.status(400).json({ success: false, message: "No image file uploaded" });
+  }
+
+  try {
+    const imagePath = req.files['image'][0].path;
+    const uploadResult :any= await uploadToCloudinary(imagePath, 'chatplanetassets');
+
+    const groupId = uuidv4();
+    const imageUrl = uploadResult.secure_url;
+
+    const sql = `
+      INSERT INTO groupchat (id, name, description, createdBy, group_image)
+      VALUES ($1, $2, $3, $4, $5)
+    `;
+    const values = [groupId, name, description, userid, imageUrl];
+
+    await pool.query(sql, values);
+
+    return res.status(201).json({
+      success: true,
+      message: "Group created successfully",
+      group: {
+        id: groupId,
+        name,
+        description,
+        createdBy: userid,
+        group_image: imageUrl
+      }
+    });
+  } catch (err) {
+    console.error("Error creating group:", err);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+export const addGroupMember = async (req:any, res:any) => {
+ 
+        const {group_id, user_id} = req.body
         console.log(`addgroup member ${req.body}`)
-       
-        const sqlSearch = `SELECT * FROM group_member WHERE group_id = $1 AND user_id = $2`
-   
-               const values = [group_id, user_id]
-                pool.query(sqlSearch, values, async (err, result:any) => {
-                    if (err) {
-                      console.log(err)
-                      return  res.json({success:false, message:'Cannot fetch groups!'})   
-                    }else if (result.length > 0){
-                          return res.json({success:true, message: 'Contact exist already in group' });
-                        }else{
-                        const sqlInsert = `INSERT INTO group_member(group_id, user_id) VALUES ($1, $2)`           
-                       
-                        const values = [group_id, user_id]
-                    pool.query (sqlInsert, values, (err, result:any)=> {
-                      if (err){
-                        console.log(err.stack)
-                      return res.json({success:false, message:`cannaot add member to group`}) 
-                      }
-                      console.log('contact added to group')
-                      res.json({success:true, message:"contact added to group", groupContact:result.rows})
-                     })        
-                        }    
-                })
+       try {
+    const result = await pool.query(
+      `
+      INSERT INTO group_member (user_id, group_id)
+      VALUES ($1, $2)
+      ON CONFLICT (user_id, group_id) DO NOTHING
+      RETURNING *;
+      `,
+      [user_id, group_id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(200).json({ message: 'User is already in the group.' });
+    } else {
+      return res.status(201).json({ message: 'User added to group.' });
+    }
+
+  } catch (error) {
+    console.error('Error inserting group member:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+              }
 
 
-        }
-                      
-                
-                              
-        
-                          
-                
-        
-    
+// Retrieve group
+export const getGroups = async (req: any, res: any) => {
+    const userId = req.user?.id;
 
+    if (!userId) {
+        return res.status(401).json({
+            success: false,
+            message: 'Unauthorized: No user ID provided',
+        });
+    }
 
+    console.log("Fetching groups for user:", userId);
 
-// Retreive group 
-export const getGroups = async (req:any, res:any) => {
-    const userId = req.user.id
-    console.log("I am getting group")
-    const sqlSearch = `SELECT * FROM groupchat`
-    //  const search_query = mysql.format(sqlSearch,[userId])
+    const sqlQuery = `SELECT * FROM groupchat`; // assuming user_id column exists
 
-         
-                pool.query(sqlSearch, async (err, result:any) => {
-                    if (err) {
-                      return  res.json({success:false, message:"No groups found "})   
-                    }
-                         console.log('group success')
-                       console.log(result.rows)
-                res.json({success:true, message:"get groups success !", groups:result.rows})     
-                })
-                
-                
-            
-}
+    try {
+        const result = await pool.query(sqlQuery);
 
+        console.log("Groups retrieved:", result.rows);
 
-// Retreive group 
-export const getGroupMember = async (req:any, res:any) => {
-  const userid = req.user.id
-  console.log("I am getting group")
-  const sqlSearch = `SELECT * FROM group_member WHERE user_id  = $1`
-              const values = [userid]
-              pool.query(sqlSearch, values, async (err, result:any) => {
-                  if (err) {
-                    return  res.json({success:false, message:"no group members found "})   
-                  }
-                       console.log(`groupmember: ${result}`)
-              res.json({success:true, message:" Fetch group members!!", groupmembers:result.rows})     
-              })
-            
-              
-          
-}
+        return res.status(200).json({
+            success: true,
+            message: "Groups retrieved successfully",
+            groups: result.rows,
+        });
+    } catch (err) {
+        console.error("Error retrieving groups:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Error retrieving groups",
+        });
+    }
+};
+
+export const getGroupMember = async (req: any, res: any) => {
+    const userId = req.user?.id;
+
+    if (!userId) {
+        return res.status(401).json({
+            success: false,
+            message: 'Unauthorized: No user ID provided',
+        });
+    }
+
+    console.log("Fetching group members for user:", userId);
+
+    const sqlQuery = `SELECT * FROM group_member WHERE user_id = $1`;
+    const values = [userId];
+
+    try {
+        const result = await pool.query(sqlQuery, values);
+
+        console.log("Group members retrieved:", result.rows);
+
+        return res.status(200).json({
+            success: true,
+            message: "Group members fetched successfully!",
+            groupmembers: result.rows,
+        });
+    } catch (err) {
+        console.error("Error fetching group members:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Error fetching group members",
+        });
+    }
+};

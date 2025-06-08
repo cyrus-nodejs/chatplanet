@@ -165,11 +165,11 @@ console.log(receiver)
        <div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100  dark:bg-gray-700'>
         <div className=''>
 
-         {messages && (<div className='space-y-2 pb-16'>
+         {messages && (<div className='space-y-2 pb-32'>
            {messages.map((msg:CHATMESSAGES, index:number) => (
           
            <div className='' >
-           {allusers  && (    <div key={index}   className={`mb- p-2 w-full    rounded-lg ${
+           {allusers  && (    <div key={index}   className={` p-2 w-full    rounded-lg ${
               msg.sender_id === authUser?.id ? "bg-violet-200 dark:bg-violet-100 text-slate-700 dark:text-slate-700 border-1 font-medium    " : "bg-violet-400 dark:bg-violet-400 text-white font-medium dark:text-white  "
             }`}>{
    allusers.map((user:USER) => (

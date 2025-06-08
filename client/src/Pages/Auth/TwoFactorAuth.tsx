@@ -1,49 +1,30 @@
 
 import "../../index.css"
 
- import {  Navigate, useNavigate, redirect } from 'react-router-dom';
+ import { redirect,  useNavigate} from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useState, useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook';
-import  {getMessage,fetchAsyncUser, getIsAuthenticated, getAuthUser,     fetch2FaLogin} from '../../Redux/features/auth/authSlice';
+import  {getMessage, getAuthUser, getIsAuthorized, getIsAuthenticated, fetch2FaLogin} from '../../Redux/features/auth/authSlice';
 
 
 const TwoFactorAuth = () => {
   
    const navigate = useNavigate()
-
-    
-        const isAuthenticated = useAppSelector(getIsAuthenticated)
-      
-         const user= useAppSelector(getAuthUser)
-    
-      
-    const dispatch = useAppDispatch()
-  const message = useAppSelector(getMessage)
-  const [submitting, setSubmitting] = useState(false);
-
+   const [submitting, setSubmitting] = useState(false);
+   const dispatch = useAppDispatch()
+   const message = useAppSelector(getMessage)
+   const user = useAppSelector(getAuthUser)
+   const isAuthorized = useAppSelector(getIsAuthorized)
+   const isAuthenticated = useAppSelector(getIsAuthenticated)
  
 
 
 
-useEffect(() => {
-    
-  dispatch(fetchAsyncUser());
 
-}, [dispatch])
 
-useEffect(() =>{
-  if (user && isAuthenticated){
-    navigate('/')
-  }else{
-    redirect("/login")
-  }
-
-    }, [user, isAuthenticated, navigate])
-
-    
 
 interface FormValues {
   mfacode:string,
@@ -60,7 +41,7 @@ interface FormValues {
     try {
       setSubmitting(true);
       dispatch(fetch2FaLogin(values))
-       navigate('/')
+      
       console.log(values);
       // Set submitting to false after successful submission
       setSubmitting(false);
@@ -84,7 +65,13 @@ interface FormValues {
 
           
          
-
+  useEffect(() => {
+   if(isAuthenticated && isAuthorized && user){
+    navigate('/')
+   }else{
+    redirect("/login")
+   }
+  }, [isAuthenticated, isAuthorized, navigate, user])
 
   return (
   
@@ -93,9 +80,7 @@ interface FormValues {
           
           <div className="flex bg-slate-50  m-auto h-screen ">
 
-           {isAuthenticated && user &&(
-          <Navigate to="/" replace={true} />
-        )}
+  
          
               <div className="m-auto p-auto w-96">
               <p className="text-2xl  text-center mb-3 font-semibold">Verify Your Identity</p>

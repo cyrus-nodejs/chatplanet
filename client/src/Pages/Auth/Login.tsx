@@ -1,5 +1,5 @@
 
-import {  useNavigate, redirect } from 'react-router-dom';
+import {  redirect, useNavigate, Navigate } from 'react-router-dom';
 import "../../index.css"
 
 
@@ -8,10 +8,10 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 
-import {  useState, useEffect} from 'react';
+import {useEffect,  useState} from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook';
-import  {getMessage, fetchAsyncUser, getAuthUser, fetchLogin} from '../../Redux/features/auth/authSlice';
+import  {getMessage, getAuthSuccess, getAuthUser, getIsAuthorized, getIsAuthenticated, fetchLogin} from '../../Redux/features/auth/authSlice';
 
 
 const Login = () => {
@@ -19,25 +19,18 @@ const Login = () => {
     password: string;
     email:string,
   }
-   const navigate = useNavigate()
-   const dispatch = useAppDispatch()
+   
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   
-  //  const mfauser = useAppSelector(getTwoFaUser)
-
-         const user= useAppSelector(getAuthUser)
 
       
   const message = useAppSelector(getMessage)
-  // const success = useAppSelector(getSuccessStatus)
+  const success = useAppSelector(getAuthSuccess)
+  const isAuthenticated = useAppSelector(getIsAuthenticated)
+  const isAuthorized = useAppSelector(getIsAuthorized)
+  const user = useAppSelector(getAuthUser)
   const [submitting, setSubmitting] = useState(false);
-
-
-  useEffect(() => {
-    
-    dispatch(fetchAsyncUser());
-  
-  }, [dispatch])
-
 
 
 
@@ -53,9 +46,6 @@ const Login = () => {
     try {
       setSubmitting(true);
       dispatch(fetchLogin(values))
-         navigate('/2facode/verify')
-      
-     
       // Set submitting to false after successful submission
       setSubmitting(false);
     } catch (error) {
@@ -74,31 +64,21 @@ const Login = () => {
     onSubmit: handleSubmit,
   });
 
-//   useEffect(() => {
-    
-//     dispatch(fetch2FAUser());
-
-// }, [dispatch])
-
-useEffect(() => {
-  if (user)  {
-   navigate("/2facode/verify")
-  }else{
-    redirect('/login')
-  }
- 
-
-}, [navigate, user])
-  
-         
+  useEffect(() => {
+   if(success && isAuthenticated){
+    navigate('/2facode/verify')
+   }else{
+    redirect("/login")
+   }
+  }, [dispatch, isAuthenticated, navigate, success])
 
   return (
-  
 
-   
           
           <div className="flex bg-slate-50  m-auto h-screen ">
-   
+        {isAuthenticated && isAuthorized && user && (
+          <Navigate to="/" replace={true} />
+        )}
               <div className="m-auto p-auto w-96">
               <p className="text-2xl  text-center mb-3 font-semibold">ChatPlanet</p>
             <p className="text-center pb-5">Sign in to continue ChatPlanet</p>

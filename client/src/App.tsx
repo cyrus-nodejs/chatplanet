@@ -8,9 +8,11 @@ import Register from "./Pages/Auth/Register";
 import Login from "./Pages/Auth/Login";
 import TwoFactorAuth from './Pages/Auth/TwoFactorAuth';
 import ErrorPage from './Pages/Auth/Error';
-import PrivateRoute from './Pages/PrivateRoutes';
-
-
+import IsAuthorizedRoute from './Pages/ProtectedRoutes/isAuthorizedRoutes';
+import IsVerifiedRoute from './Pages/ProtectedRoutes/isVerifiedRoutes';
+import { useEffect } from 'react';
+import { fetchAsyncUser } from './Redux/features/auth/authSlice';
+import { useAppDispatch } from './Redux/app/hook';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -25,8 +27,14 @@ import {
 
 function App() {
   
+  const dispatch = useAppDispatch()
   
-  
+  useEffect(() => {
+    
+  dispatch(fetchAsyncUser());
+
+}, [dispatch])
+
   
   // useEffect(() => {
   //   const loadFlyonui = async () => {
@@ -43,9 +51,9 @@ function App() {
     {
     path: "/",
     element: (
-      <PrivateRoute>
+      <IsAuthorizedRoute>
         <Index />
-      </PrivateRoute>
+      </IsAuthorizedRoute>
     ),
     errorElement: <ErrorPage />
   },
@@ -73,7 +81,11 @@ function App() {
   },
   {
     path: `/2facode/verify`,
-    element: <TwoFactorAuth  />,
+    element:  (
+      <IsVerifiedRoute>
+        <TwoFactorAuth />
+      </IsVerifiedRoute>
+    ),
     errorElement: <ErrorPage />
   }
 ])

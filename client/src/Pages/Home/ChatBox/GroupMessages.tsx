@@ -164,11 +164,11 @@ console.log(group)
 <div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100  dark:bg-gray-700'>
  <div className=''>
 
-  {groupMessages && (<div className='space-y-2 pb-64'>
+  {groupMessages && (<div className='space-y-2 pb-32'>
             {groupMessages.map((msg:GROUPCHATMESSAGES, index:number) => (
            
             <div className='flex' >
-            {allusers  && (    <div key={index}   className={`mb-3 p-2 w-full  flex-none  rounded-lg ${
+            {allusers  && (    <div key={index}   className={` p-2 w-full  flex-none  rounded-lg ${
                msg.user_id? "bg-violet-200 dark:bg-violet-100border-1 font-medium  " : "bg-violet-400 dark:bg-violet-400  "
              }`}>{
     allusers.map((user:USER) => (

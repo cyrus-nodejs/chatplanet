@@ -11,6 +11,7 @@ export interface AuthState {
    authUser: USER | null | undefined 
     twoFaUser:USER | null | undefined 
     isAuthenticated: boolean
+     isAuthorized: boolean
     status:  'idle' | 'pending' | 'succeeded' | 'failed'
     success:boolean
     error:string | null | undefined
@@ -26,6 +27,7 @@ const initialState: AuthState = {
    authUser: null,
     twoFaUser:null,
     isAuthenticated: false,
+    isAuthorized: false,
     message:"",
     status: 'idle' ,
     success:false,
@@ -134,6 +136,7 @@ export const authSlice = createSlice({
     .addCase(fetchAsyncUser.fulfilled, (state, action) => {
          state.authUser= action.payload.user
          state.isAuthenticated = true
+         state.isAuthorized = true
          state.message= action.payload.message
      
       })
@@ -142,21 +145,7 @@ export const authSlice = createSlice({
         state.error = action.error.message;
         
       })
-      // builder.addCase(fetch2FAUser.pending, (state) => {
-      //   state.status = 'pending'
-        
-      // })
-      // .addCase(fetch2FAUser.fulfilled, (state, action) => {
-      //   state.twoFaUser= action.payload.user
-      //   state.authUser= action.payload.user
-      //   state.isAuthenticated = true
-      //   state.message= action.payload.message
-      //   })
-      //   .addCase(fetch2FAUser.rejected, (state, action) => {
-      //     state.status = 'failed'
-      //     state.error = action.error.message;
-          
-      //   })
+   
       .addCase(fetchAsyncLogout.pending, (state) => {
       state.status = 'pending'
       state.authUser= null
@@ -175,9 +164,9 @@ export const authSlice = createSlice({
         state.status = 'pending'
         })
         .addCase(fetchLogin.fulfilled, (state, action) => {
-          state.token = action.payload.token
           state.message= action.payload.message
           state.success = action.payload.success
+          state.isAuthenticated = true
           
           
         })
@@ -191,6 +180,7 @@ export const authSlice = createSlice({
           .addCase(fetch2FaLogin.fulfilled, (state, action) => {
             state.authUser= action.payload.user
             state.isAuthenticated = true
+            state.isAuthorized = true
             state.message= action.payload.message
           })
           .addCase(fetch2FaLogin.rejected, (state, action) => {
@@ -270,8 +260,10 @@ export const getToken = (state:RootState) => state.auth.token
 export const getTwoFaUser = (state:RootState) => state.auth.twoFaUser
 export const getAuthUser = (state:RootState) => state.auth.authUser
 export const getIsAuthenticated = (state:RootState) => state.auth.isAuthenticated
+export const getIsAuthorized = (state:RootState) => state.auth.isAuthorized
 export const getAuthError = (state:RootState) => state.auth.error
 export const getAuthStatus = (state:RootState) => state.auth.status
+export const getAuthSuccess = (state:RootState) => state.auth.success
 export const getOnlineUsers = (state:RootState) => state.auth.onlineUsers
 export const getAllUsers = (state:RootState) => state.auth.allUsers
 export const getMessage =(state:RootState) => state.auth.message

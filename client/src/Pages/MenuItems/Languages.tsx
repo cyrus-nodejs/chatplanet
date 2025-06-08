@@ -9,8 +9,8 @@ const Languages = () => {
 
   return (
     <div className="p-5 flex flex-col">
-    <h5 className="">{t('welcome')}</h5>
-    <p className=''>{t('hello')}</p>
+    <h5 className="text-slate-500">{t('welcome')}</h5>
+    <p className='text-slate-500'>{t('hello')}</p>
 
     <button onClick={() => changeLanguage('es')} className="bg-violet-600 text-white p-2 m-2">
       Español

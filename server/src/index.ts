@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
  // Cors configuration for server  Local host & web hosting services
 const corsOptions = {
   //  origin: process.env!.FRONTEND_URL2,
-   origin: process.env!.FRONTEND_URL,
+   origin: process.env!.FRONTEND_URL1,
  credentials: true, 
  optionSuccessStatus: 200,
  methods: ['GET', 'PUT', 'POST', 'DELETE'],
@@ -108,205 +108,313 @@ io.on('connection', (socket) => {
 
 
  // Handle user joining
- socket.on('login', (sender_id) => {
-  try{
-  users[sender_id] = socket.id;
+socket.on('login', async (sender_id) => {
+  if (!sender_id || typeof sender_id !== 'string' || sender_id.trim() === '') {
+    console.warn('Invalid sender_id:', sender_id);
+    return socket.emit('loginError', 'Invalid user ID');
+  }
 
-    // Update online Users status in database
-     const sqlUpdate = `UPDATE users   SET status = 'online', last_seen = NOW()  WHERE  id = $1`
-    //  const insert_query = mysql.format(sqlUpdate,["online",  sender_id])
-    const values = [sender_id]
-     pool.query(sqlUpdate, values, async (err:any, result:any) => {
-      if (err) throw err;
-          //  console.log(`${sender_id} socket active`)
-      })
-  io.emit('onlineUsers', users); // Emit connected users list
-}catch(err){
-  console.log(err)
-}
-});
-
-try{
- // Emit chat history when a user connects
- socket.on('requestChatHistory', (data) => {
-  const {sender_id, receiver_id} = data
-  pool.query(
-    'SELECT * FROM private_messages WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $3 AND receiver_id = $4) ORDER BY timestamp ASC',
-    [sender_id, receiver_id, receiver_id, sender_id],
-    (err, results) => {
-      if (err) throw err;
-      // console.log(`privateChatHistory: ${results}`)
-      socket.emit('chatHistory', results.rows);
+  try {
+    // verify user exists in DB
+    const checkUserQuery = 'SELECT id FROM users WHERE id = $1';
+    const result = await pool.query(checkUserQuery, [sender_id]);
+    if (result.rowCount === 0) {
+      return socket.emit('loginError', 'User not found');
     }
-  );
 
-})
-}catch (err){
-console.log(err)
-}
-   
+    users[sender_id] = socket.id;
+
+    const sqlUpdate = `UPDATE users SET status = 'online', last_seen = NOW() WHERE id = $1`;
+    await pool.query(sqlUpdate, [sender_id]);
+
+    io.emit('onlineUsers', users);
+  } catch (err) {
+    console.log('loginError', err);
+    socket.emit('loginError', 'Internal server error');
+  }
+});
+
+  // Emit chat history when a user connects
+socket.on('requestChatHistory', (data) => {
+  const { sender_id, receiver_id } = data;
+
+  // Validate input
+  if (!sender_id || !receiver_id) {
+    return socket.emit('chatHistoryError', 'Invalid sender or receiver ID');
+  }
+
+  const query = `
+    SELECT * FROM private_messages
+    WHERE (sender_id = $1 AND receiver_id = $2)
+       OR (sender_id = $2 AND receiver_id = $1)
+    ORDER BY timestamp ASC
+  `;
+
+  pool.query(query, [sender_id, receiver_id], (err, results) => {
+    if (err) {
+      console.error('Error fetching chat history', err);
+      return socket.emit('chatHistoryError', 'Could not retrieve chat history');
+    }
+
+    socket.emit('chatHistory', results.rows);
+  });
+});
     
- // Handle private messages
- socket.on('private_message', (messageData) => {
-  try{
-  const {  receiver_id, message, sender_id } = messageData;
-     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, message, status) VALUES ($1,$2,$3,$4,$5)"
-     const values =[uuidv4(), sender_id, receiver_id, message, 'delivered']
-            pool.query (sqlInsert, values, (err, result:any)=> {
-              if (err) throw err;
-              console.log(`This is ${ result.rows}`)
-            
-             })
-   if (users[receiver_id]) {
-    io.to(users[receiver_id]).emit('private_message', { sender_id, message });
-    console.log(`${message} sent to ${users[receiver_id]}`)
-    console.log(receiver_id)
-  }
-}catch (err){
-  console.log(err)
-      }
-   
-});
-
-
 
 
 // Handle private messages
- socket.on('private_media', (mediaData) => {
-  try{
-      
-  const {  receiver_id, media, sender_id } = mediaData
+socket.on('private_message', async (messageData) => {
+  try {
+    const { receiver_id, message, sender_id } = messageData;
 
-  const image = media.image
-     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, media, status) VALUES ($1,$2,$3,$4,$5)"
-     
-     const values = [uuidv4(), sender_id, receiver_id, image, 'delivered']
-            pool.query (sqlInsert, values, (err, result:any)=> {
-              if (err) throw err;
-              console.log(`This is ${ result.rows}`)
-            
-             })
-   if (users[receiver_id]) {
-    io.to(users[receiver_id]).emit('private_message', { sender_id, media });
-    console.log(`${media} sent to ${users[receiver_id]}`)
-    console.log(receiver_id)
+    // Insert the message into the database
+    const sqlInsert = `
+      INSERT INTO private_messages (id, sender_id, receiver_id, message, status) 
+      VALUES ($1, $2, $3, $4, $5)
+    `;
+    const values = [uuidv4(), sender_id, receiver_id, message, 'delivered'];
+
+    await pool.query(sqlInsert, values);
+
+    console.log(`Message from ${sender_id} to ${receiver_id} saved to DB.`);
+
+    // Send the message to the receiver if they are online
+    if (users[receiver_id]) {
+      io.to(users[receiver_id]).emit('private_message', { sender_id, message });
+      console.log(`Message sent to socket ID: ${users[receiver_id]}`);
+    } else {
+      console.log(`Receiver ${receiver_id} is offline.`);
+    }
+
+  } catch (err) {
+    console.log('Error handling private_message', err)
   }
-}catch (err){
-  console.log(err)
-      }
-   
 });
 
-// Handle private messages
- socket.on('private_files', (fileData) => {
-  try{
-  const {  receiver_id, files, sender_id } = fileData;
-  const file = files.Files
-     const sqlInsert = "INSERT INTO private_messages(id, sender_id, receiver_id, files, status) VALUES ($1,$2,$3,$4,$5)"
-     
-     const values = [uuidv4(), sender_id, receiver_id, file, 'delivered']
-            pool.query (sqlInsert, values, (err, result:any)=> {
-              if (err) throw err;
-              console.log(`This is ${ result.rows}`)
-            
-             })
-   if (users[receiver_id]) {
-    io.to(users[receiver_id]).emit('private_message', { sender_id, files });
-    console.log(`${files} sent to ${users[receiver_id]}`)
-    console.log(receiver_id)
+
+
+// Handle private message media
+socket.on('private_media', async (mediaData) => {
+  try {
+    const { receiver_id, media, sender_id } = mediaData;
+
+    // Check that required data is present
+    if (!receiver_id || !sender_id || !media || !media.image) {
+      console.error("Invalid media data received");
+      return;
+    }
+
+    const image = media.image;
+    const sqlInsert = `
+      INSERT INTO private_messages(id, sender_id, receiver_id, media, status)
+      VALUES ($1, $2, $3, $4, $5)
+    `;
+    
+    const values = [uuidv4(), sender_id, receiver_id, image, 'delivered'];
+
+    // Use async/await with pool.query
+    const result = await pool.query(sqlInsert, values);
+    console.log(`Media message inserted for receiver ${receiver_id}`);
+
+    if (users[receiver_id]) {
+      io.to(users[receiver_id]).emit('private_message', {
+        sender_id,
+        media
+      });
+      console.log(`Media sent to socket ${users[receiver_id]}`);
+    } else {
+      console.log(`User ${receiver_id} is not connected`);
+    }
+
+  } catch (err) {
+    console.error("Error handling private_media:", err);
   }
-}catch (err){
-  console.log(err)
-      }
-   
 });
+
+// Handle private message files
+ socket.on('private_files', async (fileData) => {
+  try {
+    const { receiver_id, files, sender_id } = fileData;
+
+    // Basic validation
+    if (!receiver_id || !sender_id || !files) {
+      console.error("Invalid file data received");
+      return;
+    }
+
+    // You should standardize what files look like (e.g., file URL or Base64 blob)
+    const filePayload = files; // assuming files is a JSON object or array
+
+    const sqlInsert = `
+      INSERT INTO private_messages (id, sender_id, receiver_id, media, type, status)
+      VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+
+    const values = [
+      uuidv4(),
+      sender_id,
+      receiver_id,
+      JSON.stringify(filePayload), // store as JSON
+      'text', // message type
+      'delivered'
+    ];
+
+    await pool.query(sqlInsert, values);
+    console.log(`File message inserted for receiver ${receiver_id}`);
+
+    // Send message to recipient if online
+    if (users[receiver_id]) {
+      io.to(users[receiver_id]).emit('private_message', {
+        sender_id,
+        media: filePayload,
+        type: 'file'
+      });
+      console.log(`Files sent to socket ${users[receiver_id]}`);
+    } else {
+      console.log(`User ${receiver_id} is not connected`);
+    }
+
+  } catch (err) {
+    console.error("Error handling private_files:", err);
+  }
+});
+
    
 
   // Join a group (room)
-  socket.on('joinGroup', (group_id) => {
+socket.on('joinGroup', (group_id) => {
+  if (group_id && typeof group_id === 'string') {
     socket.join(group_id);
-    // console.log(`User joined group: ${group_id}`);
-  });
-
-
+    socket.emit('joinedGroup', group_id); // Notify the client
+    console.log(`Socket ${socket.id} joined group: ${group_id}`);
+  } else {
+    socket.emit('error', 'Invalid group ID');
+  }
+});
  
   // Handle group messages
-  socket.on('group_message', (messageData) => {
-    const { user_id, group_id, message } = messageData;
-    console.log(`socket ${messageData}`)
+socket.on('group_message', (messageData) => {
+  const { user_id, group_id, message } = messageData;
+  console.log("Received group message:", messageData);
 
-       const sqlInsert = "INSERT INTO group_messages( group_id, user_id, message) VALUES ($1,$2,$3)"
-      
-       const values = [ group_id, user_id, message]
-              pool.query (sqlInsert, values, (err, result:any)=> {
-                if (err) throw err;
-              console.log(`group message: ${result.rows}`)
-                
-               })
-          
-    io.to(group_id).emit("group_message", messageData); // Broadcast to group
+  const sqlInsert = `
+    INSERT INTO group_messages (group_id, user_id, message) 
+    VALUES ($1, $2, $3)
+  `;
+  const values = [group_id, user_id, message];
+
+  pool.query(sqlInsert, values, (err, result) => {
+    if (err) {
+      console.error("Database insert error:", err);
+      socket.emit("error", "Failed to save message");
+      return;
+    }
+
+    // Optionally log success or message ID
+    console.log("Message saved to DB for group:", group_id);
+
+    // Broadcast message to all users in group
+    io.to(group_id).emit("group_message", messageData);
   });
+});
 
-    // Handle group messages
-    socket.on('group_media', (mediaData) => {
-      const { user_id, group_id, media } = mediaData;
-      console.log(`socket ${mediaData}`)
-  
-         const sqlInsert = "INSERT INTO group_messages( group_id, user_id, media) VALUES ($1,$2,$3)"
-         
-         const values = [ group_id, user_id, media]
-                pool.query (sqlInsert,values, (err, result:any)=> {
-                  if (err) throw err;
-                // console.log(`group message: ${result}`)
-                 })
-            
-      io.to(group_id).emit("group_message", mediaData); // Broadcast to group
-    });
+    // Handle group media
+socket.on('group_media', (mediaData) => {
+  const { user_id, group_id, media } = mediaData;
 
-      // Handle group messages
-  socket.on('group_files', (fileData) => {
-    const { user_id, group_id, files } = fileData;
-    console.log(`socket ${fileData}`)
+  if (!user_id || !group_id || !media) {
+    socket.emit("error", "Invalid media message data");
+    return;
+  }
 
-       const sqlInsert = "INSERT INTO group_messages( group_id, user_id, files) VALUES ($1,$2,$3)"
-       const values = [ group_id, user_id, files]
-              pool.query (sqlInsert, values, (err, result:any)=> {
-                if (err) throw err;
-              // console.log(`group message: ${result}`)
-               })
-          
-    io.to(group_id).emit("group_message", fileData); // Broadcast to group
+  console.log("Received media message:", mediaData);
+
+  const sqlInsert = `
+    INSERT INTO group_messages (group_id, user_id, media) 
+    VALUES ($1, $2, $3)
+  `;
+  const values = [group_id, user_id, media];
+
+  pool.query(sqlInsert, values, (err, result) => {
+    if (err) {
+      console.error("Error saving media message:", err);
+      socket.emit("error", "Failed to save media message");
+      return;
+    }
+
+    console.log("Media message saved for group:", group_id);
+
+    // You may want to structure this differently for client handling:
+    io.to(group_id).emit("group_message", mediaData);
   });
+});
 
+      // Handle group files
+socket.on('group_files', (fileData) => {
+  const { user_id, group_id, files } = fileData;
+
+  // Validate input
+  if (!user_id || !group_id || !files) {
+    socket.emit("error", "Invalid file message data");
+    return;
+  }
+
+  console.log("Received file message:", fileData);
+
+  const sqlInsert = `
+    INSERT INTO group_messages (group_id, user_id, files)
+    VALUES ($1, $2, $3)
+  `;
+  const values = [group_id, user_id, files];
+
+  pool.query(sqlInsert, values, (err, result) => {
+    if (err) {
+      console.error("Error saving file message:", err);
+      socket.emit("error", "Failed to save file message");
+      return;
+    }
+
+    console.log("File message saved for group:", group_id);
+
+    io.to(group_id).emit("group_message", fileData);
+  });
+});
 
  // Emit groupchat history when a user connects
- socket.on('requestGroupChatHistory', (group_id) => {
-  try{
+socket.on('requestGroupChatHistory', (group_id) => {
+  if (!group_id) {
+    socket.emit('error', 'Group ID is required for chat history');
+    return;
+  }
 
-    pool.query(
-      'SELECT * FROM group_messages WHERE group_id = $1  ORDER BY timestamp ASC',
-      [group_id],
-      (err, results) => {
-        if (err) throw err;
-        // console.log(`groupchathistory: ${results}`)
-        socket.emit('groupChatHistory', results.rows);
+  pool.query(
+    'SELECT * FROM group_messages WHERE group_id = $1 ORDER BY timestamp ASC',
+    [group_id],
+    (err, results) => {
+      if (err) {
+        console.error("Error fetching chat history:", err);
+        socket.emit('error', 'Failed to retrieve group chat history');
+        return;
       }
-    );
-  
-}catch (err){
 
-}
-
+      socket.emit('groupChatHistory', results.rows);
+    }
+  );
 })
- 
 
   // Leave group (room)
-  socket.on('leaveGroup', (group_id) => {
-    socket.leave(group_id);
-    // console.log(`User left group: ${group_id}`);
-  });
+socket.on('leaveGroup', (group_id) => {
+  if (!group_id) {
+    socket.emit('error', 'Group ID required to leave group');
+    return;
+  }
 
-  // Handle events for video call signaling, such as:
+  socket.leave(group_id);
+  socket.emit('leftGroup', group_id);
+  console.log(`Socket ${socket.id} left group: ${group_id}`);
+});
+ 
+// Handle events for video call signaling, such as:
   socket.on('offer', (offer) => {
     socket.broadcast.emit('offer', offer);
   });
@@ -319,56 +427,37 @@ console.log(err)
     socket.broadcast.emit('ice-candidate', candidate);
   });
 
-  //  // Handle incoming offer
-  //  socket.on("offer", (offer, toUserId) => {
-  //   const toSocketId = users[toUserId];
-  //   if (toSocketId) {
-  //     io.to(toSocketId).emit("offer", offer);
-  //   }
-  // });
 
-  // // Handle incoming answer
-  // socket.on("answer", (answer, toUserId) => {
-  //   const toSocketId = users[toUserId];
-  //   if (toSocketId) {
-  //     io.to(toSocketId).emit("answer", answer);
-  //   }
-  // });
 
-  // // Handle ICE candidates
-  // socket.on("ice-candidate", (candidate, toUserId) => {
-  //   const toSocketId = users[toUserId];
-  //   if (toSocketId) {
-  //     io.to(toSocketId).emit("ice-candidate", candidate);
-  //   }
-  // });
+socket.on('disconnect', () => {
+  try {
+    for (const userId in users) {
+      if (users[userId] === socket.id) {
+        // Remove user from users list
+        delete users[userId];
 
-  // Handle disconnect
+        // Use parameterized query to avoid SQL injection
+        const sqlUpdate = `UPDATE users SET status = $1, last_seen = NOW() WHERE id = $2`;
+        const values = ['offline', userId];
 
-    socket.on('disconnect', () => {
-      try{
-      for (let userId in users) {
-        if (users[userId] === socket.id) {
-          delete users[userId];
-            // console.log("DB connected successful: " );
-            // Update online Users status in database
-            const sqlUpdate = `UPDATE users   SET status = 'offline',  last_seen = NOW()  WHERE  id = '${userId}'`
-            // const insert_query = mysql.format(sqlUpdate,["offline", userId])
-            pool.query(sqlUpdate, async (err:any, result:any) => {
-             if (err) throw err;
-                //  console.log(`${users[userId]} disconnected`)
-             })
-          
-     
-          break;
-        }
+        pool.query(sqlUpdate, values, (err, result) => {
+          if (err) {
+            console.error(`Error updating status for user ${userId}:`, err);
+          } else {
+            console.log(`User ${userId} marked offline on disconnect.`);
+          }
+        });
+
+        break; // user found and handled, exit loop
       }
-      // console.log(`User ${socket.id} disconnected`);
-    }catch (err){
-    
     }
-   
-    });
+  } catch (err) {
+    console.error("Error handling disconnect:", err);
+  }
+
+  // Optionally, log the socket disconnect event
+  console.log(`Socket ${socket.id} disconnected.`);
+});
 
 });
 

@@ -61,7 +61,7 @@ console.log(mygroup)
 <div className='mt-4  h-32 overflow-hidden px-2 overflow-y-auto'>
 {  mygroup?.map((group:GROUPS) =>
              (
-              <div onClick={() => {setGroup(group)}} className="flex my-3 justify-between">
+              <div onClick={() => {setGroup(group)}} className="flex mt-8 justify-between">
               
               <div className=' font-medium  py-2 text-md text-slate-500'>{capitalizeFirstLetter(group.name.toLowerCase())}</div>
       
@@ -72,7 +72,7 @@ console.log(mygroup)
         >
               <i className='bx bx-group bx-sm'></i>
         </button> 
-        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full m-2 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-4">
+        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1">
              Add  
            </div> 
            </div>

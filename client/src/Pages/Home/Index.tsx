@@ -1,7 +1,6 @@
 
 import ChatBox from './ChatBox'
-import { useEffect} from 'react'
-import { fetchAsyncUser } from '../../Redux/features/auth/authSlice'
+
 import ContactModal from '../../components/modal/contactModal'
 import GroupModal from '../../components/modal/groupModal'
 import PhoneCallModal from '../../components/modal/phoneCallModal'
@@ -11,29 +10,14 @@ import AboutModal from '../../components/updateModal/about'
 import MobileModal from '../../components/updateModal/phoneNo'
 import LocationModal from '../../components/updateModal/location'
 import MenuIndex from './MenuIndex'
-// import Login from '../Auth/Login'
-// import Register from '../Auth/Register'
+
 import Appbar from './Appbar'
 import AddGroupContactModal from '../../components/modal/AddGroupContactModal'
-import { useAppDispatch} from '../../Redux/app/hook'
+
 import MessageImageModal from '../../components/updateModal/ImageModal'
 import FilesModal from '../../components/updateModal/fileModal'
 const Index = () => {
  
-  const dispatch = useAppDispatch()
-//   const authUser = useAppSelector(getAuthUser)
-//  const isAuthenticated = useAppSelector(getIsAuthenticated)
-
-  useEffect(() => {
-    
-    dispatch(fetchAsyncUser());
-  
-  }, [dispatch])
-  
-  
-    
-
-  
 
 
 
