@@ -22,21 +22,8 @@ const initialState: updateprofileState = {
 const BASEURL = import.meta.env.VITE_APP_BASE_URL
 console.log(BASEURL)
 
-// export const fetchUpdateImage = createAsyncThunk(
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     'updateprofile/fetchUpdateImage', async (data:any) => {
-//         const response= await axios.post(`${BASEURL}/updateimage`, {data}, {
-//           headers: {
-//               'Authorization': 'Bearer your_token', // Add any custom headers
-//                "Content-Type": "multipart/form-data",
-//           },
-//           withCredentials: true // Include credentials such as cookies
-//       },)
-//         console.log(response.data)
-//         return response.data
-//       });
 
-
+     // Update bio
       export const fetchUpdateBio = createAsyncThunk(
         'updateprofile/fetchUpdateBio', async (data:{about:string, }) => {
          const { about} = data
@@ -45,7 +32,7 @@ console.log(BASEURL)
             return response.data
           });
 
-
+          // update location
           export const fetchUpdateLocation = createAsyncThunk(
             'updateprofile/fetchUpdateLocation', async (data:{location:string, }) => {
              const { location} = data
@@ -54,6 +41,7 @@ console.log(BASEURL)
                 return response.data
               });
 
+              // update mobile
               export const fetchUpdateMobile = createAsyncThunk(
                 'updateprofile/fetchUpdateMobile', async (data:{mobile:string, }) => {
                  const { mobile} = data
@@ -79,17 +67,7 @@ export const updateProfileSlice = createSlice({
 
   },
    extraReducers: (builder) => {
-    // Add reducers for additional action types here, and handle loading state as needed
-    // builder.addCase(fetchUpdateImage.pending, (state) => {
-    //     state.status = 'pending'
-    //     })
-    //     .addCase(fetchUpdateImage.fulfilled, (state, action) => {
-    //       state.message= action.payload.message
-    //     })
-    //     .addCase(fetchUpdateImage.rejected, (state, action) => {
-    //       state.status = 'failed'
-    //       state.error = action.error.message;
-    //     })
+
         builder.addCase(fetchUpdateBio.pending, (state) => {
           state.status = 'pending'
           })

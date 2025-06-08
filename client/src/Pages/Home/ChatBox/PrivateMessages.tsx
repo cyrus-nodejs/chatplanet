@@ -32,7 +32,8 @@ const PrivateMessages = () => {
 
     const myuser  = allusers?.filter(users=> users.id ===receiver?.userid)
 console.log(receiver)
-  const handleEmojiSelect = (emoji:string ) => {
+  
+const handleEmojiSelect = (emoji:string ) => {
     dispatch({ type: 'SET_CURRENTMESSAGE', payload:  currentMessage + emoji})
     setShowEmojiPicker(false);
   };

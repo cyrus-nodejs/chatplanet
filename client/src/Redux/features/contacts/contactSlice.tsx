@@ -23,7 +23,7 @@ const initialState: contactState = {
 // eslint-disable-next-line react-refresh/only-export-components
 const BASEURL = import.meta.env.VITE_APP_BASE_URL
 console.log(BASEURL)
-
+    //Add contacts
 export const fetchAddContacts = createAsyncThunk(
     'contact/fetchAddContacts', async (data:{email:string, invitation:string}) => {
      const { email, invitation} = data
@@ -32,6 +32,7 @@ export const fetchAddContacts = createAsyncThunk(
         return response.data
       });
 
+      // Get contacts
 export const fetchContacts = createAsyncThunk(
     'contact/fetchContacts', async () => {
         const response= await axios.get(`${BASEURL}/getcontacts`, { withCredentials: true })

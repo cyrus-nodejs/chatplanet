@@ -9,7 +9,7 @@ export interface AuthState {
   onlineUsers:USER[]
   allUsers:USER[]
    authUser: USER | null | undefined 
-    twoFaUser:USER | null | undefined 
+  
     isAuthenticated: boolean
      isAuthorized: boolean
     status:  'idle' | 'pending' | 'succeeded' | 'failed'
@@ -25,7 +25,7 @@ const initialState: AuthState = {
   onlineUsers:[],
   allUsers:[],
    authUser: null,
-    twoFaUser:null,
+  
     isAuthenticated: false,
     isAuthorized: false,
     message:"",
@@ -39,7 +39,7 @@ const initialState: AuthState = {
 // eslint-disable-next-line react-refresh/only-export-components
 const BASEURL = import.meta.env.VITE_APP_BASE_URL
 console.log(BASEURL)
-
+// Get authenticated User
 export const fetchAsyncUser = createAsyncThunk(
     'auth/fetchAsyncUser', async () => {
         const response= await axios.get(`${BASEURL}/user`, { withCredentials: true })
@@ -47,13 +47,8 @@ export const fetchAsyncUser = createAsyncThunk(
         return response.data
       });
 
-      // export const fetch2FAUser = createAsyncThunk(
-      //   'auth/fetch2FAUser', async () => {
-      //       const response= await axios.post(`${BASEURL}/2fa/verify`,{}, { withCredentials: true } )
-      //       console.log(response.data)
-      //       return response.data
-      //     });
-
+  
+//   // Login routes
       export const fetchLogin = createAsyncThunk(
         'auth/fetchLogin', async (data:{email:string, password:string}) => {
          const { email, password} = data
@@ -63,6 +58,7 @@ export const fetchAsyncUser = createAsyncThunk(
             return response.data
           });
 
+          // Multifactor factor authentication verifcation route
           export const fetch2FaLogin = createAsyncThunk(
             'auth/fetch2FaLogin', async (data:{mfacode:string}) => {
              const { mfacode} = data
@@ -71,6 +67,7 @@ export const fetchAsyncUser = createAsyncThunk(
                 return response.data
               });
 
+          // Sigup routes
           export const fetchRegister = createAsyncThunk(
             'auth/fetchRegister', async (data:{firstname:string, lastname:string,  email:string, password:string, mobile:string}) => {
            const   {firstname, lastname, email, mobile,  password} = data
@@ -79,13 +76,15 @@ export const fetchAsyncUser = createAsyncThunk(
                 return response.data
               });
         
-
+ // Log out route
   export const fetchAsyncLogout = createAsyncThunk(
     'auth/fetchAsyncLogout',  async () => {
         const response= await axios.get(`${BASEURL}/logout`, { withCredentials: true })
         console.log(response.data)
         return response.data
       });
+
+      // Forgot password route
       export const fetchForgotPassword = createAsyncThunk(
         'auth/fetchForgotPassword',  async (data:{email:string}) => {
          const {email} = data
@@ -93,6 +92,8 @@ export const fetchAsyncUser = createAsyncThunk(
             console.log(response.data)
             return response.data
           });
+
+        //Reset password route
           export const fetchResetPassword = createAsyncThunk(
             'auth/fetchResetPassword',  async (data:{ password:string, token:string}) => {
                const { password, token} = data
@@ -101,6 +102,7 @@ export const fetchAsyncUser = createAsyncThunk(
                 return response.data
               });
             
+            // Get all online users
               export const fetchOnlineUsers = createAsyncThunk(
                 'contact/fetchOnlineUsers', async () => {
                     const response= await axios.get(`${BASEURL}/onlineusers`, { withCredentials: true })
@@ -109,7 +111,7 @@ export const fetchAsyncUser = createAsyncThunk(
                   });
             
                 
-
+                // Get all users
                   export const fetchAllUsers = createAsyncThunk(
                     'contact/fetchAllUsers', async () => {
                         const response= await axios.get(`${BASEURL}/allusers`, { withCredentials: true })
@@ -138,14 +140,13 @@ export const authSlice = createSlice({
          state.isAuthenticated = true
          state.isAuthorized = true
          state.message= action.payload.message
-     
       })
       .addCase(fetchAsyncUser.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message;
         
       })
-   
+
       .addCase(fetchAsyncLogout.pending, (state) => {
       state.status = 'pending'
       state.authUser= null
@@ -160,6 +161,7 @@ export const authSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message;
       })
+
       .addCase(fetchLogin.pending, (state) => {
         state.status = 'pending'
         })
@@ -167,13 +169,12 @@ export const authSlice = createSlice({
           state.message= action.payload.message
           state.success = action.payload.success
           state.isAuthenticated = true
-          
-          
         })
         .addCase(fetchLogin.rejected, (state, action) => {
           state.status = 'failed'
           state.error = action.error.message;
         })
+
         .addCase(fetch2FaLogin.pending, (state) => {
           state.status = 'pending'
           })
@@ -187,9 +188,9 @@ export const authSlice = createSlice({
             state.status = 'failed'
             state.error = action.error.message;
           })
+
         .addCase(fetchRegister.pending, (state) => {
       state.status = 'pending'
-     
       })
       .addCase(fetchRegister.fulfilled, (state, action) => {
         state.status = 'succeeded'
@@ -202,7 +203,6 @@ export const authSlice = createSlice({
       
       .addCase(fetchForgotPassword.pending, (state) => {
         state.status = 'pending'
-        
         })
         .addCase(fetchForgotPassword.fulfilled, (state, action) => {
           state.status = 'succeeded'
@@ -211,8 +211,8 @@ export const authSlice = createSlice({
         .addCase(fetchForgotPassword.rejected, (state, action) => {
           state.status = 'failed'
           state.error = action.error.message;
-          
         })
+
         .addCase(fetchResetPassword.pending, (state) => {
           state.status = 'pending'
           })
@@ -225,6 +225,7 @@ export const authSlice = createSlice({
             state.status = 'failed'
             state.error = action.error.message;
           })
+
           builder.addCase(fetchOnlineUsers.pending, (state) => {
             state.status = 'pending'
             
@@ -236,11 +237,10 @@ export const authSlice = createSlice({
             .addCase(fetchOnlineUsers.rejected, (state, action) => {
               state.status = 'failed'
               state.error = action.error.message;
-              
             })
+
             builder.addCase(fetchAllUsers.pending, (state) => {
               state.status = 'pending'
-              
             })
             .addCase(fetchAllUsers.fulfilled, (state, action) => {
                  state.allUsers= action.payload.users
@@ -257,7 +257,6 @@ export const authSlice = createSlice({
 
 // Export the generated action creators for use in components
 export const getToken = (state:RootState) => state.auth.token
-export const getTwoFaUser = (state:RootState) => state.auth.twoFaUser
 export const getAuthUser = (state:RootState) => state.auth.authUser
 export const getIsAuthenticated = (state:RootState) => state.auth.isAuthenticated
 export const getIsAuthorized = (state:RootState) => state.auth.isAuthorized

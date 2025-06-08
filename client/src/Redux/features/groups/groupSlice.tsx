@@ -26,6 +26,7 @@ const initialState: groupState = {
 const BASEURL = import.meta.env.VITE_APP_BASE_URL
 console.log(BASEURL)
 
+// Add group to database
 export const fetchAddGroup = createAsyncThunk(
     'group/fetchAddGroup', async (data:{ name:string, description:string } ) => {
      const { name, description} = data
@@ -35,6 +36,7 @@ export const fetchAddGroup = createAsyncThunk(
         return response.data
       });
 
+      // add members to group
       export const fetchAddGroupMembers = createAsyncThunk(
         'group/fetchAddGroupMembers', async (data:{ group:GROUPS, contact:CONTACTS } ) => {
    console.log(data)
@@ -47,13 +49,15 @@ export const fetchAddGroup = createAsyncThunk(
             return response.data
           });
     
+          //Get all groups
 export const fetchGroups = createAsyncThunk(
     'group/fetchGroups', async () => {
         const response= await axios.get(`${BASEURL}/getgroups`, { withCredentials: true })
         console.log(response.data)
         return response.data
       });
-
+       
+      //Get members from group
       export const fetchGroupMembers = createAsyncThunk(
         'group/fetchGroupMembers', async () => {
           const response= await axios.get(`${BASEURL}/get/groupmembers`, { withCredentials: true })
@@ -88,8 +92,8 @@ export const groupSlice = createSlice({
       .addCase(fetchGroups.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message;
-        
       })
+
       builder.addCase(fetchGroupMembers.pending, (state) => {
         state.status = 'pending'
         
@@ -114,6 +118,7 @@ export const groupSlice = createSlice({
           state.status = 'failed'
           state.error = action.error.message;
         })
+        
         .addCase(fetchAddGroupMembers.pending, (state) => {
           state.status = 'pending'
           })
