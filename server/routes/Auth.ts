@@ -14,6 +14,7 @@ import {
 
 router.get('/user', authenticateJWT,  getAuthUser  )
 router.get('/logout', authenticateJWT,  LogOut  )
+
  router.post("/register", Register);
 router.post("/login", Login );
 router.post("/login/2fa", authorizeJWT,  twoFactorLogin );

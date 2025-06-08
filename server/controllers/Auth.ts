@@ -107,7 +107,8 @@ await pool.query(
 
     return res.json({
       success: true,
-      message: `MFA code sent to ${user.email}`
+      message: `MFA code sent to ${user.email}`,
+       token:token
     });
   } catch (err) {
     console.error('Login error:', err);
@@ -173,7 +174,7 @@ await pool.query(
       maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
 
-    return res.json({ success: true, message: 'MFA verified. Login successful!', user:req.user });
+    return res.json({ success: true, message: 'MFA verified. Login successful!', user:req.user, accessToken:accessToken });
 
   } catch (err) {
     console.error('verifyMFA error:', err);
