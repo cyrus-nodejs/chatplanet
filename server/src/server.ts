@@ -17,21 +17,12 @@ import cookieParser from 'cookie-parser';
 
 
 dotenv.config()
-// const crypto = require("crypto")
-// let token = crypto.randomBytes(64).toString('hex');
-// console.log(token)
+
 
 
 const app: Express = express();
-
 const httpServer = createServer(app);
-const port = process.env.PORT ;
 
-
-//  console.log(authenticator.generateKey())
-      
-
-    
 
 
 // Middleware
@@ -47,12 +38,8 @@ const corsOptions = {
    origin: process.env!.FRONTEND_URL,
  credentials: true, 
  optionSuccessStatus: 200,
- methods: ['GET', 'PUT', 'POST', 'DELETE'],
- 
-
+ methods: ['GET', 'PUT', 'POST', 'DELETE']
 }
-
-
 
 // Apply CORS middleware
 app.use(cors(corsOptions));
@@ -82,17 +69,6 @@ app.use("/", profileRoutes );
 app.use("/", contactRoutes );
 app.use("/", groupRoutes );
 
-
-//CREATE DATBASE CONNECTION
-const connectDB = () => {
-  pool.connect(async (err:any) => {
-    if (err) throw err;
-    console.log("Connected to the PostgreSQL database! " );
-    
-  })
-}
-
-connectDB()
 
 
 
