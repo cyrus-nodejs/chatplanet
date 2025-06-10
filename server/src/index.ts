@@ -1,11 +1,12 @@
 import dotenv from 'dotenv';
-import app from './server';
+import httpServer from './server';
 import {pool} from '../models/connectDb'
 const PORT = process.env.PORT || 5000;
 import { createServer } from "http";
+
 dotenv.config()
 
-const httpServer = createServer(app);
+
 
 
 //CREATE DATBASE CONNECTION
