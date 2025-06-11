@@ -117,8 +117,8 @@ const handleEmojiSelect = (emoji:string ) => {
  
   };
 
-
-
+console.log(authUser?.id)
+console.log(receiver)
 
  console.log(allusers)
      useEffect(() => {
@@ -142,7 +142,7 @@ const handleEmojiSelect = (emoji:string ) => {
           <div className="flex sticky     top-0 flex-row ">
   <div className="basis-1/3">
   <div className="flex ">
-  <div style={{ backgroundImage: `url(${myuser[0]?.profile_image})` }}className="flex-none w-10 bg-cover bg-center    m-auto pt-5 h-10 bg-slate-200  dark:bg-gray-800 text-black dark:text-white rounded-full  flex">
+  <div style={{ backgroundImage: `url(${receiver?.profile_image})` }}className="flex-none w-10 bg-cover bg-center    m-auto pt-5 h-10 bg-slate-200  dark:bg-gray-800 text-black dark:text-white rounded-full  flex">
   </div>
   <div className="flex-grow pt-4 text-1xl text-slate-500 font-medium h-16 px-3">{capitalizeFirstLetter(receiver?.firstname?.toLowerCase() )}</div>
 </div>

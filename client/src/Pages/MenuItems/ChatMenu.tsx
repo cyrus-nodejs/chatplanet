@@ -5,7 +5,7 @@ import { USER } from "../../utils/types"
   import { getOnlineUsers, fetchOnlineUsers } from "../../Redux/features/auth/authSlice"
  import {useAppSelector,  useAppDispatch } from "../../Redux/app/hook"
 import { getRecentUser, fetchRecentChat } from "../../Redux/features/messages/messageSlice"
- import { fetchAsyncUser, getAllUsers } from "../../Redux/features/auth/authSlice"
+ import { fetchAsyncUser } from "../../Redux/features/auth/authSlice"
 import { convertTimestampToTime } from "../../utils/helper"
 
 const ChatMenu = () => {
@@ -13,16 +13,16 @@ const ChatMenu = () => {
   const dispatch = useAppDispatch()
  const onlineusers = useAppSelector(getOnlineUsers)
  const recentChat = useAppSelector(getRecentUser)
- const allusers = useAppSelector(getAllUsers)
+
  console.log(recentChat)
 console.log(onlineusers)
 
-const recentusers = recentChat?.filter((value:any, index, self) => 
+// const recentusers = recentChat?.filter((value:any, index, self) => 
  
-  index === self.findIndex((t:any) => (
-    t?.receiver_id === value?.receiver_id
-  ))
-);
+//   index === self.findIndex((t:any) => (
+//     t?.receiver_id === value?.receiver_id
+//   ))
+// );
 
  useEffect(() => {
   dispatch(fetchOnlineUsers());
@@ -65,31 +65,31 @@ console.log(recentChat)
       <p className="text-left my-3 font-mono text-2xl text-slate-500">Recent Chat</p>
 
    <div className='h-64 overflow-hidden overflow-y-auto justify-between'>
-      {recentusers && (  
+      {recentChat && (  
          <div className=" ">
         
         
-        {recentusers.map((data:any, id:number) => (
+        {recentChat.map((data:any) => (
             
-              allusers?.map((user:USER, index:number) => (
-<div className='flex flex-col ' key={id}>
+        
+<div className='flex flex-col ' key={data.recentchat_id}>
   <div className='my-2 '>
     <div className="flex">
-   <div className='basis-2/12' key={index}>{data?.receiver_id === user?.id && (<img width='100'  className='rounded-full border border-1' height='100' src={user?.profile_image} /> )}</div>
+   <div className='basis-2/12' >{<img width='100'  className='rounded-full border border-1' height='100' src={data?.receiver_avatar} /> }</div>
   <div className="w-48 mx-1 flex-none ">
   <div className="flex flex-col text-sm ">
-  <div className='font-medium text-slate-500'>{data.receiver_id === user?.id && (<span>{user?.firstname} {user.lastname}</span>)}</div>
-  <div className='text-slate-500'>{data.receiver_id === user?.id && (<span>{user?.about} </span>)}</div>
+  <div className='font-medium text-slate-500'><span>{data?.receiver_name} {data.receiver_lastname}</span></div>
+  <div className='text-slate-300'><span className='text-xs'>{data?.latest_message} </span></div>
   
 </div>
   </div>
-  <div className="w-16 flex-none text-sm mx-1 text-slate-500">{data.receiver_id === user?.id && (<span>{convertTimestampToTime(user?.last_seen)} </span>)}</div>
+  <div className="w-16 flex-none  mx-1 text-slate-500"><span className='text-xs'>{convertTimestampToTime(data?.latest_message_time)} </span></div>
 </div>
     </div>
  
 
   </div>
-)) 
+
 
 
 ))}

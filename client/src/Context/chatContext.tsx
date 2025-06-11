@@ -102,7 +102,7 @@ useEffect(() => {
         };
 
 
-}, [socket, authUser?.id, group, onlineUsers.length,  receiver, dispatch]);
+}, [socket, authUser?.id, group, onlineUsers,   receiver, dispatch]);
 
 console.log(currentGroupMessage, authUser, receiver)
 useEffect(() => {
@@ -180,11 +180,7 @@ if (socket.current){
     
 
 
-// Sending a private message
-console.log(currentMessage)
-console.log(currentGroupMessage)
-console.log(currentMedia)
-console.log(currentFile)
+
 const sendPrivateMessage = (receiver:CONTACTS) => {
 
   const message = currentMessage
@@ -192,7 +188,7 @@ const sendPrivateMessage = (receiver:CONTACTS) => {
   const files = currentFile
   if (socket.current){
     if (message !== "" ){
-      const messageData ={  sender_id: authUser?.id, receiver_id:receiver.userid, message:message}
+      const messageData ={  sender_id: authUser?.id, receiver_id:receiver.contactid, message:message}
      
       socket.current.emit('private_message', messageData);
       dispatch({type:"SEND_MESSAGE",  payload:{ sender_id: authUser?.id, message}})
@@ -201,7 +197,7 @@ const sendPrivateMessage = (receiver:CONTACTS) => {
     }
   
     if (media !== null ){
-      const mediaData = {  sender_id: authUser?.id, receiver_id:receiver.userid, media:media}
+      const mediaData = {  sender_id: authUser?.id, receiver_id:receiver.contactid, media:media}
       socket.current.emit('private_media', mediaData);
       dispatch({type:"SEND_MESSAGE",  payload:{ sender_id: authUser?.id, media}})
       // setMessages([...messages, { sender_id: authUser.id, message }]);
@@ -210,7 +206,7 @@ const sendPrivateMessage = (receiver:CONTACTS) => {
   
   
     if (files !== null ){
-      const fileData ={  sender_id: authUser?.id, receiver_id:receiver.userid, files:files}
+      const fileData ={  sender_id: authUser?.id, receiver_id:receiver.contactid, files:files}
       socket.current.emit('private_files', fileData );
       dispatch({type:"SEND_MESSAGE",  payload:{ sender_id: authUser?.id, files}})
       

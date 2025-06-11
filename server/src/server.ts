@@ -58,9 +58,12 @@ const io = new Server(httpServer,
 
 app.set('trust proxy', 1) 
 
-app.get("/", authenticateJWT, (req: any, res: any) => {
- 
+app.get("/", authenticateJWT, async (req: any, res: any) => {
+      const result = await pool.query('SELECT * FROM users');
+    console.log('This results', result.rows);
   res.send(`Express + TypeScript Server ${req.user.firstname} `);
+  
+
 });
 
 app.use("/", authRoutes );
@@ -433,4 +436,4 @@ socket.on('disconnect', () => {
 });
 
 
-export default app;
+export default httpServer;

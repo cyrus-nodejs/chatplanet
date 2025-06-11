@@ -97,6 +97,7 @@ await pool.query(
       lastname: user.lastname,
     };
 
+    console.log('This is', tokenData)
     const token = create2FAtoken(tokenData);
 
     res.cookie('token', token, {
@@ -165,7 +166,7 @@ await pool.query(
       firstname: user.firstname,
       lastname: user.lastname
     });
-
+    console.log('This is', accessToken)
     // Step 5: Set cookie or return token
     res.cookie('accessToken', accessToken, {
       httpOnly: true,

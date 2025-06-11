@@ -93,12 +93,15 @@ export interface GROUPMEMBERS {
 export interface CONTACTS {
   id: string,
   firstname: string,
-  userid:string
+  userid:string,
+  contactid:string,
   lastname: string,
   email: string,
   image:string,
   mobile:string
   country:string
+  profile_image:string
+  about:string
 }
 
     

@@ -36,13 +36,6 @@ const [isOpen4, setIsOpen4] = useState(false);
   };
 
 
-   // Data for collapsible items
-  //  const items = [
-  //   { id: 1, title: 'Personal', content: 'Content for Item 1' },
-  //   { id: 2, title: 'Privacy', content: 'Content for Item 2' },
-  //   { id: 3, title: 'Security', content: 'Content for Item 3' },
-  //   { id: 4, title: 'Help', content: 'Content for Item 4' },
-  // ];
 
   return (
     <div className='' >
@@ -51,7 +44,8 @@ const [isOpen4, setIsOpen4] = useState(false);
 
 </div>
 
-<div className="bg-[url('https://img.freepik.com/premium-photo/ai-generated-images-build-user-profile-page_1290175-101.jpg')] bg-cover bg-center  rounded-full  w-32 h-32 bg-slate-400 m-auto">
+<div  className="bg-cover bg-center  rounded-full  w-32 h-32 bg-slate-400 m-auto"
+  style={{ backgroundImage: `url(${myuser[0].profile_image})` }}>
   
 </div>
 

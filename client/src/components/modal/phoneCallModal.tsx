@@ -136,8 +136,10 @@ const PhoneCallModal = () => {
         onClick={(e) => e.stopPropagation()}
       >
         
-        <div className="bg-[url('https://img.freepik.com/premium-photo/ai-generated-images-build-user-profile-page_1290175-101.jpg')] bg-cover bg-center  rounded-full  w-32 h-32 bg-slate-400 m-auto">
-
+ 
+<div  className="bg-cover bg-center  rounded-full  w-32 h-32 bg-slate-400 m-auto"
+  style={{ backgroundImage: `url(${receiver.profile_image})` }}>
+  
 </div>
 
 <p className='text-lg text-center'> {receiver ? receiver?.firstname.toUpperCase(): "choose receiver"} </p>

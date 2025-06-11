@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import httpServer from './server';
 import {pool} from '../models/connectDb'
 const PORT = process.env.PORT || 5000;
-import { createServer } from "http";
+
 
 dotenv.config()
 

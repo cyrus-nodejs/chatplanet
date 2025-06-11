@@ -54,8 +54,6 @@ export const addGroupMember = async (req:any, res:any) => {
       `
       INSERT INTO group_member (user_id, group_id)
       VALUES ($1, $2)
-      ON CONFLICT (user_id, group_id) DO NOTHING
-      RETURNING *;
       `,
       [user_id, group_id]
     );

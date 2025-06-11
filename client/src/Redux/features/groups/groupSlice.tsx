@@ -42,7 +42,7 @@ export const fetchAddGroup = createAsyncThunk(
    console.log(data)
           const {group, contact} = data
        const group_id = group.id
-       const user_id = contact.userid
+       const user_id = contact.contactid
       
             const response= await axios.post(`${BASEURL}/add/groupmembers`,{user_id, group_id},{ withCredentials: true })
             console.log(response.data)

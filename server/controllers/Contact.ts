@@ -1,66 +1,47 @@
 import { pool } from '../models/connectDb'
+import { v4 as uuidv4 } from 'uuid';
 import { Request, Response, NextFunction } from 'express'
 import mysql from 'mysql2';
 
 //Create User contact list
 export const addContact = async (req: any, res: any) => {
-  const { email } = req.body;
+ const { email } = req.body;
+
+  if (!req.user) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
 
   try {
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "User with that email not found" });
     }
 
-    // Find user by email
-    const sqlSearch = "SELECT * FROM users WHERE email = $1";
-    const values = [email];
+    const contactUser = userResult.rows[0];
+console.log('Tis is contactid', contactUser.id)
+    const checkResult = await pool.query(
+      "SELECT * FROM contacts WHERE userid = $1 AND contactid = $2",
+      [req.user.id, contactUser.id]
+    );
 
-    pool.query(sqlSearch, values, (err, result: any) => {
-      if (err) {
-        console.error("Search user error:", err);
-        return res.status(500).json({ success: false, message: "Server error" });
-      }
+    if (checkResult.rows.length > 0) {
+      return res.status(409).json({ success: false, message: "Contact already exists" });
+    }
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({ success: false, message: "User with that email not found" });
-      }
+    await pool.query(
+     `
+    INSERT INTO contacts (id, userid, contactid, timestamp)
+    VALUES ($1, $2, $3, NOW())
+  `,
+      [
+        uuidv4(),
+        req.user.id,
+        contactUser.id
+      ]
+    );
 
-      const contactUser = result.rows[0];
-
-      //Check if contact already exists for this user
-      const sqlCheck = "SELECT * FROM contacts WHERE id = $1 AND email = $2";
-      pool.query(sqlCheck, [req.user.id, contactUser.email], (err, checkResult: any) => {
-        if (err) {
-          console.error("Check contact error:", err);
-          return res.status(500).json({ success: false, message: "Server error" });
-        }
-
-        if (checkResult.rows.length > 0) {
-          return res.status(409).json({ success: false, message: "Contact already exists" });
-        }
-
-        // Insert contact (assuming id is auto-generated)
-        const sqlInsert = `INSERT INTO contacts (id, userid, firstname, lastname, email, mobile) 
-                           VALUES ($1, $2, $3, $4, $5,$6)`;
-        const insertValues = [
-          req.user.id,
-          contactUser.id,
-          contactUser.firstname,
-          contactUser.lastname,
-          contactUser.email,
-          contactUser.mobile,
-        ];
-
-        pool.query(sqlInsert, insertValues, (err, insertResult: any) => {
-          if (err) {
-            console.error("Insert contact error:", err);
-            return res.status(500).json({ success: false, message: "Failed to add contact" });
-          }
-
-          return res.status(201).json({ success: true, message: "Contact added successfully" });
-        });
-      });
-    });
+    return res.status(201).json({ success: true, message: "Contact added successfully" });
   } catch (error) {
     console.error("Unexpected error:", error);
     return res.status(500).json({ success: false, message: "Internal server error" });
@@ -77,7 +58,23 @@ export const getContact = async (req: any, res: any) => {
 
   console.log("Getting contacts for user:", userId);
 
-  const sqlSearch = "SELECT * FROM contacts WHERE id = $1";
+  const sqlSearch = `
+SELECT 
+    u.id AS userid,
+    u.firstname,
+    u.lastname,
+    u.mobile,
+    u.profile_image,
+     u.about,
+     u.last_seen,
+     u.country,
+     c.contactid,
+    c.timestamp,
+    c.userid
+FROM contacts c
+JOIN users u ON c.contactid = u.id
+WHERE c.userid = $1;
+  `;
   const values = [userId];
 
   pool.query(sqlSearch, values, (err, result: any) => {

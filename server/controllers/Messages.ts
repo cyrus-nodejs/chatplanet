@@ -49,11 +49,39 @@ export const getRecentChat = async (req: any, res: any) => {
 
   try {
     const results = await pool.query(
-      'SELECT * FROM recentchat WHERE user_id = $1 ORDER BY timestamp ASC',
+      // 'SELECT * FROM recentchat WHERE user_id = $1 ORDER BY last_updated ASC',
+       `
+      SELECT DISTINCT ON (rc.user_id, rc.receiver_id)
+    rc.receiver_id,
+    rc.user_id,
+    rc.last_updated,
+    u.firstname AS receiver_firstname,
+    u.lastname AS receiver_lastname,
+    u.about AS receiver_about,
+    u.profile_image AS receiver_avatar,
+    m.message AS latest_message,
+    m.type AS latest_message_type,
+    m.media AS latest_message_media,
+    m.status AS latest_message_status,
+    m.timestamp AS latest_message_time
+  FROM recentchat rc
+  JOIN users u ON u.id = rc.receiver_id
+  LEFT JOIN LATERAL (
+    SELECT message, type, media, status, timestamp
+    FROM private_messages
+    WHERE 
+      (sender_id = rc.user_id AND receiver_id = rc.receiver_id)
+      OR 
+      (sender_id = rc.receiver_id AND receiver_id = rc.user_id)
+    ORDER BY timestamp DESC
+    LIMIT 1
+  ) m ON TRUE
+  WHERE rc.user_id = $1
+  ORDER BY rc.user_id, rc.receiver_id, rc.last_updated DESC;
+      `,
       [userid]
     );
 
-    console.log('recentchat:', results.rows);
 
     res.json({ success: true, message: 'success', recentchat: results.rows });
   } catch (err) {
