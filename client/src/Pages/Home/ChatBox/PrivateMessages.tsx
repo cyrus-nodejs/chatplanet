@@ -147,23 +147,29 @@ console.log(receiver)
     <section>
       <div className='flex flex-col h-screen'>
   <div  className='flex-1 overflow-y-auto px-4 space-x-4 bg-gray-100  dark:bg-gray-700' >
-          <div className="flex sticky  bg-white   dark:bg-gray-800 text-black dark:text-white    top-0 flex-row ">
-  <div className="basis-1/3">
-  <div className="flex ">
-  <div style={{ backgroundImage: `url(${receiver?.profile_image})` }} className="flex-none w-10 bg-cover bg-center    m-auto pt-5 h-10 bg-slate-200  dark:bg-gray-800 text-black dark:text-white rounded-full  flex">
-  </div>
-  <div className="flex-grow pt-4 text-1xl text-slate-500 font-medium h-16 px-3">{capitalizeFirstLetter(receiver?.firstname?.toLowerCase() )}</div>
-</div>
-  </div>
-  <div className="basis-1/3" ></div>
-  <div className="basis-1/3">
-  <div className="flex flex-row ">
-  <div className="basis-1/5 pt-3" ><i className='bx bx-search bx-sm text-slate-500 '></i></div>
-  <div onClick={togglePhoneCallModal} className="basis-1/5 pt-3"><i className='bx bxs-phone bx-sm text-slate-500 ' ></i></div>
-  <div  onClick={toggleVideoCallModal} className="basis-1/5 pt-3"><i className='bx bx-video bx-sm text-slate-500 '></i></div>
-  <div className="basis-1/5"><i className='bx bx-user bx-sm pt-3 text-slate-500 ' ></i></div>
-  <div className="basis-1/5"><i className='bx bx-dots-horizontal-rounded bx-sm pt-3 text-slate-500 ' ></i></div>
+   <div className="flex sticky  bg-white   dark:bg-gray-800 text-black dark:text-white    top-0 flex-row ">
+    <div className="basis-1/3">
+    <div className="flex ">
+    <div className='basis-2/2'>
+    <img width='50'  className='rounded-full border border-1' style={{ backgroundImage: `url(${receiver?.profile_image})` }} />
     </div>
+    <div className="flex-grow pt-4 text-1xl h-16 px-3">
+  {receiver && (<h5 className='text-slate-500 font-medium'> {capitalizeFirstLetter(receiver?.firstname?.toLowerCase() )}  </h5>) } 
+      
+    </div>
+  
+   
+  </div>
+    </div>
+    <div className="basis-1/3" ></div>
+    <div className="basis-1/3">
+    <div className="flex flex-row ">
+    <div className="basis-1/5 pt-3" ><i className='bx bx-search bx-sm text-slate-500 '></i></div>
+    <div onClick={togglePhoneCallModal} className="basis-1/5 pt-3"><i className='bx bxs-phone bx-sm text-slate-500 ' ></i></div>
+    <div  onClick={toggleVideoCallModal} className="basis-1/5 pt-3"><i className='bx bx-video bx-sm text-slate-500 '></i></div>
+    <div className="basis-1/5"><i className='bx bx-user bx-sm pt-3 text-slate-500 ' ></i></div>
+    <div className="basis-1/5"><i className='bx bx-dots-horizontal-rounded bx-sm pt-3 ' ></i></div>
+      </div>
   </div>
 
 </div>
