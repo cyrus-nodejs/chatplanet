@@ -129,7 +129,7 @@ await pool.query(
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none'
     });
 
@@ -200,7 +200,7 @@ await pool.query(
     // Step 5: Set cookie or return token
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
