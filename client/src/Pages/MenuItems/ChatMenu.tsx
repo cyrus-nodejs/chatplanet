@@ -78,12 +78,12 @@ console.log(recentChat)
    <div className='basis-2/12' >{<img width='100'  className='rounded-full border border-1' height='100' src={data?.receiver_avatar} /> }</div>
   <div className="w-48 mx-1 flex-none ">
   <div className="flex flex-col text-sm ">
-  <div className='font-medium text-slate-500'><span>{data?.receiver_name} {data.receiver_lastname}</span></div>
-  <div className='text-slate-300'><span className='text-xs'>{data?.latest_message} </span></div>
+  <div className='font-medium text-slate-500'><span className=' text-slate-500'>{data?.receiver_name} {data.receiver_lastname}</span></div>
+  <div className='text-slate-300'><span className='text-xs  text-slate-500'>{data?.latest_message} </span></div>
   
 </div>
   </div>
-  <div className="w-16 flex-none  mx-1 text-slate-500"><span className='text-xs'>{convertTimestampToTime(data?.latest_message_time)} </span></div>
+  <div className="w-16 flex-none  mx-1 text-slate-500"><span className='text-xs  text-slate-500'>{convertTimestampToTime(data?.latest_message_time)} </span></div>
 </div>
     </div>
  
