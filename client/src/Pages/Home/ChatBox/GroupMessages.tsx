@@ -168,7 +168,7 @@ useEffect(() => {
   </div>
  <div className=''>
 
-  {groupMessages && (<div className='space-y-2 pb-32'>
+  {groupMessages && (<div className='space-y-2 '>
             {groupMessages.map((msg:GROUPCHATMESSAGES, index:number) => (
            
             <div className='flex' >
