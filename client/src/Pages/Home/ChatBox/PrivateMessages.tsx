@@ -172,7 +172,7 @@ console.log(receiver)
       </div>
   </div>
 
-</div>
+
 
 
         <div className=''>
@@ -329,7 +329,7 @@ console.log(receiver)
   </div>
     </div>
    
-
+</div>
  
   </div>
   </section>
