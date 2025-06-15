@@ -3,9 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt'
 import { createAccessToken, forgotPasswordToken, create2FAtoken } from '../middlewares/jwt/jwt';
 import { contactEmail } from '../utils/nodemailer';
-
+import { Request, Response, NextFunction } from 'express'
 import speakeasy from 'speakeasy'
 import jwt from 'jsonwebtoken'
+import { USER } from '../src/types/@types';
+
+
+
 
 //Signup and save new User to database
 export const Register = async (req: any, res: any) => {
@@ -13,7 +17,20 @@ export const Register = async (req: any, res: any) => {
     const { email, firstname, lastname, password, mobile } = req.body;
 
     if (!email || !firstname || !lastname || !password || !mobile) {
-      return res.status(400).json({ success: false, message: 'All fields are required' });
+       res.status(400).json({ success: false, message: 'All fields are required' });
+         return;
+    }
+
+    // Check for existing user by email or mobile
+    const existingUser = await pool.query(
+      'SELECT email, mobile FROM users WHERE email = $1 OR mobile = $2',
+      [email, mobile]
+    );
+
+    if (existingUser.rows.length > 0) {
+      const user = existingUser.rows[0];
+      const conflictField = user.email === email ? 'email' : 'mobile';
+      res.status(409).json({ success: false, message: `User with this ${conflictField} already exists` });
     }
 
     const salt = await bcrypt.genSalt();
@@ -22,32 +39,42 @@ export const Register = async (req: any, res: any) => {
     const sqlInsert = `
       INSERT INTO users (id, firstname, lastname, email, mobile, password) 
       VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id
+    ING id
     `;
     const values = [uuidv4(), firstname, lastname, email, mobile, hashedPassword];
 
     const result = await pool.query(sqlInsert, values);
 
-    return res.status(201).json({ success: true, message: 'User registered successfully!', userId: result.rows[0].id });
+     res.status(201).json({
+      success: true,
+      message: 'User registered successfully!',
+      userId: result.rows[0].id,
+    });
   } catch (err: any) {
     console.error('Registration error:', err);
 
-    if (err.code === '23505') { // unique_violation
-      return res.status(409).json({ success: false, message: 'User with this email already exists' });
+    if (err.code === '23505') {
+       res.status(409).json({
+        success: false,
+        message: 'User with this email or mobile already exists',
+      });
     }
 
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+     res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
   }
 };
 
 // email password authentication
 
 
-export const Login = async (req: any, res: any) => {
+export const Login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ success: false, message: 'Email and password required' });
+   res.status(400).json({ success: false, message: 'Email and password required' });
   }
 
   try {
@@ -55,14 +82,14 @@ export const Login = async (req: any, res: any) => {
     const result = await pool.query(sqlSearch, [email]);
 
     if (result.rowCount === 0) {
-      return res.status(401).json({ success: false, message: 'Incorrect email or password' });
+     res.status(401).json({ success: false, message: 'Incorrect email or password' });
     }
 
     const user = result.rows[0];
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Incorrect email or password' });
+     res.status(401).json({ success: false, message: 'Incorrect email or password' });
     }
 
     // Generate MFA secret per user — should actually be stored per-user in DB for reuse
@@ -83,10 +110,10 @@ await pool.query(
       to: user.email,
       subject: '2FA CODE',
       html: `
-        <p>You requested a one-time code for authentication:</p>
+        <p>You anyed a one-time code for authentication:</p>
         <h2>${mfaCode}</h2>
         <p>This code is valid for 15 minutes.</p>
-        <p>If you didn’t request this, please secure your account.</p>
+        <p>If you didn’t any this, please secure your account.</p>
       `
     });
 
@@ -106,23 +133,26 @@ await pool.query(
       sameSite: 'none'
     });
 
-    return res.json({
+   res.json({
       success: true,
       message: `MFA code sent to ${user.email}`,
        token:token
     });
   } catch (err) {
     console.error('Login error:', err);
-    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+   res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 //Multifactor authentication
-    export const twoFactorLogin  = async (req:any, res:any, next:any) =>{
+    export const twoFactorLogin  = async (req:Request, res:Response, next:NextFunction) =>{
+
           const {  mfacode } = req.body;
-           const userId= req.user.id
+           const User =  req?.user as USER
+           const userId=User.id
            console.log(`this is ${req.user}`)
   if (!userId || !mfacode) {
-    return res.status(400).json({ success: false, message: 'MFA code and user ID are required' });
+   res.status(400).json({ success: false, message: 'MFA code and user ID are required' });
+     
   }
 
   try {
@@ -133,13 +163,13 @@ await pool.query(
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+     res.status(404).json({ success: false, message: 'User not found' });
     }
 
     const user = result.rows[0];
   
     if (!user.mfa_secret) {
-      return res.status(400).json({ success: false, message: 'MFA not initiated or expired' });
+     res.status(400).json({ success: false, message: 'MFA not initiated or expired' });
     }
 
     // Step 2: Verify the MFA code
@@ -153,7 +183,7 @@ await pool.query(
 
 
     if (!verified) {
-      return res.status(401).json({ success: false, message: 'Invalid MFA code' });
+     res.status(401).json({ success: false, message: 'Invalid MFA code' });
     }
 
     // Step 3: Clean up MFA secret 
@@ -175,17 +205,17 @@ await pool.query(
       maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
 
-    return res.json({ success: true, message: 'MFA verified. Login successful!', user:req.user, accessToken:accessToken });
-
+   res.json({ success: true, message: 'MFA verified. Login successful!', user:req.user, accessToken:accessToken });
+  return;
   } catch (err) {
     console.error('verifyMFA error:', err);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+   res.status(500).json({ success: false, message: 'Internal server error' });
   }
     }
 
    
     // Forgot password
-export const ForgotPassword = async (req: any, res: any) => {
+export const ForgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   try {
@@ -195,11 +225,11 @@ export const ForgotPassword = async (req: any, res: any) => {
     pool.query(sqlSearch, values, async (err, result:any) => {
       if (err) {
         console.error("SQL Search Error:", err);
-        return res.status(500).json({ success: false, message: "Server error. Try again later." });
+       res.status(500).json({ success: false, message: "Server error. Try again later." });
       }
 
       if (result?.length === 0) {
-        return res.status(404).json({ success: false, message: "No user found with this email." });
+       res.status(404).json({ success: false, message: "No user found with this email." });
       }
 
       const user = result[0];
@@ -209,7 +239,7 @@ export const ForgotPassword = async (req: any, res: any) => {
       pool.query(sqlUpdate, [token, user.id], async (err, updateResult) => {
         if (err) {
           console.error("Token Update Error:", err);
-          return res.status(500).json({ success: false, message: "Failed to set reset token." });
+         res.status(500).json({ success: false, message: "Failed to set reset token." });
         }
 
         // Send the reset email
@@ -220,38 +250,38 @@ export const ForgotPassword = async (req: any, res: any) => {
             subject: "Reset Your Password",
             html: `
               <p>Hello ${user.firstname},</p>
-              <p>We received a request to reset your password. Click the link below to reset it:</p>
+              <p>We received a any to reset your password. Click the link below to reset it:</p>
               <a href="${process.env.FRONTEND_URL}/resetpassword/${token}">Reset Password</a>
-              <p>If you didn’t request this, please ignore this email.</p>
+              <p>If you didn’t any this, please ignore this email.</p>
             `,
           });
 
-          return res.status(200).json({ success: true, message: "A password reset link has been sent to your email." });
+         res.status(200).json({ success: true, message: "A password reset link has been sent to your email." });
         } catch (emailErr) {
           console.error("Email Send Error:", emailErr);
-          return res.status(500).json({ success: false, message: "Failed to send reset email." });
+         res.status(500).json({ success: false, message: "Failed to send reset email." });
         }
       });
     });
   } catch (error) {
     console.error("Unexpected Error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error." });
+   res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
 // reset password
-export const ResetPassword = async (req: any, res: any) => {
+export const ResetPassword = async (req: Request, res: Response) => {
   const { password } = req.body;
   const { token } = req.params;
 
   if (!token) {
-    return res.status(400).json({ success: false, message: "Token is required" });
+   res.status(400).json({ success: false, message: "Token is required" });
   }
 
   try {
     // Verify JWT token
     jwt.verify(token, process.env.FORGOT_PASSWORD!, async (err: any, decoded: any) => {
       if (err) {
-        return res.status(401).json({ success: false, message: "Invalid or expired token!" });
+       res.status(401).json({ success: false, message: "Invalid or expired token!" });
       }
 
       // Find user by token
@@ -259,11 +289,11 @@ export const ResetPassword = async (req: any, res: any) => {
       pool.query(sqlSearch, [token], async (err, result: any) => {
         if (err) {
           console.error("SQL Search Error:", err);
-          return res.status(500).json({ success: false, message: "Server error." });
+         res.status(500).json({ success: false, message: "Server error." });
         }
 
         if (result.length === 0) {
-          return res.status(404).json({ success: false, message: "Token not found or already used." });
+         res.status(404).json({ success: false, message: "Token not found or already used." });
         }
 
         // Hash the new password
@@ -275,28 +305,29 @@ export const ResetPassword = async (req: any, res: any) => {
         pool.query(sqlUpdate, [hashedPassword, token], (err, updateResult) => {
           if (err) {
             console.error("Password Update Error:", err);
-            return res.status(500).json({ success: false, message: "Failed to update password." });
+           res.status(500).json({ success: false, message: "Failed to update password." });
           }
 
-          return res.status(200).json({ success: true, message: "Password has been reset successfully." });
+         res.status(200).json({ success: true, message: "Password has been reset successfully." });
         });
       });
     });
   } catch (error) {
     console.error("Unexpected Error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error." });
+   res.status(500).json({ success: false, message: "Internal server error." });
   }
 };
 
 //Retrieve authenticated User
-export const getAuthUser = async (req: any, res: any) => {
+export const getAuthUser = async (req: Request, res: Response) => {
   if (!req.user) {
-    return res.status(401).json({ success: false, message: "No user found" });
+   res.status(401).json({ success: false, message: "No user found" });
+     return;
   }
 
   console.log(`Authenticated user: ${req.user.firstname}`);
 
-  return res.status(200).json({
+ res.status(200).json({
     success: true,
     message: `Welcome ${req.user.firstname}`,
     user: req.user,
@@ -305,7 +336,7 @@ export const getAuthUser = async (req: any, res: any) => {
   //Retrieve authenticated User
 export const LogOut = async (req: any, res: any) => {
   if (!req.user) {
-    return res.status(401).json({ success: false, message: "No user found" });
+   res.status(401).json({ success: false, message: "No user found" });
   }
 
   res.clearCookie('accessToken', {
@@ -315,7 +346,8 @@ export const LogOut = async (req: any, res: any) => {
   });
 
   console.log('Cookie cleared');
-  return res.status(200).json({ success: true, message: 'Logout success!' });
+ res.status(200).json({ success: true, message: 'Logout success!' });
+   return;
 };
   
   

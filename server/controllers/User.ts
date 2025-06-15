@@ -1,14 +1,15 @@
 import { pool } from '../models/connectDb'
 import { Request, Response, NextFunction } from 'express'
-import mysql from 'mysql2';
+
 import { uploadToCloudinary } from '../utils/cloudinary';
 
 //Retrieve connected Users
-export const getOnlineUsers = async (req: any, res: any) => {
+export const getOnlineUsers = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(401).json({ success: false, message: 'Unauthorized: User not identified' });
+       res.status(401).json({ success: false, message: 'Unauthorized: User not identified' });
+        return;
     }
 
     console.log(`userid ${userId}`);
@@ -19,47 +20,59 @@ export const getOnlineUsers = async (req: any, res: any) => {
     const result = await pool.query(sqlSearch, values);
 
     if (result.rows.length === 0) {
-      return res.json({ success: true, message: 'No other users online', users: [] });
+       res.json({ success: true, message: 'No other users online', users: [] });
+        return;
     }
 
     console.log('onlineUsers found!');
     res.json({ success: true, message: 'Online users found!', users: result.rows });
+     return;
 
   } catch (error) {
     console.error('Error retrieving online users:', error);
     res.status(500).json({ success: false, message: 'Server error retrieving online users' });
+     return;
   }
 }
 
 
-export const getAllUsers = async (req: any, res: any) => {
+export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const sqlSearch = 'SELECT * FROM users';
     const result = await pool.query(sqlSearch);
 
     if (result.rows.length === 0) {
-      return res.json({ success: true, message: 'No users found.', users: [] });
+       res.json({ success: true, message: 'No users found.', users: [] });
+       return;
     }
 
     console.log('All users found!');
     res.json({ success: true, message: 'All users retrieved successfully.', users: result.rows });
+     return;
 
   } catch (error) {
     console.error('Error retrieving all users:', error);
     res.status(500).json({ success: false, message: 'Server error retrieving users' });
+     return;
   }
 };
 
 
 // Get user profile
-export const UpdateProfileImage = async (req: any, res: any) => {
+export const UpdateProfileImage = async (req: Request, res: Response) => {
   try {
-    if (!req.files || !req.files['image'] || !req.files['image'][0]) {
-      return res.json({ success: false, message: "No image file uploaded" });
-    }
+  
+ if (!req.files || Array.isArray(req.files)) {
+res.status(400).json({ success: false, message: "No image file uploaded" });
+  return;
+}
 
+if (!req.files['image'] || !req.files['image'][0]) {
+   res.status(400).json({ success: false, message: "No image file uploaded" });
+     return;
+}
     const imageFilePath = req.files['image'][0].path;
-    const userId = req.user.id;
+    const userId = req.user?.id;
 
     let imageData = {};
     if (imageFilePath) {
@@ -72,21 +85,24 @@ export const UpdateProfileImage = async (req: any, res: any) => {
     await pool.query(sqlUpdate, values);
 
     console.log('Profile image update successful');
-    return res.json({ success: true, message: "Profile Image Update successful!" });
+     res.json({ success: true, message: "Profile Image Update successful!" });
+      return;
   } catch (err) {
     console.error(err);
-    return res.json({ success: false, message: "Network error!" });
+  res.json({ success: false, message: "Network error!" });
+   return;
   }
 };
 
 
 //update user profile
-export const updateAbout = (req: any, res: any) => {
+export const updateAbout = (req: Request, res: Response) => {
   const { about } = req.body;
   const userid = req.user?.id;
 
   if (!userid) {
-    return res.json({ success: false, message: "No user found!" });
+     res.json({ success: false, message: "No user found!" });
+      return;
   }
 
   const sqlUpdate = `UPDATE users SET about = $1 WHERE id = $2`;
@@ -95,19 +111,22 @@ export const updateAbout = (req: any, res: any) => {
   pool.query(sqlUpdate, values, (err, result: any) => {
     if (err) {
       console.error(err);
-      return res.json({ success: false, message: "Update failed!" });
+     res.json({ success: false, message: "Update failed!" });
+      return;
     }
     console.log("Update success!");
-    return res.json({ success: true, message: "Profile update successful!" });
+     res.json({ success: true, message: "Profile update successful!" });
+      return;
   });
 };
 
-export const updateLocation = (req: any, res: any) => {
+export const updateLocation = (req: Request, res: Response) => {
   const { location } = req.body;
   const userid = req.user?.id;
 
   if (!userid) {
-    return res.status(401).json({ success: false, message: "No user found!" });
+    res.status(401).json({ success: false, message: "No user found!" });
+     return;
   }
 
   const sqlUpdate = `UPDATE users SET country = $1 WHERE id = $2`;
@@ -116,21 +135,24 @@ export const updateLocation = (req: any, res: any) => {
   pool.query(sqlUpdate, values, (err: any, result: any) => {
     if (err) {
       console.error('Update error:', err);
-      return res.status(500).json({ success: false, message: "Update failed!" });
+       res.status(500).json({ success: false, message: "Update failed!" });
+        return;
     }
     console.log('Update success!');
-    return res.json({ success: true, message: "Country updated successfully!" });
+     res.json({ success: true, message: "Country updated successfully!" });
+      return;
   });
 };
 
 
 
-export const updatePhoneContact = (req: any, res: any) => {
+export const updatePhoneContact = (req: Request, res: Response) => {
   const { mobile } = req.body;
   const userid = req.user?.id;
 
   if (!userid) {
-    return res.status(401).json({ success: false, message: "No user found!" });
+     res.status(401).json({ success: false, message: "No user found!" });
+      return;
   }
 
   const sqlUpdate = `UPDATE users SET mobile = $1 WHERE id = $2`;
@@ -139,9 +161,11 @@ export const updatePhoneContact = (req: any, res: any) => {
   pool.query(sqlUpdate, values, (err: any, result: any) => {
     if (err) {
       console.error('Update error:', err);
-      return res.status(500).json({ success: false, message: "Update failed!" });
+       res.status(500).json({ success: false, message: "Update failed!" });
+        return;
     }
     console.log('Update success!');
-    return res.json({ success: true, message: "Phone Contact Updated Successfully!" });
+     res.json({ success: true, message: "Phone Contact Updated Successfully!" });
+      return;
   });
 };

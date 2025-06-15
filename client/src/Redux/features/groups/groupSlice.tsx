@@ -5,6 +5,7 @@ import axios from 'axios'
 
 export interface groupState {
     groups: GROUPS[] 
+    searchresults:GROUPS[]
     groupmembers: GROUPMEMBERS[]
     message:string,
     status:  'idle' | 'pending' | 'succeeded' | 'failed'
@@ -14,6 +15,7 @@ export interface groupState {
   // Define the initial value for the slice state
 const initialState: groupState = {
    groups: [],
+   searchresults:[],
    groupmembers:[],
    status: 'idle' ,
    message:"",
@@ -65,7 +67,16 @@ export const fetchGroups = createAsyncThunk(
             return response.data
           });
     
+           //Get members from group
+      export const fetchSearchGroup = createAsyncThunk(
+        'group/fetchSearchGroup', async (data:{query:string}) => {
+          const {query} = data
+          const response= await axios.get(`${BASEURL}/search-contact?q=${query}`, { withCredentials: true })
+            console.log(response.data)
+            return response.data
+          });
         
+
             
 
      
@@ -130,6 +141,20 @@ export const groupSlice = createSlice({
             state.error = action.error.message;
           })
       
+            
+                  .addCase(fetchSearchGroup.pending, (state) => {
+                state.status = 'pending'
+                
+              })
+              .addCase(fetchSearchGroup.fulfilled, (state, action) => {
+                   state.searchresults= action.payload.searchresults
+                   state.message= action.payload.message
+                })
+                .addCase(fetchSearchGroup.rejected, (state, action) => {
+                  state.status = 'failed'
+                  state.error = action.error.message;
+                  
+                })
     
   },
 })
@@ -138,6 +163,7 @@ export const groupSlice = createSlice({
 export const getGroupMembers =(state:RootState) => state.group.groupmembers
 export const getAllGroup =(state:RootState) => state.group.groups
 export const getGroupMessage =(state:RootState) => state.group.message
+export const getSearchResults =(state:RootState) => state.group.searchresults
 
 // Export the slice reducer for use in the store configuration
 export default groupSlice.reducer;

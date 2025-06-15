@@ -1,34 +1,85 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-import { useContext, useEffect } from "react"
+
+import { useContext, useEffect, useState } from "react"
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 import { ChatTabsContext } from "../../Context/chatTabs"
 
 import { useAppDispatch, useAppSelector } from "../../Redux/app/hook"
-import { fetchContacts,  getAllContacts } from "../../Redux/features/contacts/contactSlice"
+import { fetchContacts, fetchSearchContact, getSearchResults,  getAllContacts } from "../../Redux/features/contacts/contactSlice"
  import { fetchAddRecentChat } from "../../Redux/features/messages/messageSlice"
 import { CONTACTS } from "../../utils/types"
 import { fetchAsyncUser } from "../../Redux/features/auth/authSlice"
  import { ChatContext } from "../../Context/chatContext"
  import { capitalizeFirstLetter } from "../../utils/helper"
 const Contact = () => {
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+  interface FormValues {
+    query: string;
+  }
+   
+
+  
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 let data:any
   const {toggleContactModal} = useContext(ChatTabsContext)
-   const { setReceiver} = useContext(ChatContext)
- const dispatch = useAppDispatch()
+   const {  dispatch} = useContext(ChatContext)
+ const reduxdispatch = useAppDispatch()
  const allContacts = useAppSelector(getAllContacts)
+ const searchresults =  useAppSelector(getSearchResults)
   
  useEffect(() => {
-  dispatch(fetchAsyncUser());
-}, [dispatch])
+  reduxdispatch(fetchAsyncUser());
+}, [reduxdispatch])
 
 
 
  useEffect(() => {
-  dispatch(fetchContacts());
-}, [dispatch])
+  reduxdispatch(fetchContacts());
+}, [reduxdispatch])
+
+
+
+  
+
+      
+  // const message = useAppSelector(getMessage)
+
+const [hidden, setHidden] = useState(true)
+  const [submitting, setSubmitting] = useState(false);
+
+
+  const hideSearchResult = () => {
+    setHidden(!hidden)
+  }
+
+
+  const validationSchema = Yup.object().shape({
+   query: Yup.string()
+    .min(1, 'Search term must be at least 1 characters')
+    .required('Search term is required'),
+   });
+
+  const handleSubmit = async (values: FormValues) => {
+    try {
+      setSubmitting(true);
+      reduxdispatch(fetchSearchContact(values))
+      // Set submitting to false after successful submission
+      setSubmitting(false);
+    } catch (error) {
+      // Handle form submission error
+      console.error(error);
+      setSubmitting(false);
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      query: ''
+    },
+    validationSchema,
+    onSubmit: handleSubmit,
+  });
 
 
   return (
@@ -47,16 +98,31 @@ let data:any
       </div>
 
 </div>
-<div className=' flex  w-full'>
-<i className='bx mt-5 bx-search text-slate-500'></i>
-<input className="   mt-4 bg-gray-300 placeholder:text-green  w-5/6 m-2 h-10"  />
+  <form  onSubmit={formik.handleSubmit}>
 
+<div className=' flex  w-full'>
+<input type='text'  name="query"  value={formik.values.query} onChange={formik.handleChange} className="   mt-4 bg-gray-300  placeholder:text-green  w-5/6 m-2 h-8"  />
+<button type="submit"  disabled={submitting}><i className='bx mt-5  bx-search text-slate-500'></i></button>
 </div>
+
+{formik.touched.query && formik.errors.query && (
+            <div className="error text-xs text-slate-500">{formik.errors.query}</div>
+          )}
+
+<ul onClick={hideSearchResult}>
+        {hidden  &&  (searchresults.map(user => (
+          <li className='text-slate-500' key={user.id} onClick={() => {dispatch({ type: 'SET_RECEIVER', payload: user }) }}>
+            <img src={user.profile_image} alt="" width="30" />
+            {user.firstname}  {user.lastname}
+          </li>
+        ))) }
+      </ul>
+     </form>
 <div className='h-64 overflow-hidden overflow-y-auto justify-between'>
 {allContacts && (<div>
   {allContacts?.map((receiver:CONTACTS, id:number) =>{
-          return (
-        <div key={id} onClick={() => {setReceiver(receiver); dispatch(fetchAddRecentChat(data={receiver})) }} className=" pt-3 text-left font-medium text-slate-500  w-full">{capitalizeFirstLetter(receiver.firstname.toLowerCase())} {capitalizeFirstLetter(receiver.lastname.toLowerCase())} </div>
+          return (  
+        <div key={id} onClick={() => {dispatch({ type: 'SET_RECEIVER', payload: receiver }); reduxdispatch(fetchAddRecentChat(data ={ receiver })) }} className=" pt-3 text-left font-medium text-slate-500  w-full">{capitalizeFirstLetter(receiver.firstname.toLowerCase())} {capitalizeFirstLetter(receiver.lastname.toLowerCase())} </div>
               )
        })}
 </div>)}

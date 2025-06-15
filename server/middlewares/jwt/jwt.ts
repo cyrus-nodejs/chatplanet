@@ -39,7 +39,7 @@ export const authenticateJWT = (req:any, res:any, next:any) => {
   console.log(`na this be ${accessToken}`)
 if (!accessToken){
   console.log('No  token found, authorization denied!')
-  return res.json({success:false,  message:""})
+  return res.json({success:false,  message:"No Acces Token, Please login!"})
 }else{
  // Verify the token using the secret key
  jwt.verify(accessToken, process.env.ACCESSTOKEN!, async (err:any, user:any) => {

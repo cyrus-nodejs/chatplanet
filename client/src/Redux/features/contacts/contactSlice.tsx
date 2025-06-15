@@ -5,6 +5,7 @@ import axios from 'axios'
 
 export interface contactState {
     contacts: CONTACTS[] 
+    searchresults:  CONTACTS[] 
     message:string,
     status:  'idle' | 'pending' | 'succeeded' | 'failed'
     error:string | null | undefined
@@ -13,6 +14,7 @@ export interface contactState {
   // Define the initial value for the slice state
 const initialState: contactState = {
    contacts: [],
+   searchresults:[],
    status: 'idle' ,
    message:"",
    error:null,
@@ -39,6 +41,16 @@ export const fetchContacts = createAsyncThunk(
         console.log(response.data)
         return response.data
       });
+
+      // Get contacts
+export const fetchSearchContact = createAsyncThunk(
+    'contact/fetchSearchContact ', async (data:{query:string}) => {
+      const {query} = data
+        const response= await axios.get(`${BASEURL}/search-contact?q=${query}`, { withCredentials: true })
+        console.log(response.data)
+        return response.data
+      });
+
 
     
             
@@ -80,6 +92,20 @@ export const contactSlice = createSlice({
           state.status = 'failed'
           state.error = action.error.message;
         })
+
+        .addCase(fetchSearchContact.pending, (state) => {
+      state.status = 'pending'
+      
+    })
+    .addCase(fetchSearchContact.fulfilled, (state, action) => {
+         state.searchresults= action.payload.searchresults
+         state.message= action.payload.message
+      })
+      .addCase(fetchSearchContact.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message;
+        
+      })
     
   },
 })
@@ -87,6 +113,7 @@ export const contactSlice = createSlice({
 
 export const getAllContacts =(state:RootState) => state.contact.contacts
 export const getContactMessage =(state:RootState) => state.contact.message
+export const getSearchResults =(state:RootState) => state.contact.searchresults
 
 // Export the slice reducer for use in the store configuration
 export default contactSlice.reducer;

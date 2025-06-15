@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-createGroup,addGroupMember,  getGroups, getGroupMember
+createGroup,addGroupMember,  getGroups, getGroupMember, searchGroup
  } from "../controllers/Groups";
 import { upload } from '../utils/storage';
  import { authenticateJWT } from '../middlewares/jwt/jwt';
@@ -16,6 +16,7 @@ router.post('/creategroup', authenticateJWT, upload.fields([{ name: 'image', max
 router.post('/add/groupmembers', authenticateJWT,   addGroupMember )
 router.get('/getgroups', authenticateJWT,   getGroups )
 router.get('/get/groupmembers', authenticateJWT,getGroupMember )
+router.get('/search-group', authenticateJWT, searchGroup)
 
 
  

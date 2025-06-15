@@ -1,21 +1,22 @@
 import { pool } from '../models/connectDb'
 import { Request, Response, NextFunction } from 'express'
-import mysql from 'mysql2';
-import { v4 as uuidv4 } from 'uuid';
-import { uploadToCloudinary } from '../utils/cloudinary';
 
 
 
-export const addRecentChat = async (req:any, res:any) => {
+
+
+export const addRecentChat = async (req:Request, res:Response) => {
 const { receiver_id } = req.body;
-  const userid = req.user?.id;
+  const userid = req.user?.id
 
   if (!userid) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+   res.status(401).json({ success: false, message: "Unauthorized" });
+   return;
   }
 
   if (!receiver_id) {
-    return res.status(400).json({ success: false, message: "receiver_id is required" });
+     res.status(400).json({ success: false, message: "receiver_id is required" });
+     return;
   }
 
   const sqlInsert = `
@@ -29,22 +30,24 @@ const { receiver_id } = req.body;
   try {
     const result = await pool.query(sqlInsert, [receiver_id, userid]);
 
-    console.log("recentchat upserted:", result.rows[0]);
+    // console.log("recentchat upserted:", result.rows[0]);
     res.json({ success: true, message: "recentchat added or updated", data: result.rows[0] });
   } catch (err: any) {
     console.error("Error adding/updating recentchat:", err.stack);
     res.status(500).json({ success: false, message: "Cannot add or update recentchat!" });
+     return;
   }
 
         }
 
     
 // API to get group chat history between users
-export const getRecentChat = async (req: any, res: any) => {
+export const getRecentChat = async (req: Request, res: Response) => {
   const userid = req.user?.id;
 
   if (!userid) {
-    return res.status(401).json({ success: false, message: 'Unauthorized: No user ID' });
+   res.status(401).json({ success: false, message: 'Unauthorized: No user ID' });
+    return;
   }
 
   try {
@@ -76,7 +79,7 @@ export const getRecentChat = async (req: any, res: any) => {
     ORDER BY timestamp DESC
     LIMIT 1
   ) m ON TRUE
-  WHERE rc.user_id = $1
+  WHERE rc.user_id = $1  AND rc.receiver_id != $1
   ORDER BY rc.user_id, rc.receiver_id, rc.last_updated DESC;
       `,
       [userid]
@@ -84,9 +87,11 @@ export const getRecentChat = async (req: any, res: any) => {
 
 
     res.json({ success: true, message: 'success', recentchat: results.rows });
+     return;
   } catch (err) {
     console.error('Database query error:', err);
     res.status(500).json({ success: false, message: 'Failed to fetch data!' });
+     return;
   }
 }
 

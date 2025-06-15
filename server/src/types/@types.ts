@@ -12,9 +12,17 @@ export interface IFile  {
 
 export interface USER {
     id: string,
-    firstname:string,
-    lastname:string,
+    firstname: string,
+    lastname: string,
     email: string,
+    // profile_image:string,
+    // about:string,
+    // mobile:string
+    // status:string,
+    // date_created:string, 
+    // last_seen:string,
+    // country:string,
+    // resettoken:string
 }
 
 

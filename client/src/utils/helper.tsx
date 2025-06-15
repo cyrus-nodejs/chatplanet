@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
  
      export  const convertTimestampToTime = (timestamp:string) => {
         const date = new Date(timestamp);
@@ -28,4 +29,16 @@
       export const capitalizeFirstLetter = (word:any) => {
         return word?.charAt(0).toUpperCase() + word?.slice(1);
       }
-      
+
+  function isValidDate(date: { getHours?: () => any; getMinutes?: () => any; getSeconds?: () => any; getTime?: any; }) {
+  return date instanceof Date && !isNaN(date.getTime());
+}
+export const formatTime = (date: { getHours: () => any; getMinutes: () => any; getSeconds: () => any; }) => {
+  if (!isValidDate(date)) return "Invalid Date";
+
+  const h = String(date.getHours()).padStart(2, '0');
+  const m = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+
+  return `${h}:${m}:${s}`;
+}

@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useContext } from 'react'
+import { useEffect, useState, useContext, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../Redux/app/hook'
 import { convertTimestampToTime, capitalizeFirstLetter } from '../../../utils/helper';
 import EmojiPicker from '../../../components/Emoji/emoji';
@@ -8,9 +8,10 @@ import { ChatTabsContext } from '../../../Context/chatTabs'
 import { getAllUsers, fetchAllUsers,  fetchAsyncUser, getAuthUser  } from '../../../Redux/features/auth/authSlice'
 import { GROUPCHATMESSAGES, USER } from '../../../utils/types'
 
+
 //  import { getOnlineUsers, fetchOnlineUsers } from '../../../Redux/features/auth/authSlice'
 const GroupMessages = () => {
-  
+    const messagesEndRef = useRef<HTMLDivElement>(null);
     const {  group,  dispatch,  groupMessages, currentGroupMessage,  sendGroupMessage } = useContext(ChatContext)
    const {togglePhoneCallModal, toggleVideoCallModal} = useContext(ChatTabsContext)
 
@@ -112,10 +113,12 @@ console.log(group)
     }
  
   };
+useEffect(() => {
+  messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+}, [groupMessages]);
 
 
-
-    console.log(allusers)
+    
      useEffect(() => {
     
       reduxDispatch(fetchAllUsers());
@@ -129,14 +132,19 @@ console.log(group)
       
       }, [reduxDispatch])
       
-  
+  console.log(group)
   return (
     <section>  
-        <div className="flex sticky     top-0 flex-row ">
+      
+
+  <div className='flex flex-col h-screen'>
+
+<div className='flex-1 overflow-y-auto px-4 space-x-4 bg-gray-100  dark:bg-gray-700'>
+    <div className="flex sticky  bg-white   dark:bg-gray-800 text-black dark:text-white    top-0 flex-row ">
     <div className="basis-1/3">
     <div className="flex ">
     <div className='basis-2/2'>
-    <img width='50'  className='rounded-full border border-1' height='50' src={group.group_image} />
+    <img width='50'  className='rounded-full border border-1' height='50' src={group?.group_image} />
     </div>
     <div className="flex-grow pt-4 text-1xl h-16 px-3">
   {group && (<h5 className='text-slate-500 font-medium'> {capitalizeFirstLetter(group?.name?.toLowerCase())}  </h5>) } 
@@ -149,19 +157,15 @@ console.log(group)
     <div className="basis-1/3" ></div>
     <div className="basis-1/3">
     <div className="flex flex-row ">
-    <div className="basis-1/5" ><i className='bx bx-search bx-sm'></i></div>
-    <div onClick={togglePhoneCallModal} className="basis-1/5"><i className='bx bxs-phone bx-sm' ></i></div>
-    <div  onClick={toggleVideoCallModal} className="basis-1/5"><i className='bx bx-video bx-sm'></i></div>
-    <div className="basis-1/5"><i className='bx bx-user bx-sm' ></i></div>
-    <div className="basis-1/5"><i className='bx bx-dots-horizontal-rounded bx-sm' ></i></div>
+    <div className="basis-1/5 pt-3" ><i className='bx bx-search bx-sm text-slate-500 '></i></div>
+    <div onClick={togglePhoneCallModal} className="basis-1/5 pt-3"><i className='bx bxs-phone bx-sm text-slate-500 ' ></i></div>
+    <div  onClick={toggleVideoCallModal} className="basis-1/5 pt-3"><i className='bx bx-video bx-sm text-slate-500 '></i></div>
+    <div className="basis-1/5"><i className='bx bx-user bx-sm pt-3 text-slate-500 ' ></i></div>
+    <div className="basis-1/5"><i className='bx bx-dots-horizontal-rounded bx-sm pt-3 ' ></i></div>
       </div>
     </div>
   
   </div>
-
-  <div className='flex flex-col h-screen'>
-
-<div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100  dark:bg-gray-700'>
  <div className=''>
 
   {groupMessages && (<div className='space-y-2 pb-32'>
@@ -169,14 +173,14 @@ console.log(group)
            
             <div className='flex' >
             {allusers  && (    <div key={index}   className={` p-2 w-full  flex-none  rounded-lg ${
-               msg.user_id? "bg-violet-200 dark:bg-violet-100border-1 font-medium  " : "bg-violet-400 dark:bg-violet-400  "
+               msg.user_id? "bg-violet-200  dark:bg-violet-400 border-1 font-medium  " : "bg-violet-400 dark:bg-violet-400  "
              }`}>{
     allusers.map((user:USER) => (
      <div className=' flex '>
        {/* <div className='flex-none h-10 w-10' key={index}>{msg.sender_id === user?.id && (<img height='50'  width='50' className=' rounded-full bg-cover '  src={user?.profile_image} /> )}</div>  */}
       <div className='flex-auto '>
       <div className=''>
-       <div className='' >{msg.user_id === user?.id && (<span className=''>{msg.message}</span> )}  </div>
+       <div className='' >{msg.user_id === user?.id && (<span className='text-base italic  dark:text-violet-800 font-medium'>{msg.message}</span> )}  </div>
        <div className='' >{msg.user_id === user?.id && (msg.media && <img src={msg.media} height='100' width='100' /> )}  </div>
       
        <div className='w-15' >{msg.user_id === user?.id && (msg.files && (
@@ -199,14 +203,14 @@ console.log(group)
  
        <div className=' mr-2'>{msg.user_id === user?.id && (<span className='text-xs font-light '><i className='bx bx-time'></i>{convertTimestampToTime(msg.timestamp)}</span> )}  </div>
        </div>
-       <div>{msg.user_id === user?.id && (<span className='text-md font-light text-slate-800'>{user.firstname}</span> )}  </div>
+       <div>{msg.user_id === user?.id && (<span className='text-xs font-normal text-slate-800'>{capitalizeFirstLetter(user.firstname)} {capitalizeFirstLetter(user.lastname)}</span> )}  </div>
        
        </div>
       </div>
     ))
     
     }</div>)}
-   
+      <div ref={messagesEndRef} />
             </div>
            
                              ))} 
@@ -234,7 +238,7 @@ console.log(group)
           htmlFor="file-upload"
           className="cursor-pointer   bg-violet-600 text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300 "
         >
-            <i className='bx bx-file  bx-md'></i>
+            <i className='bx bx-file text-white  bx-md'></i>
         </label>
         {filePreview && (
         <div  className="absolute  bottom-full mb-2  group-hover:block  text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">
@@ -265,7 +269,7 @@ console.log(group)
           id="file-upload"
           type="file"
           onChange={handleFileChange} 
-          className="hidden"
+          className="hidden text-white"
           accept="application/pdf"
         />
 
@@ -279,7 +283,7 @@ console.log(group)
         htmlFor="image-upload"
         className="cursor-pointer   bg-violet-600 text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300"
       >
-          <i className='bx bx-image bx-md'></i>
+          <i className='bx bx-image bx-md text-white'></i>
         <input
           type="file"
           id="image-upload"
@@ -306,7 +310,7 @@ console.log(group)
      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Image</div>
      </div>
   <div className='relative group m-2'>    
-    {authUser && (<button className='  rounded-md' type='submit' onClick={() => sendGroupMessage(group)}><i className='bx bx-play text-white  bg-violet-600 bx-md' ></i></button>)}
+    {authUser && (<button className='  rounded-md' type='submit' onClick={() => sendGroupMessage()}><i className='bx bx-play text-white  bg-violet-600 bx-md' ></i></button>)}
     <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Send </div>
     </div>
   </div>

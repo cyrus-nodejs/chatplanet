@@ -1,17 +1,22 @@
 import { pool } from '../models/connectDb'
 import { v4 as uuidv4 } from 'uuid';
 import { uploadToCloudinary } from '../utils/cloudinary';
-
+import { Response, Request, NextFunction } from 'express'
 
 // Create Group by User
 export const createGroup = async (req: any, res: any) => {
   const { name, description } = req.body;
-  const userid = req.user.id;
+  const userid = req.user?.id;
 
-  if (!req.files || !req.files['image'] || !req.files['image'][0]) {
-    return res.status(400).json({ success: false, message: "No image file uploaded" });
-  }
+ if (!req.files || Array.isArray(req.files)) {
+res.status(400).json({ success: false, message: "No image file uploaded" });
+  return;
+}
 
+if (!req.files['image'] || !req.files['image'][0]) {
+   res.status(400).json({ success: false, message: "No image file uploaded" });
+     return;
+}
   try {
     const imagePath = req.files['image'][0].path;
     const uploadResult :any= await uploadToCloudinary(imagePath, 'chatplanetassets');
@@ -27,7 +32,7 @@ export const createGroup = async (req: any, res: any) => {
 
     await pool.query(sql, values);
 
-    return res.status(201).json({
+     res.status(201).json({
       success: true,
       message: "Group created successfully",
       group: {
@@ -40,7 +45,7 @@ export const createGroup = async (req: any, res: any) => {
     });
   } catch (err) {
     console.error("Error creating group:", err);
-    return res.status(500).json({ success: false, message: "Internal server error" });
+     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -59,27 +64,31 @@ export const addGroupMember = async (req:any, res:any) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(200).json({ message: 'User is already in the group.' });
+       res.status(200).json({ message: 'User is already in the group.' });
+         return;
     } else {
-      return res.status(201).json({ message: 'User added to group.' });
+      res.status(201).json({ message: 'User added to group.' });
+        return;
     }
 
   } catch (error) {
     console.error('Error inserting group member:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+     res.status(500).json({ error: 'Internal server error' });
+       return;
   }
               }
 
 
 // Retrieve group
-export const getGroups = async (req: any, res: any) => {
+export const getGroups = async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
-        return res.status(401).json({
+         res.status(401).json({
             success: false,
             message: 'Unauthorized: No user ID provided',
         });
+          return;
     }
 
     console.log("Fetching groups for user:", userId);
@@ -91,18 +100,20 @@ export const getGroups = async (req: any, res: any) => {
 
         console.log("Groups retrieved:", result.rows);
 
-        return res.status(200).json({
+         res.status(200).json({
             success: true,
             message: "Groups retrieved successfully",
             groups: result.rows,
         });
+          return;
     } catch (err) {
         console.error("Error retrieving groups:", err);
 
-        return res.status(500).json({
+         res.status(500).json({
             success: false,
             message: "Error retrieving groups",
         });
+          return;
     }
 };
 
@@ -110,10 +121,11 @@ export const getGroupMember = async (req: any, res: any) => {
     const userId = req.user?.id;
 
     if (!userId) {
-        return res.status(401).json({
+        res.status(401).json({
             success: false,
             message: 'Unauthorized: No user ID provided',
         });
+          return;
     }
 
     console.log("Fetching group members for user:", userId);
@@ -126,17 +138,38 @@ export const getGroupMember = async (req: any, res: any) => {
 
         console.log("Group members retrieved:", result.rows);
 
-        return res.status(200).json({
+         res.status(200).json({
             success: true,
             message: "Group members fetched successfully!",
             groupmembers: result.rows,
         });
+          return;
     } catch (err) {
         console.error("Error fetching group members:", err);
 
-        return res.status(500).json({
+        res.status(500).json({
             success: false,
             message: "Error fetching group members",
         });
+          return;
     }
 };
+
+
+export const searchGroup = async (req: any, res: any) => {
+    const { q } = req.query;
+  try {
+    const result = await pool.query(
+      `SELECT  * FROM groupchat
+       WHERE name ILIKE $1 `,
+      [`%${q}%`]
+    );
+   res.json({ success: true, searchresults:result.rows});
+     return;
+  } catch (err:any) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+      return;
+  }
+
+}

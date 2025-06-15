@@ -58,7 +58,6 @@ export interface USER {
   
     
 export interface CHATMESSAGES  {
-  id:string,
   sender_id:  string | undefined,
   receiver_id: string,
   message: string,
@@ -67,6 +66,18 @@ export interface CHATMESSAGES  {
    type: string,
 status:string,
    timestamp: string,
+
+}
+  
+    
+export interface SENDMESSAGE  {
+  
+  sender_id:  string | undefined,
+  receiver_id: string,
+  message: string,
+  media:string,
+  files:string,
+
 
 }
 
@@ -137,63 +148,71 @@ export interface SENDMESSAGE{
   media:string,
   files:string
 }
+
 export interface State {
-  messages: CHATMESSAGES[],
-   groupMessages: GROUPCHATMESSAGES[], 
-   currentMessage:string,
-    currentGroupMessage:string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    currentFile:any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    currentMedia:any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    currentGroupFile:any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    currentGroupMedia:any
+  messages: CHATMESSAGES[]  ;
+  currentMessage: string;
+  currentTyping: boolean;
+  groupMessages: GROUPCHATMESSAGES[]  ;
+  currentGroupMessage: string;
+  currentGroupTyping: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  currentMedia: any; // Or File | null if you're using media
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  currentFile: any;  // Or File | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  currentGroupMedia: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  currentGroupFile: any;
+  onlineUsers: USER[];
+  group: GROUPS ;
+  receiver: CONTACTS  ;
 }
 
-
 export type Action =
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
-| { type: 'SET_CURRENTGROUP_FILE'; payload: any }
- 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- | { type: 'SET_CURRENTGROUP_MEDIA'; payload: any    }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-| { type: 'SET_CURRENTFILE'; payload: any }
- 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- | { type: 'SET_CURRENTMEDIA'; payload: any    }
-  | { type: 'SET_CURRENTMESSAGE'; payload: string  }
+ | { type: 'SET_CURRENT_TYPING'; payload: boolean }
+  | { type: 'SET_CURRENT_GROUPTYPING'; payload: boolean }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  | { type: 'SEND_MESSAGE'; payload: any}
+  | { type: 'SET_CURRENTGROUP_MEDIA'; payload: any } // Type as needed
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | { type: 'SET_CURRENTGROUP_FILE'; payload: any }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | { type: 'SET_CURRENTMEDIA'; payload: any }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | { type: 'SET_CURRENTFILE'; payload: any }
+  | { type: 'SET_CURRENTMESSAGE'; payload: string }
+  | { type: 'SEND_MESSAGE'; payload:   CHATMESSAGES}
   | { type: 'RECEIVE_MESSAGE'; payload: CHATMESSAGES }
   | { type: 'RECEIVE_MESSAGEHISTORY'; payload: CHATMESSAGES[] }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  | { type: 'SEND_GROUPMESSAGE'; payload: any }
-  | { type: 'SET_CURRENTGROUP_MESSAGE'; payload: string  }
-   |{ type: 'RECEIVE_GROUPMESSAGE'; payload:GROUPCHATMESSAGES }
-   |{ type: 'RECEIVE_GROUPMESSAGE_HISTORY'; payload:GROUPCHATMESSAGES[] }
+  | { type: 'SET_CURRENTGROUP_MESSAGE'; payload: string }
+  | { type: 'SEND_GROUPMESSAGE'; payload:  GROUPCHATMESSAGES  }
+  | { type: 'RECEIVE_GROUPMESSAGE'; payload: GROUPCHATMESSAGES }
+  | { type: 'RECEIVE_GROUPMESSAGE_HISTORY'; payload: GROUPCHATMESSAGES[] }
+  | { type: 'SET_RECEIVER'; payload: CONTACTS }
+  | { type: 'SET_GROUP'; payload: GROUPS  }
+  | { type: 'SET_ONLINE_USERS'; payload: USER[] };
   
 
 export type chatType = {
-  receiver:CONTACTS
-  group:GROUPS
-  sendPrivateMessage:(arg0: CONTACTS) => void
-  sendGroupMessage:(arg0: GROUPS) => void
-  setReceiver:React.Dispatch<React.SetStateAction<CONTACTS>>
-  setGroup:React.Dispatch<React.SetStateAction<GROUPS>>
+  receiver:CONTACTS | null
+  group:GROUPS | null
+  sendPrivateMessage:() => void
+  sendGroupMessage:() => void
   groupMessages:GROUPCHATMESSAGES[]
   currentGroupMessage:string
   messages:CHATMESSAGES[]
   currentMessage:string
    currentMedia:File
    currentFile:File
+   currentTyping:boolean
+   currentGroupTyping:boolean
    currentGroupMedia:File
    currentGroupFile:File
   state:State
   dispatch: React.Dispatch<Action>
   socket:MutableRefObject<void | Socket | null>
+
+  
 
 }
   
