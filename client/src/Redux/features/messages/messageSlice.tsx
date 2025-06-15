@@ -45,7 +45,7 @@ console.log(BASEURL)
               export const fetchAddRecentChat = createAsyncThunk(
                 'message/fetchAddRecentChat',  async (data:{receiver:CONTACTS}) => {
                   const {receiver} = data
-                  const receiver_id = receiver.userid
+                  const receiver_id = receiver.contactid
                     console.log(data)
                     const response= await axios.post(`${BASEURL}/add/recentchat`, {receiver_id},{ withCredentials: true })
                     console.log(response.data)

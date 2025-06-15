@@ -156,7 +156,7 @@ export const getGroupMember = async (req: any, res: any) => {
 };
 
 
-export const searchGroup = async (req: any, res: any) => {
+export const searchGroup = async (req: Request, res: Response) => {
     const { q } = req.query;
   try {
     const result = await pool.query(

@@ -141,7 +141,7 @@ if (socket.current){
 </div> */}
 
 <div  className="bg-cover bg-center  rounded-full  w-32 h-32 bg-slate-400 m-auto"
-  style={{ backgroundImage: `url(${receiver.profile_image})` }}>
+  style={{ backgroundImage: `url(${receiver?.profile_image})` }}>
   
 </div>
 

@@ -12,16 +12,19 @@ import { CONTACTS } from "../../utils/types"
 import { fetchAsyncUser } from "../../Redux/features/auth/authSlice"
  import { ChatContext } from "../../Context/chatContext"
  import { capitalizeFirstLetter } from "../../utils/helper"
+
 const Contact = () => {
 
   interface FormValues {
     query: string;
   }
    
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   let data: any;
+   console.log(data)
 
-  
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-let data:any
+
+
   const {toggleContactModal} = useContext(ChatTabsContext)
    const {  dispatch} = useContext(ChatContext)
  const reduxdispatch = useAppDispatch()
