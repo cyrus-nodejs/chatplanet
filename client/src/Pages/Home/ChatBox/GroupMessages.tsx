@@ -144,6 +144,7 @@ useEffect(() => {
     <div className="basis-1/3">
     <div className="flex ">
     <div style={{ backgroundImage: `url(${group?.group_image})` }} className='basis-2/2'>
+    <img width='70'  className='rounded-full border border-1' height='50' src={group?.group_image} />
     </div>
     <div className="flex-grow pt-4 text-1xl h-16 px-3">
   {group && (<h5 className='text-slate-500 font-medium'> {capitalizeFirstLetter(group?.name?.toLowerCase())}  </h5>) } 
