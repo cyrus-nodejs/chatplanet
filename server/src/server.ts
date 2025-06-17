@@ -13,7 +13,8 @@ import { createServer } from "http";
 import cors from "cors"
 import { authenticateJWT } from '../middlewares/jwt/jwt';
 import cookieParser from 'cookie-parser';
-
+ import cron from 'node-cron';
+import axios from 'axios';
 
 
 dotenv.config()
@@ -36,14 +37,31 @@ app.use(express.urlencoded({ extended: true }));
  app.use(bodyParser.json({ limit: "100mb"}));
  app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 
+
+
+
+
+
+cron.schedule('*/5 * * * *', async () => {
+  try {
+    const url = process.env.SERVER_URL!;
+    await axios.get(url);
+    console.log('Ping sent to:', url);
+  } catch (err) {
+    console.error('Ping failed', err);
+  }
+});
  // Cors configuration for server  Local host & web hosting services
 export const corsOptions = {
-  //  origin: process.env!.FRONTEND_URL2,
    origin: process.env!.FRONTEND_URL,
  credentials: true, 
  optionSuccessStatus: 200,
  methods: ['GET', 'PUT', 'POST', 'DELETE']
 }
+
+
+
+
 
 // Apply CORS middleware
 app.use(cors(corsOptions));

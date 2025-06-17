@@ -198,6 +198,7 @@ await pool.query(
     });
     console.log('This is', accessToken)
     // Step 5: Set cookie or return token
+    
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: true,
