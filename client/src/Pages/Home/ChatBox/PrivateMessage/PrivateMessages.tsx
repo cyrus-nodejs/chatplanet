@@ -181,13 +181,14 @@ console.log(receiver)
            {messages?.map((msg:CHATMESSAGES) => (
           
             <div
+            key={msg.timestamp}
             className={`max-w-xs p-3 rounded-lg ${
               msg.sender_id === authUser?.id
                 ? 'ml-auto bg-slateBlue text-white my-2 rounded-br-none bubble-user  '
                 : 'mr-auto bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-white my-2 rounded-bl-none bubble-bot'
             }`}
           >
-            <div>
+            <div className='sm: w-40rem  md:48rem lg:64rem xl:80rem 2xl:96rem' >
             <p className='italic'>{msg.message}</p>
          
               <p><span className='text-xs font-light '><i className='bx bx-time'></i>{convertTimestampToTime(msg.timestamp)}</span></p>

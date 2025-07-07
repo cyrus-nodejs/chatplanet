@@ -44,10 +44,10 @@ console.log(recentChat)
      
       
       {onlineusers && (<div className="flex   flex-row ">
-  {onlineusers.map((user:USER, id:number) =>{
+  {onlineusers.map((user:USER, ) =>{
           return (
     
-        <div key={id} className="flex justify-center items-center">
+        <div key={user.id} className="flex justify-center items-center">
         <div className="w-24 h-24 overflow-hidden rounded-full border-1">
           <img
             className="w-full h-full object-cover "

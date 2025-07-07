@@ -170,7 +170,7 @@ useEffect(() => {
     </div>
   
   </div>
- <div className='flex-1 overflow-y-auto px-4 space-x-4 bg-gray-100  dark:bg-gray-700 '>
+ <div className='flex-1 overflow-y-auto px-4 space-x-4 bg-gray-100  dark:bg-gray-800 '>
 
   {groupMessages && (<div className=''>
             {groupMessages.map((msg:GROUPCHATMESSAGES, ) => (
@@ -178,13 +178,14 @@ useEffect(() => {
             
      
             <div
+            key={msg.timestamp}
             className={`max-w-xs p-3 rounded-lg ${
               msg.user_id === authUser?.id
-                ? 'ml-auto bg-slateBlue text-white rounded-br-none bubble-user '
-                : 'mr-auto bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-white my-3 rounded-bl-none bubble-bot'
+                ? 'ml-auto bg-slateBlue text-white rounded-br-none bubble-user sm: w-32  md:w-80 lg:w-80 xl:w-96'
+                : 'mr-auto bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-white my-3 rounded-bl-none bubble-bot sm: w-32  md:w-80 lg:w-80 xl:w-96'
             }`}
           >
-            <div>
+            <div className='  '>
             <p className='italic'>{msg.message}</p>
          
               <p><span className='text-xs font-light '><i className='bx bx-time'></i>{convertTimestampToTime(msg.timestamp)}</span></p>
@@ -202,7 +203,7 @@ useEffect(() => {
    </div>
       
   
-   <div className='flex flex-row sticky  bg-slate-100  dark:bg-gray-900  bottom-0'>
+   <div className='flex flex-row sticky  bg-slate-100  dark:bg-gray-800  bottom-0'>
          <div className='  basis-2/3 '> 
           <input value={currentGroupMessage} onChange={(e) => dispatch({ type: 'SET_CURRENTGROUP_MESSAGE', payload: e.target.value })}  className=" w-full h-10 rounded-md py-2 m-3 focus:outline-none  focus:ring-purple-600 focus:border-transparent focus: placeholder-gray-500   bg-gray-200 dark:bg-gray-700 dark:text-white" placeholder="Enter Message"/>
          </div>
