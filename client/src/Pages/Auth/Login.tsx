@@ -80,16 +80,16 @@ const Login = () => {
           <Navigate to="/" replace={true} />
         )}
               <div className="m-auto p-auto w-96">
-              <p className="text-2xl  text-center mb-3 font-semibold">ChatPlanet</p>
-            <p className="text-center pb-5">Sign in to continue ChatPlanet</p>
+              <p className="text-2xl text-gunMetal  text-center mb-3 font-semibold">ChatPlanet</p>
+            <p className="text-center  text-gunMetal pb-5">Sign in to continue ChatPlanet</p>
             <form className='bg-white p-6' onSubmit={formik.handleSubmit}>
               
             <div className="input-group border rounded bg-slate-50 max-w-sm">
   <span className="input-group-text">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-envelope w-1/6 px-6 bx-xs '></i></span>
+    <span className="icon-[tabler--user] text-base-content/80 size-5  text-gunMetal"><i className='bx bx-envelope w-1/6 px-6 bx-xs  text-gunMetal '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Email</label>
-  <input   value={formik.values.email} onChange={formik.handleChange}  name="email"   type="email" placeholder="Email"   className="input grow input focus:outline-none h-12 bg-white w-5/6"  id="leadingIconDefault" />
+  <input   value={formik.values.email} onChange={formik.handleChange}  name="email"   type="email" placeholder="Email"   className=" text-gunMetal grow input focus:outline-none h-12 bg-white w-5/6"  id="leadingIconDefault" />
 </div>
     
       {formik.touched.email && formik.errors.email && (
@@ -99,10 +99,10 @@ const Login = () => {
       <br />
       <div className="input-group border rounded bg-slate-50 max-w-sm">
   <span className="input-group-text">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-lock-alt w-1/6 px-6 bx-xs '></i></span>
+    <span className="icon-[tabler--user]  text-gunMetal text-base-content/80 size-5"><i className='bx bx-lock-alt w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Password</label>
-  <input   value={formik.values.password}  onChange={formik.handleChange}  name="password"     type="password" placeholder="Password"   className="input input focus:outline-none   h-12 bg-white  grow w-5/6"  id="leadingIconDefault" />
+  <input   value={formik.values.password}  onChange={formik.handleChange}  name="password"     type="password" placeholder="Password"   className=" text-gunMetal input focus:outline-none   h-12 bg-white  grow w-5/6"  id="leadingIconDefault" />
 </div>
 
       {formik.touched.password && formik.errors.password && (
@@ -122,7 +122,7 @@ const Login = () => {
           <div className="flex justify-between ...">
   <div><a href="/forgotpassword" className='text-violet-500'>Forgot password?</a></div>
 
-  <div> Not registered?  <a href="/register" className='text-violet-500' >Sign up</a></div>
+  <div className=' text-gunMetal'> Not registered?  <a href="/register" className='text-violet-500' >Sign up</a></div>
 </div>
           <p className="text-violet-500  mt-2  text-center">{message}</p> 
                </form>

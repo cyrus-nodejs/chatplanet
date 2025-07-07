@@ -83,16 +83,16 @@ interface FormValues {
   
          
               <div className="m-auto p-auto w-96">
-              <p className="text-2xl  text-center mb-3 font-semibold">Verify Your Identity</p>
-            <p className="text-center pb-5">A verification code has been sent to your email. Enter the code to continue and be redirected.</p>
+              <p className="text-2xl text-gunMetal text-center mb-3 font-semibold">Verify Your Identity</p>
+            <p className="text-center text-gunMetal pb-5">A verification code has been sent to your email. Enter the code to continue and be redirected.</p>
             <form className='bg-white p-6' onSubmit={formik.handleSubmit}>
               
             <div className="input-group border rounded bg-slate-50 max-w-sm">
   <span className="input-group-text">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-envelope w-1/6 px-6 bx-xs '></i></span>
+    <span className="icon-[tabler--user] text-gunMetal text-base-content/80 size-5"><i className='bx bx-envelope w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault"> MFA code verification</label>
-  <input   value={formik.values.mfacode} onChange={formik.handleChange}  name="mfacode"   type="text" placeholder="Enter MFA code!"   className="input grow input focus:outline-none h-12 bg-white w-5/6"  id="leadingIconDefault" />
+  <input   value={formik.values.mfacode} onChange={formik.handleChange}  name="mfacode"   type="text" placeholder="Enter MFA code!"   className="text-gunMetal grow input focus:outline-none h-12 bg-white w-5/6"  id="leadingIconDefault" />
 </div>
     
       {formik.touched.mfacode && formik.errors.mfacode && (
@@ -106,7 +106,7 @@ interface FormValues {
              <button type="submit" disabled={submitting}  className="w-full text-white mt-4 rounded-md bg-purple-400 h-12"   >Verify MFA code</button>
                </div> 
   
-          <p className="text-danger mt-2 fs-5 text-center">{message}</p> 
+          <p className="text-gunMetal mt-2 fs-5 text-center">{message}</p> 
                </form>
   
          

@@ -53,20 +53,20 @@ const ForgotPassword = () => {
    
   
 <div   className="flex bg-slate-50  m-auto h-screen ">
-<div  className="m-auto p-auto w-96" >
+<div  className="m-auto  text-gunMetal p-auto w-96" >
          
                 
-  <p className="text-center text-dark fs-1 fw-normal">Forgot Your Password?
+  <p className="text-center  text-gunMetal text-dark fs-1 fw-normal">Forgot Your Password?
 No problem! We'll send you instructions on how to reset your password.
 
 </p>
   <form onSubmit={formik.handleSubmit}>
   <div className="input-group border rounded bg-slate-50 max-w-sm">
   <span className="input-group-text">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-envelope w-1/6 px-6 bx-xs '></i></span>
+    <span className="icon-[tabler--user] text-base-content/80 size-5  text-gunMetal"><i className='bx bx-envelope w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Email</label>
-  <input   value={formik.values.email} onChange={formik.handleChange}  name="email"   type="email" placeholder="Email"   className="input grow input focus:outline-none h-12 bg-white w-5/6"  id="leadingIconDefault" />
+  <input   value={formik.values.email} onChange={formik.handleChange}  name="email"   type="email" placeholder="Email"   className=" grow  text-gunMetal input focus:outline-none h-12 bg-white w-5/6"  id="leadingIconDefault" />
 </div>
     
       {formik.touched.email && formik.errors.email && (

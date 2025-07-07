@@ -72,16 +72,16 @@ interface FormValues {
 <div   className="d-inline-flex px-5 mx-5">
 <div >
          
-<p className="text-center text-dark fs-4 fw-normal">Reset your password.</p>           
-  <p className="text-center text-dark fs-5 fw-normal">Reset your password.
+<p className="text-center text-dark  text-gunMetal  normal">Reset your password.</p>           
+  <p className="text-center text-dark  text-gunMetal">Reset your password.
   Last step. Enter your password, and you are set. Thanks!</p>
   <form onSubmit={formik.handleSubmit}>
-      <input  required   value={formik.values.password}  onChange={formik.handleChange} style={{}} name="password"     type="password" placeholder="Password" />
+      <input  required   value={formik.values.password}  onChange={formik.handleChange} style={{}} name="password" className=' text-gunMetal'    type="password" placeholder="Password" />
       {formik.touched.password && formik.errors.password && (
             <div className="error">{formik.errors.password}</div>
           )}
       <br />
-      <input  required className="shadow-none"   value={formik.values.confirmPassword}  onChange={formik.handleChange} style={{}} name="confirmPassword"     type="password" placeholder="Confirm Password" />
+      <input  required className=" text-gunMetal"   value={formik.values.confirmPassword}  onChange={formik.handleChange} style={{}} name="confirmPassword"     type="password" placeholder="Confirm Password" />
        {formik.touched.confirmPassword && formik.errors.confirmPassword && (
             <div className="error">{formik.errors.confirmPassword}</div>
           )}

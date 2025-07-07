@@ -93,16 +93,16 @@ interface FormValues {
  <div className="mx-auto px-auto w-96 ">
 
                 
-  <h6 className=" text-xl text-center  font-semibold pb-1" >Register</h6>
-  <p className='text-center text-sm pb-1'>Get your ChatPlanet account now. </p>
+  <h6 className=" text-xl text-center  text-gunMetal font-semibold pb-1" >Register</h6>
+  <p className='text-center text-sm pb-1  text-gunMetal'>Get your ChatPlanet account now. </p>
 
   <form className='bg-white p-3' onSubmit={formik.handleSubmit}>
   <div className="input-group border max-w-sm  bg-slate-50 ">
   <span className="input-group-text">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-user w-1/6 px-6 bx-xs ' ></i></span>
+    <span className="icon-[tabler--user]  text-gunMetal text-base-content/80 size-5"><i className='bx bx-user w-1/6 px-6 bx-xs ' ></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Firstname</label>
-  <input   onChange={formik.handleChange} value={formik.values.firstname}   name="firstname"type="text"  placeholder="firstname"   className=" h-12 input focus:outline-none bg-white grow w-5/6"  id="leadingIconDefault" />
+  <input   onChange={formik.handleChange} value={formik.values.firstname}   name="firstname"type="text"  placeholder="firstname"   className=" h-12 input focus:outline-none  text-gunMetal bg-white grow w-5/6"  id="leadingIconDefault" />
 </div>
    
   {formik.touched.firstname && formik.errors.firstname && (
@@ -111,10 +111,10 @@ interface FormValues {
       <br /> 
       <div className="input-group border max-w-sm rounded bg-slate-50">
   <span className="input-group-text ">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-user-circle w-1/6 px-6 bx-xs '></i></span>
+    <span className="icon-[tabler--user]  text-gunMetal text-base-content/80 size-5"><i className='bx bx-user-circle w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Last Name</label>
-  <input onChange={formik.handleChange} value={formik.values.lastname}   name="lastname"   type="text"  placeholder="lastname"   className="input input focus:outline-none h-12 bg-white grow w-5/6"  id="leadingIconDefault" />
+  <input onChange={formik.handleChange} value={formik.values.lastname}   name="lastname"   type="text"  placeholder="lastname"   className=" input  text-gunMetal focus:outline-none h-12 bg-white grow w-5/6"  id="leadingIconDefault" />
 </div>
     
       {formik.touched.lastname && formik.errors.lastname && (
@@ -123,10 +123,10 @@ interface FormValues {
       <br />
       <div className="input-group border rounded bg-slate-50 max-w-sm">
   <span className="input-group-text">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bxs-phone w-1/6 px-6 bx-xs'></i></span>
+    <span className="icon-[tabler--user]  text-gunMetal text-base-content/80 size-5"><i className='bx bxs-phone w-1/6 px-6 bx-xs'></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Mobile</label>
-  <input   value={formik.values.mobile} onChange={formik.handleChange}  name="mobile"  placeholder="Phone number"    type="tel"   className="input grow input focus:outline-none h-12 bg-white w-5/6"  id="" />
+  <input   value={formik.values.mobile} onChange={formik.handleChange}  name="mobile"  placeholder="Phone number"    type="tel"   className=" text-gunMetal grow input focus:outline-none h-12 bg-white w-5/6"  id="" />
 </div>
     
       {formik.touched.email && formik.errors.mobile && (
@@ -136,10 +136,10 @@ interface FormValues {
       <br />
       <div className="input-group border rounded bg-slate-50 max-w-sm">
   <span className="input-group-text">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-envelope w-1/6 px-6 bx-xs '></i></span>
+    <span className="icon-[tabler--user]  text-gunMetal text-base-content/80 size-5"><i className='bx bx-envelope w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Email</label>
-  <input   value={formik.values.email} onChange={formik.handleChange}  name="email"   type="email" placeholder="Email"   className="input grow input focus:outline-none h-12 bg-white w-5/6"  id="leadingIconDefault" />
+  <input   value={formik.values.email} onChange={formik.handleChange}  name="email"   type="email" placeholder="Email"   className="grow input  text-gunMetal focus:outline-none h-12 bg-white w-5/6"  id="leadingIconDefault" />
 </div>
     
       {formik.touched.email && formik.errors.email && (
@@ -149,10 +149,10 @@ interface FormValues {
       <br />
       <div className="input-group border rounded bg-slate-50 max-w-sm">
   <span className="input-group-text">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bx-lock-alt w-1/6 px-6 bx-xs '></i></span>
+    <span className="icon-[tabler--user]  text-gunMetal text-base-content/80 size-5"><i className='bx bx-lock-alt w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Password</label>
-  <input   value={formik.values.password}  onChange={formik.handleChange}  name="password"     type="password" placeholder="Password"   className="input input focus:outline-none   h-12 bg-white  grow w-5/6"  id="leading" />
+  <input   value={formik.values.password}  onChange={formik.handleChange}  name="password"     type="password" placeholder="Password"   className=" text-gunMetal input focus:outline-none   h-12 bg-white  grow w-5/6"  id="leading" />
 </div>
 
       {formik.touched.password && formik.errors.password && (
@@ -161,10 +161,10 @@ interface FormValues {
       <br />
       <div className="input-group border max-w-sm rounded bg-slate-50">
   <span className="input-group-text ">
-    <span className="icon-[tabler--user] text-base-content/80 size-5"><i className='bx bxs-lock w-1/6 px-6 bx-xs '></i></span>
+    <span className="icon-[tabler--user]  text-gunMetal text-base-content/80 size-5"><i className='bx bxs-lock w-1/6 px-6 bx-xs '></i></span>
   </span>
   <label className="sr-only" htmlFor="leadingIconDefault">Confirm Password</label>
-  <input   value={formik.values.confirmPassword}  onChange={formik.handleChange}  name="confirmPassword"     type="password" placeholder="Confirm Password"   className="input focus:outline-none  grow w-5/6 h-12 bg-white"  id="leadingIconDefault" />
+  <input   value={formik.values.confirmPassword}  onChange={formik.handleChange}  name="confirmPassword"     type="password" placeholder="Confirm Password"   className="input focus:outline-none  text-gunMetal grow w-5/6 h-12 bg-white"  id="leadingIconDefault" />
 </div>
        
        {formik.touched.confirmPassword && formik.errors.confirmPassword && (
@@ -181,7 +181,7 @@ interface FormValues {
     
     </div>
     <div className="flex  justify-center mt-2">
-  <div><p className="fs-6 "> Already registered?  <a href="/login" className='text-violet-600'>  Please sign in</a></p></div>
+  <div><p className="fs-6  text-gunMetal"> Already registered?  <a href="/login" className='text-violet-600'>  Please sign in</a></p></div>
 
 </div>
     <p className="text-violet-500   text-center">{message}</p>  
