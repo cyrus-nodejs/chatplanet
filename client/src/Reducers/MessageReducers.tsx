@@ -17,12 +17,12 @@ const getSavedReceiver = (): any => {
 const getSavedGroup = (): any => {
   const savedGroup = localStorage.getItem("group");
   try {
-    return savedGroup && savedGroup !== "undefined"
+    return savedGroup  && savedGroup !== "undefined"
       ? JSON.parse(savedGroup)
-      : {};
+      :  {};
   } catch (e) {
     console.warn("Invalid JSON in localStorage for group", e);
-    return {};
+    return 'Chatplanet';
   }
 };
 export const initialState:State =  {

@@ -1,14 +1,14 @@
 import { useEffect,  useContext} from 'react'
-import { CHATMESSAGES, USER } from '../../../utils/types'
-import { useAppDispatch, useAppSelector } from '../../../Redux/app/hook'
+import { CHATMESSAGES, } from '../../../../utils/types'
+import { useAppDispatch, useAppSelector } from '../../../../Redux/app/hook'
 
 
-import { getAllUsers, fetchAllUsers,getAuthUser, fetchAsyncUser } from '../../../Redux/features/auth/authSlice'
+import { getAllUsers, fetchAllUsers,getAuthUser, fetchAsyncUser } from '../../../../Redux/features/auth/authSlice'
 // import { getPrivateMessages } from '../../../Redux/features/messages/messageSlice'
-import { convertTimestampToTime , capitalizeFirstLetter} from '../../../utils/helper'
-import EmojiPicker from '../../../components/Emoji/emoji';
-import { ChatContext } from '../../../Context/chatContext'
-import { ChatTabsContext } from '../../../Context/chatTabs'
+import { convertTimestampToTime , capitalizeFirstLetter} from '../../../../utils/helper'
+import EmojiPicker from '../../../../components/Emoji/emoji';
+import { ChatContext } from '../../../../Context/chatContext'
+import { ChatTabsContext } from '../../../../Context/chatTabs'
 import { useState } from 'react';
 
 import { useRef } from 'react';
@@ -32,7 +32,7 @@ const PrivateMessages = () => {
     const [error, setError] = useState('');
 
 
-    const myuser  = allusers?.filter(users=> users.id ===receiver?.userid)
+    // const myuser  = allusers?.filter(users=> users.id ===receiver?.userid)
 
   
 useEffect(() => {
@@ -140,20 +140,18 @@ console.log(receiver)
       
       }, [reduxDispatch])
      
-    console.log(myuser)
-      console.log(currentMessage)
-      console.log(messages)
+   
   return (
     <section>
-      <div className='flex flex-col h-screen'>
-  <div  className='flex-1 overflow-y-auto px-4 space-x-4 bg-gray-100  dark:bg-gray-700' >
+      <div className='flex bg-white flex-col h-screen '>
+
           <div className="flex sticky  bg-white   dark:bg-gray-800 text-black dark:text-white    top-0 flex-row ">
   
   <div className="basis-1/3">
 
   <div className="flex ">
   <div style={{ backgroundImage: `url(${receiver?.profile_image})` }} className="flex-none w-10 bg-cover bg-center    m-auto pt-5 h-10 bg-slate-200  dark:bg-gray-800 text-black dark:text-white rounded-full  flex"> </div>
-  <div className="flex-grow pt-4 text-1xl text-slate-500 font-medium h-16 px-3">{capitalizeFirstLetter(receiver?.firstname?.toLowerCase() )}</div>
+  <div className="flex-grow  pt-4 text-1xl text-slate-500 font-medium h-16 px-3">{capitalizeFirstLetter(receiver?.firstname?.toLowerCase() )}</div>
 </div>
 
   </div>
@@ -177,54 +175,29 @@ console.log(receiver)
 </div>
 
 
-        <div className=''>
+        <div className='flex-1 overflow-y-auto px-4 space-x-4 bg-gray-100  dark:bg-gray-700 '>
 
-         {messages && (<div className='space-y-2 '>
-           {messages?.map((msg:CHATMESSAGES, index:number) => (
+         {messages && (<div className=''>
+           {messages?.map((msg:CHATMESSAGES) => (
           
-           <div className='' >
-           {allusers  && (    <div key={index}   className={` p-2 w-full    rounded-lg ${
-              msg.sender_id === authUser?.id ? "bg-violet-100 dark:bg-violet-400 border-1 font-medium    " : "bg-violet-300 dark:bg-violet-500 text-white font-medium dark:text-white  "
-            }`}>{
-   allusers.map((user:USER) => (
-    <div className=' flex '>
-      {/* <div className='flex-none h-10 w-10' key={index}>{msg.sender_id === user?.id && (<img height='50'  width='50' className=' rounded-full bg-cover '  src={user?.profile_image} /> )}</div>  */}
-     <div className='flex-auto '>
-     <div className=''>
-      <div className='' >{msg.sender_id === user?.id && (<span className='text-base dark:text-green-800 italic font-medium'>{msg.message}</span> )}  </div>
-      <div className='' >{msg.sender_id === user?.id && (msg.media && <img src={msg.media} height='100' width='100' /> )}  </div>
-     
-      <div className='w-15' >{msg.sender_id === user?.id && (msg.files && (
-         <div className="flex flex-col h-40 items-start ">
-         <h5 className=" font-semibold ">Files</h5>
+            <div
+            className={`max-w-xs p-3 rounded-lg ${
+              msg.sender_id === authUser?.id
+                ? 'ml-auto bg-slateBlue text-white my-2 rounded-br-none bubble-user  '
+                : 'mr-auto bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-white my-2 rounded-bl-none bubble-bot'
+            }`}
+          >
+            <div>
+            <p className='italic'>{msg.message}</p>
          
-         {/* PDF viewer using iframe */}
-         <div className="">
-           <iframe
-             src={msg.files}
-             className="w-full h-32 border-2 border-gray-300 rounded-md"
-             title="Document Viewer"
-           ></iframe>
-         </div>
-   
-       </div>
-      )
-        
-       )}  </div>
-
-      <div className=' mr-2'>{msg.sender_id === user?.id && (<span className='text-xs font-light '><i className='bx bx-time'></i>{convertTimestampToTime(msg.timestamp)}</span> )}  </div>
-      </div>
-      <div>{msg.sender_id === user?.id && (<span className='text-xs font-normal text-magenta-900'>{capitalizeFirstLetter(user.firstname)} {capitalizeFirstLetter(user.lastname)}</span> )}  </div>
+              <p><span className='text-xs font-light '><i className='bx bx-time'></i>{convertTimestampToTime(msg.timestamp)}</span></p>
+             <p>{ msg.sender_id  === authUser?.id ? ( "Me" ):  capitalizeFirstLetter(receiver?.firstname)}</p>
+          </div>
       
-      </div>
-     </div>
-   )) }
- 
-   </div>)}
-     <div ref={messagesEndRef} />
-           </div>
+          </div>
           
-                            ))} 
+          ))} 
+               <div ref={messagesEndRef} />
          </div>)}
          </div>
 </div>
@@ -253,7 +226,7 @@ console.log(receiver)
           
           <label
           htmlFor="file-upload"
-          className="cursor-pointer   bg-violet-600 text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300 "
+          className="cursor-pointer   bg-slateBlue text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300 "
         >
             <i className='bx bx-file text-white  bx-md'></i>
         </label>
@@ -298,7 +271,7 @@ console.log(receiver)
   
      <label
         htmlFor="image-upload"
-        className="cursor-pointer   bg-violet-600 text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300"
+        className="cursor-pointer   bg-slateBlue text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300"
       >
           <i className='bx bx-image bx-md text-white'></i>
         <input
@@ -327,7 +300,7 @@ console.log(receiver)
      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Image</div>
      </div>
   <div className='relative group m-2'>    
-    {authUser && (<button className='  rounded-md' type='submit' onClick={() => sendPrivateMessage()}><i className='bx bx-play text-white  bg-violet-600 bx-md' ></i></button>)}
+    {authUser && (<button className='  rounded-md' type='submit' onClick={() => sendPrivateMessage()}><i className='bx bx-play text-white  bg-slateBlue bx-md' ></i></button>)}
     <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Send </div>
     </div>
   </div>
@@ -335,7 +308,7 @@ console.log(receiver)
    
 
      </div>
-  </div>
+
   </section>
   )
 }

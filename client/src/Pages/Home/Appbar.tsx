@@ -40,7 +40,7 @@ const Appbar = () => {
             onClick={() => setActiveTab(index)}
             className={`block w-full py-2 px-4 text-left text-sm font-semibold rounded-lg ${
               activeTab === index
-                ? "bg-violet-600  text-white "
+                ? "bg-slateBlue  text-white "
                 : " hover:bg-gray-200   "
             }`}
           >

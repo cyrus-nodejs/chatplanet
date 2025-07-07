@@ -79,7 +79,7 @@ useEffect(() => {
   <div className="text-left font-mono text-2xl text-slate-500">Groups</div>
   <div className='relative group'>
   <button
-        className="px-3 py-3 bg-violet-600 text-white rounded-md hover:bg-violet-800"
+        className="px-3 py-3 bg-slateBlue text-white rounded-md hover:bg-violet-800"
         onClick={toggleGroupModal}
       >
         <i className='bx bx-group bx-sm'></i>
@@ -118,7 +118,7 @@ useEffect(() => {
       
             <div className='relative group'>
              <button
-          className="relative rounded-md px-3 py-3 bg-violet-600 text-white  hover:bg-violet-500"
+          className="relative rounded-md px-3 py-3 bg-slateBlue text-white  hover:bg-violet-500"
           onClick={toggleAddContactToGroupModal}
         >
               <i className='bx bx-group bx-sm'></i>
@@ -132,7 +132,7 @@ useEffect(() => {
          
   )}
   </div>
-<h2 className='font-medium text-slate-500'>Other Groups</h2>
+<p className='font-medium text-slate-500'>Other Groups</p>
 <div className=' h-32 overflow-hidden px-2 overflow-y-auto'>
   
 {groupmembers?.map((user:GROUPMEMBERS) => (

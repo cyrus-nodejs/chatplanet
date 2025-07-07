@@ -12,13 +12,13 @@ const Languages = () => {
     <h5 className="text-slate-500">{t('welcome')}</h5>
     <p className='text-slate-500'>{t('hello')}</p>
 
-    <button onClick={() => changeLanguage('es')} className="bg-violet-600 text-white p-2 m-2">
+    <button onClick={() => changeLanguage('es')} className="bg-slateBlue text-white p-2 m-2">
       Español
     </button>
-    <button onClick={() => changeLanguage('fr')} className="bg-violet-600 text-white p-2 m-2">
+    <button onClick={() => changeLanguage('fr')} className="bg-slateBlue text-white p-2 m-2">
       Français
     </button>
-    <button onClick={() => changeLanguage('en')} className="bg-violet-600 text-white p-2 m-2">
+    <button onClick={() => changeLanguage('en')} className="bg-slateBlue text-white p-2 m-2">
       English
     </button>
   </div>

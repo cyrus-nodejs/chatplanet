@@ -29,7 +29,7 @@ const ChatBox = () => {
 
 
   return (
-    <div  className=" w-full h-screen flex-initial   overflow-hidden text-dark-400  border-1 pt-4   bg-slate-50  dark:bg-gray-900 text-black dark:text-white ">
+    <div  className=" w-full h-screen flex-initial   overflow-hidden text-dark-400  border-1    bg-slate-50  dark:bg-gray-900 text-black dark:text-white ">
   
     <div className='relative  '>
     {tabData[activeTab].content2}

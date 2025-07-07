@@ -6,7 +6,7 @@ import EmojiPicker from '../../../components/Emoji/emoji';
 import { ChatContext } from '../../../Context/chatContext'
 import { ChatTabsContext } from '../../../Context/chatTabs'
 import { getAllUsers, fetchAllUsers,  fetchAsyncUser, getAuthUser  } from '../../../Redux/features/auth/authSlice'
-import { GROUPCHATMESSAGES, USER } from '../../../utils/types'
+import { GROUPCHATMESSAGES} from '../../../utils/types'
 
 
 //  import { getOnlineUsers, fetchOnlineUsers } from '../../../Redux/features/auth/authSlice'
@@ -28,8 +28,13 @@ console.log(group)
 
 
    const allusers = useAppSelector(getAllUsers)
- 
+   
+   const groupUser = (data:string|undefined) => {
+   const user = allusers.filter(user =>  user.id  == data)
+   return user
+   }
 
+   
    const handleEmojiSelect = (emoji:string ) => {
     dispatch({ type: 'SET_CURRENTGROUP_MESSAGE', payload:  currentGroupMessage + emoji})
     setShowEmojiPicker(false);
@@ -137,10 +142,9 @@ useEffect(() => {
     <section>  
       
 
-  <div className='flex flex-col h-screen'>
+  <div className='flex bg-white flex-col h-screen '>
 
-<div className='flex-1 overflow-y-auto px-4 space-x-4 bg-gray-100  dark:bg-gray-700'>
-    <div className="flex sticky  bg-white   dark:bg-gray-800 text-black dark:text-white    top-0 flex-row ">
+    <div className="flex sticky  bg-white   dark:bg-gray-800 text-black dark:text-white  z-10   top-0 flex-row ">
     <div className="basis-1/3">
     <div className="flex ">
     <div style={{ backgroundImage: `url(${group?.group_image})` }} className='basis-2/2'>
@@ -166,62 +170,41 @@ useEffect(() => {
     </div>
   
   </div>
- <div className=''>
+ <div className='flex-1 overflow-y-auto px-4 space-x-4 bg-gray-100  dark:bg-gray-700 '>
 
-  {groupMessages && (<div className='space-y-2 '>
-            {groupMessages.map((msg:GROUPCHATMESSAGES, index:number) => (
+  {groupMessages && (<div className=''>
+            {groupMessages.map((msg:GROUPCHATMESSAGES, ) => (
            
-            <div className='flex' >
-            {allusers  && (    <div key={index}   className={` p-2 w-full  flex-none  rounded-lg ${
-               msg.user_id? "bg-violet-200  dark:bg-violet-400 border-1 font-medium  " : "bg-violet-400 dark:bg-violet-400  "
-             }`}>{
-    allusers.map((user:USER) => (
-     <div className=' flex '>
-       {/* <div className='flex-none h-10 w-10' key={index}>{msg.sender_id === user?.id && (<img height='50'  width='50' className=' rounded-full bg-cover '  src={user?.profile_image} /> )}</div>  */}
-      <div className='flex-auto '>
-      <div className=''>
-       <div className='' >{msg.user_id === user?.id && (<span className='text-base italic  dark:text-violet-800 font-medium'>{msg.message}</span> )}  </div>
-       <div className='' >{msg.user_id === user?.id && (msg.media && <img src={msg.media} height='100' width='100' /> )}  </div>
-      
-       <div className='w-15' >{msg.user_id === user?.id && (msg.files && (
-          <div className="flex flex-col h-100 items-center p-6">
-          <h5 className="text-2xl font-semibold mb-4">Files</h5>
-          
-          {/* PDF viewer using iframe */}
-          <div className="mb-6">
-            <iframe
-              src={msg.files}
-              className="w-full h-96 border-2 border-gray-300 rounded-md"
-              title="Document Viewer"
-            ></iframe>
-          </div>
-    
-        </div>
-       )
+            
+     
+            <div
+            className={`max-w-xs p-3 rounded-lg ${
+              msg.user_id === authUser?.id
+                ? 'ml-auto bg-slateBlue text-white rounded-br-none bubble-user '
+                : 'mr-auto bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-white my-3 rounded-bl-none bubble-bot'
+            }`}
+          >
+            <div>
+            <p className='italic'>{msg.message}</p>
          
-        )}  </div>
- 
-       <div className=' mr-2'>{msg.user_id === user?.id && (<span className='text-xs font-light '><i className='bx bx-time'></i>{convertTimestampToTime(msg.timestamp)}</span> )}  </div>
-       </div>
-       <div>{msg.user_id === user?.id && (<span className='text-xs font-normal text-slate-800'>{capitalizeFirstLetter(user.firstname)} {capitalizeFirstLetter(user.lastname)}</span> )}  </div>
-       
-       </div>
-      </div>
-    ))
-    
-    }</div>)}
-      <div ref={messagesEndRef} />
-            </div>
+              <p><span className='text-xs font-light '><i className='bx bx-time'></i>{convertTimestampToTime(msg.timestamp)}</span></p>
+             <p>{ msg.user_id  === authUser?.id ? ( "You" ): (groupUser( msg.user_id)[0].firstname)}</p>
+          </div>
+      
+          </div>
+        
            
                              ))} 
+              <div ref={messagesEndRef} />
           </div>)}
+      
       </div>
    </div>
       
   
    <div className='flex flex-row sticky  bg-slate-100  dark:bg-gray-900  bottom-0'>
          <div className='  basis-2/3 '> 
-          <input value={currentGroupMessage} onChange={(e) => dispatch({ type: 'SET_CURRENTGROUP_MESSAGE', payload: e.target.value })}  className=" w-full h-10 rounded-md py-2 m-3 focus:outline-none  focus:ring-purple-600 focus:border-transparent focus: placeholder-gray-500   bg-gray-200" placeholder="Enter Message"/>
+          <input value={currentGroupMessage} onChange={(e) => dispatch({ type: 'SET_CURRENTGROUP_MESSAGE', payload: e.target.value })}  className=" w-full h-10 rounded-md py-2 m-3 focus:outline-none  focus:ring-purple-600 focus:border-transparent focus: placeholder-gray-500   bg-gray-200 dark:bg-gray-700 dark:text-white" placeholder="Enter Message"/>
          </div>
         
           <div className='basis-1/3 '>
@@ -236,7 +219,7 @@ useEffect(() => {
           
           <label
           htmlFor="file-upload"
-          className="cursor-pointer   bg-violet-600 text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300 "
+          className="cursor-pointer   bg-slateBlue text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300 "
         >
             <i className='bx bx-file text-white  bx-md'></i>
         </label>
@@ -281,7 +264,7 @@ useEffect(() => {
   
      <label
         htmlFor="image-upload"
-        className="cursor-pointer   bg-violet-600 text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300"
+        className="cursor-pointer   bg-slateBlue text-white flex items-center justify-center rounded-md shadow-lg hover:bg-blue-600 transition duration-300"
       >
           <i className='bx bx-image bx-md text-white'></i>
         <input
@@ -310,7 +293,7 @@ useEffect(() => {
      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Image</div>
      </div>
   <div className='relative group m-2'>    
-    {authUser && (<button className='  rounded-md' type='submit' onClick={() => sendGroupMessage()}><i className='bx bx-play text-white  bg-violet-600 bx-md' ></i></button>)}
+    {authUser && (<button className='  rounded-md' type='submit' onClick={() => sendGroupMessage()}><i className='bx bx-play text-white  bg-slateBlue bx-md' ></i></button>)}
     <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-black text-white  dark:bg-gray-800  dark:text-white text-sm rounded px-2 py-1">Send </div>
     </div>
   </div>
@@ -318,12 +301,13 @@ useEffect(() => {
    
 
   
-    </div>
+  
       
       
  
       
   </div>
+
   </section>
   )
 }

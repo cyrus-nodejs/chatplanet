@@ -9,16 +9,33 @@
   
   color-scheme: light dark;
   /* color: #21284cf7; */
-  background-color: rgba(255, 255, 255, 0.87);
+  background-color: #FAFAFD;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-*{
-   color: 	#1d1e1f
+
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
 }
+
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* *{
+   color: 	#1d1e1f
+} */
 /* width */
 ::-webkit-scrollbar {
   width: 5px;
@@ -57,4 +74,34 @@
    /* You can change this to any color */
   border-radius: 0 0 50% 50%; /* Creates the wave shape */
   z-index: -1; /* Places the wave behind the chat box */
+}
+
+/* Speech bubble tail for user messages */
+.bubble-user::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color: #3b82f6; /* Tailwind blue-500 */
+  border-bottom: 0;
+  border-right: 0;
+  margin-left: -5px;
+}
+
+/* Speech bubble tail for bot messages */
+.bubble-bot::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color: #d1d5db; /* Tailwind gray-300 */
+  border-bottom: 0;
+  border-left: 0;
+  margin-right: -5px;
 }

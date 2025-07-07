@@ -19,8 +19,8 @@ const Contact = () => {
     query: string;
   }
    
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   let data: any;
+  
+   let data;
    console.log(data)
 
 
@@ -90,7 +90,7 @@ const [hidden, setHidden] = useState(true)
       <div className="flex mt-4 justify-between " >
   <div className="text-left font-mono text-2xl text-slate-500">Contacts</div>
  <div className='relative group'><button
-        className="px-3 py-3 bg-violet-600 text-white rounded-md hover:bg-violet-800"
+        className="px-3 py-3 bg-slateBlue text-white rounded-md hover:bg-violet-800"
         onClick={toggleContactModal}
       >
         <i className='bx bxs-user-plus bx-sm' ></i>

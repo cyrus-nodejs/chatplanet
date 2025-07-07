@@ -10,7 +10,7 @@ import Languages from "../Pages/MenuItems/Languages"
 import Groups from "../Pages/MenuItems/Groups"
 import Settings from "../Pages/MenuItems/Settings"
 // import Homechat from "../Pages/MenuItems/Homechat"
-import PrivateMessages from "../Pages/Home/ChatBox/PrivateMessages";
+import PrivateMessages from "../Pages/Home/ChatBox/PrivateMessage/PrivateMessages";
 import GroupMessages from "../Pages/Home/ChatBox/GroupMessages";
 import { tabsType} from "../utils/types"
 
@@ -54,7 +54,7 @@ export const  ChatTabsProvider = ({ children}:{ children: React.ReactNode } ) =>
   const Tab3 = <i className='bx bx-message-square-dots bg-white text-gray-700  dark:bg-gray-800  dark:text-slate-500   bx-sm'></i>
   const Tab2 =<i className='bx bxs-user bg-white text-gray-700    dark:bg-gray-800  dark:text-slate-500    bx-sm'></i>
   const Tab4 = <i className='bx bx-group bx-sm bg-white text-gray-700  dark:bg-gray-800  dark:text-slate-500 ' ></i>
-   const Tab5 = <i className='bx bxs-contact bx-sm bg-white text-gray-700  dark:bg-green-800  dark:text-green-500 ' ></i>
+   const Tab5 = <i className='bx bxs-contact bx-sm bg-white text-gray-700' ></i>
   const Tab6 = <i className='bx bx-cog bx-sm bg-white text-gray-700   dark:bg-gray-800  dark:text-slate-500 ' ></i>
   const Tab7 = <i className='bx bx-globe bx-sm bg-white text-gray-700   dark:bg-gray-800  dark:text-slate-500 '></i>
 
