@@ -42,7 +42,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
-cron.schedule('*/5 * * * *', async () => {
+cron.schedule('*/1440 * * * *', async () => {
   try {
     const url = process.env.SERVER_URL!;
     await axios.get(url);
