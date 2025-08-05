@@ -128,8 +128,8 @@ export const Login:RequestHandler = async (req: Request, res: Response): Promise
     // Set sessionId as HTTP-only cookie
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
-      secure:process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure:true,
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000
     });
 
@@ -181,8 +181,8 @@ export const twoFactorLogin:RequestHandler = async (req: Request, res: Response)
     // Clear session cookie
     res.clearCookie('sessionId', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none'
+      secure: true,
+      sameSite: 'lax'
     });
 
       const userPayload =  {
@@ -199,14 +199,14 @@ export const twoFactorLogin:RequestHandler = async (req: Request, res: Response)
     // Set JWT as cookie 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      secure: true,
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000
     });
 
     res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
@@ -248,7 +248,7 @@ const userPayload =  {
 
     res.cookie('accessToken', newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'none',
       maxAge: 15 * 60 * 1000,
     });
