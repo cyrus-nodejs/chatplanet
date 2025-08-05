@@ -3,7 +3,7 @@ import {
   addContact,  getContact, searchContacts
  } from "../controllers/Contact";
 
- import { authenticateJWT } from '../middlewares/jwt/jwt';
+ import { authorizeJWT } from '../middlewares/jwt/jwt';
 const router = express.Router();
 
 
@@ -11,9 +11,9 @@ const router = express.Router();
 
 
  
-router.post('/addcontact', authenticateJWT,  addContact )
-router.get('/getcontacts', authenticateJWT,   getContact )
-router.get('/search-contact', authenticateJWT,   searchContacts )
+router.post('/addcontact', authorizeJWT,  addContact )
+router.get('/getcontacts', authorizeJWT,   getContact )
+router.get('/search-contact', authorizeJWT,   searchContacts )
 
  
   

@@ -1,7 +1,7 @@
 import { createSlice,  createAsyncThunk } from '@reduxjs/toolkit'
 import { USER } from '../../../utils/types'
 import { RootState } from '../../app/store'
-import axios from 'axios'
+import axios from '../../../utils/axios/axiosconfig'
 
 
 
@@ -9,12 +9,12 @@ export interface AuthState {
   onlineUsers:USER[]
   allUsers:USER[]
    authUser: USER | null | undefined 
-  
+     sessionId: string | null
     isAuthenticated: boolean
      isAuthorized: boolean
     status:  'idle' | 'pending' | 'succeeded' | 'failed'
     success:boolean
-    error:string | null | undefined
+    error:null | { success: boolean; message: string }
     message:string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     token:any
@@ -25,7 +25,7 @@ const initialState: AuthState = {
   onlineUsers:[],
   allUsers:[],
    authUser: null,
-  
+    sessionId:null,
     isAuthenticated: false,
     isAuthorized: false,
     message:"",
@@ -50,19 +50,28 @@ export const fetchAsyncUser = createAsyncThunk(
   
 //   // Login routes
       export const fetchLogin = createAsyncThunk(
-        'auth/fetchLogin', async (data:{email:string, password:string}) => {
+        'auth/fetchLogin', async (data:{email:string, password:string},  { rejectWithValue }) => {
          const { email, password} = data
-            const response= await axios.post(`${BASEURL}/login`,{email, password},   
-              { withCredentials: true }  )
+         try {
+            const response= await axios.post(`${BASEURL}/login`, {email, password}, { withCredentials: true }  )
             console.log(response.data)
             return response.data
-          });
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         } catch (err: any) {
+      if (err.response && err.response.data) {
+        // Pass full backend error response
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue({ success: false, message: err.message });
+    }
+  }
+          );
 
           // Multifactor factor authentication verifcation route
-          export const fetch2FaLogin = createAsyncThunk(
-            'auth/fetch2FaLogin', async (data:{mfacode:string}) => {
+          export const twoFactorLogin = createAsyncThunk(
+            'auth/twoFactorLogin', async (data:{mfacode:string}) => {
              const { mfacode} = data
-                const response= await axios.post(`${BASEURL}/login/2fa`,{mfacode},{ withCredentials: true })
+                const response= await axios.post(`${BASEURL}/login/2fa`, {mfacode}, { withCredentials: true })
                 console.log(response.data)
                 return response.data
               });
@@ -137,13 +146,13 @@ export const authSlice = createSlice({
     })
     .addCase(fetchAsyncUser.fulfilled, (state, action) => {
          state.authUser= action.payload.user
-         state.isAuthenticated = true
-         state.isAuthorized = true
+         state.isAuthorized = action.payload.success
          state.message= action.payload.message
       })
       .addCase(fetchAsyncUser.rejected, (state, action) => {
         state.status = 'failed'
-        state.error = action.error.message;
+        state.error = action.payload as AuthState['error'];
+       
         
       })
 
@@ -156,10 +165,11 @@ export const authSlice = createSlice({
       .addCase(fetchAsyncLogout.fulfilled, (state, action) => {
       state.status = 'succeeded'
       state.message= action.payload.message
+    
       })
       .addCase(fetchAsyncLogout.rejected, (state, action) => {
         state.status = 'failed'
-        state.error = action.error.message;
+        state.error = action.payload as AuthState['error'];
       })
 
       .addCase(fetchLogin.pending, (state) => {
@@ -167,26 +177,29 @@ export const authSlice = createSlice({
         })
         .addCase(fetchLogin.fulfilled, (state, action) => {
           state.message= action.payload.message
-          state.success = action.payload.success
           state.isAuthenticated = true
+          window.location.href = '/2facode/verify'
         })
         .addCase(fetchLogin.rejected, (state, action) => {
           state.status = 'failed'
-          state.error = action.error.message;
+          state.error = action.payload as AuthState['error'];
+           
+          //  state.message = action.payload
         })
 
-        .addCase(fetch2FaLogin.pending, (state) => {
+        .addCase(twoFactorLogin.pending, (state) => {
           state.status = 'pending'
           })
-          .addCase(fetch2FaLogin.fulfilled, (state, action) => {
+          .addCase(twoFactorLogin.fulfilled, (state, action) => {
             state.authUser= action.payload.user
-            state.isAuthenticated = true
-            state.isAuthorized = true
+            state.isAuthorized = action.payload.success
             state.message= action.payload.message
+             window.location.href = '/'
           })
-          .addCase(fetch2FaLogin.rejected, (state, action) => {
+          .addCase(twoFactorLogin.rejected, (state, action) => {
             state.status = 'failed'
-            state.error = action.error.message;
+            state.error = action.payload as AuthState['error'];
+            
           })
 
         .addCase(fetchRegister.pending, (state) => {
@@ -198,7 +211,7 @@ export const authSlice = createSlice({
       })
       .addCase(fetchRegister.rejected, (state, action) => {
         state.status = 'failed'
-        state.error = action.error.message;
+        state.error = action.payload as AuthState['error'];
       })
       
       .addCase(fetchForgotPassword.pending, (state) => {
@@ -210,7 +223,7 @@ export const authSlice = createSlice({
         })
         .addCase(fetchForgotPassword.rejected, (state, action) => {
           state.status = 'failed'
-          state.error = action.error.message;
+          state.error = action.payload as AuthState['error'];
         })
 
         .addCase(fetchResetPassword.pending, (state) => {
@@ -223,7 +236,7 @@ export const authSlice = createSlice({
           })
           .addCase(fetchResetPassword.rejected, (state, action) => {
             state.status = 'failed'
-            state.error = action.error.message;
+            state.error = action.payload as AuthState['error'];
           })
 
           builder.addCase(fetchOnlineUsers.pending, (state) => {
@@ -236,7 +249,7 @@ export const authSlice = createSlice({
             })
             .addCase(fetchOnlineUsers.rejected, (state, action) => {
               state.status = 'failed'
-              state.error = action.error.message;
+              state.error = action.payload as AuthState['error'];
             })
 
             builder.addCase(fetchAllUsers.pending, (state) => {
@@ -248,7 +261,7 @@ export const authSlice = createSlice({
               })
               .addCase(fetchAllUsers.rejected, (state, action) => {
                 state.status = 'failed'
-                state.error = action.error.message;
+                state.error = action.payload as AuthState['error'];
                 
               })
       
@@ -266,6 +279,8 @@ export const getAuthSuccess = (state:RootState) => state.auth.success
 export const getOnlineUsers = (state:RootState) => state.auth.onlineUsers
 export const getAllUsers = (state:RootState) => state.auth.allUsers
 export const getMessage =(state:RootState) => state.auth.message
+export const getError =(state:RootState) => state.auth.error
+export const getSessionId =(state:RootState) => state.auth.sessionId
 export const getSuccessStatus =(state:RootState) => state.auth.success
 
 

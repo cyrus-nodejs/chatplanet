@@ -1,6 +1,5 @@
 import Index from './Pages/Home/Index'
-// import { useEffect} from 'react';
-// import { useLocation } from 'react-router-dom';
+
 import './App.css'
 import ResetPassword from "./Pages/Auth/ResetPassword";
 import ForgotPassword from "./Pages/Auth/ForgotPassword";
@@ -9,7 +8,7 @@ import Login from "./Pages/Auth/Login";
 import TwoFactorAuth from './Pages/Auth/TwoFactorAuth';
 import ErrorPage from './Pages/Auth/Error';
 import IsAuthorizedRoute from './Pages/ProtectedRoutes/isAuthorizedRoutes';
-import IsVerifiedRoute from './Pages/ProtectedRoutes/isVerifiedRoutes';
+
 import { useEffect } from 'react';
 import { fetchAsyncUser } from './Redux/features/auth/authSlice';
 import { useAppDispatch } from './Redux/app/hook';
@@ -36,13 +35,6 @@ function App() {
 }, [dispatch])
 
   
-  // useEffect(() => {
-  //   const loadFlyonui = async () => {
-  //     await import('flyonui/flyonui');
-     
-  //   };
-  //   loadFlyonui();
-  // },  );
 
 
  
@@ -82,9 +74,7 @@ function App() {
   {
     path: `/2facode/verify`,
     element:  (
-      <IsVerifiedRoute>
         <TwoFactorAuth />
-      </IsVerifiedRoute>
     ),
     errorElement: <ErrorPage />
   }

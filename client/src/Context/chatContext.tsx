@@ -21,6 +21,7 @@ const date = new Date(iso);
   
 const socket  = useRef<Socket | null | void>(null);
   socket.current = io(SOCKET_SERVER_URL, {
+    withCredentials: true,
   transports: ["websocket"]
 });
   

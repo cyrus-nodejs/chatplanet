@@ -1,24 +1,30 @@
 import { pool } from '../models/connectDb'
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt'
-import { createAccessToken, forgotPasswordToken, create2FAtoken } from '../middlewares/jwt/jwt';
+import { createAccessToken, createRefreshToken, forgotPasswordToken,  verifyRefreshToken } from '../middlewares/jwt/jwt';
 import { contactEmail } from '../utils/nodemailer';
 import { Request, Response, NextFunction } from 'express'
 import speakeasy from 'speakeasy'
 import jwt from 'jsonwebtoken'
-import { USER } from '../src/types/@types';
+
+import dotenv from "dotenv";
+
+dotenv.config()
 
 
+import {getRedisClient}  from '../src/config/redis'; // Assuming you're using Redis for MFA sessions
+
+import { RequestHandler } from 'express';
 
 
 //Signup and save new User to database
-export const Register = async (req: any, res: any) => {
+export const Register: RequestHandler = async (req: any, res: any): Promise<void> => {
   try {
     const { email, firstname, lastname, password, mobile } = req.body;
 
     if (!email || !firstname || !lastname || !password || !mobile) {
-       res.status(400).json({ success: false, message: 'All fields are required' });
-         return;
+     return void  res.status(400).json({ success: false, message: 'All fields are required' });
+        
     }
 
     // Check for existing user by email or mobile
@@ -30,7 +36,7 @@ export const Register = async (req: any, res: any) => {
     if (existingUser.rows.length > 0) {
       const user = existingUser.rows[0];
       const conflictField = user.email === email ? 'email' : 'mobile';
-      res.status(409).json({ success: false, message: `User with this ${conflictField} already exists` });
+    return void   res.status(409).json({ success: false, message: `User with this ${conflictField} already exists` });
     }
 
     const salt = await bcrypt.genSalt();
@@ -45,7 +51,7 @@ export const Register = async (req: any, res: any) => {
 
     const result = await pool.query(sqlInsert, values);
 
-     res.status(201).json({
+  return void    res.status(201).json({
       success: true,
       message: 'User registered successfully!',
       userId: result.rows[0].id,
@@ -60,7 +66,7 @@ export const Register = async (req: any, res: any) => {
       });
     }
 
-     res.status(500).json({
+  return void    res.status(500).json({
       success: false,
       message: 'Internal server error',
     });
@@ -69,154 +75,193 @@ export const Register = async (req: any, res: any) => {
 
 // email password authentication
 
+const mfaSessions: Record<string, { userId: number; expiresAt: number }> = {};
 
-export const Login = async (req: Request, res: Response) => {
+export const Login:RequestHandler = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
+  const redis = getRedisClient();
+
+
   if (!email || !password) {
-   res.status(400).json({ success: false, message: 'Email and password required' });
+    return  void res.status(400).json({ success: false, message: 'Email and password are required' });
   }
 
   try {
-    const sqlSearch = 'SELECT * FROM users WHERE email = $1';
-    const result = await pool.query(sqlSearch, [email]);
-
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     if (result.rowCount === 0) {
-     res.status(401).json({ success: false, message: 'Incorrect email or password' });
+      return void  res.status(401).json({ success: false, message: 'User not found' });
     }
 
     const user = result.rows[0];
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-     res.status(401).json({ success: false, message: 'Incorrect email or password' });
+      return void  res.status(403).json({ success: false, message: 'Incorrect email or password' });
     }
 
-    // Generate MFA secret per user — should actually be stored per-user in DB for reuse
+    // Generate MFA secret and OTP
     const secret = speakeasy.generateSecret({ name: 'ChatPlanet' });
-    const mfaCode = speakeasy.totp({
-      secret: secret.base32,
-      encoding: 'base32'
-    });
+    const mfaCode = speakeasy.totp({ secret: secret.base32, encoding: 'base32' });
 
-   
-// Store secret in DB
-await pool.query(
-  'UPDATE users SET mfa_secret = $1 WHERE id = $2',
-  [secret.base32, user.id]
-);
+    // Store MFA secret in Redis with sessionId
+    const sessionId = uuidv4();
+    await redis.setEx(`mfa:${sessionId}`, 900, JSON.stringify({
+      userId: user.id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      secret: secret.base32
+    })); // Expires in 15 mins
+
+    // Send MFA code via email
     await contactEmail.sendMail({
       from: `ChatPlanet 👻 <${process.env.Email}>`,
       to: user.email,
       subject: '2FA CODE',
       html: `
-        <p>You anyed a one-time code for authentication:</p>
+        <p>Your one-time MFA code:</p>
         <h2>${mfaCode}</h2>
-        <p>This code is valid for 15 minutes.</p>
-        <p>If you didn’t any this, please secure your account.</p>
+        <p>This code expires in 15 minutes.</p>
       `
     });
-
-    const tokenData = {
-      id: user.id,
-      email: user.email,
-      firstname: user.firstname,
-      lastname: user.lastname,
-    };
-
-    console.log('This is', tokenData)
-    const token = create2FAtoken(tokenData);
-
-    res.cookie('token', token, {
+    console.log(`This is cookie ${sessionId} `)
+    // Set sessionId as HTTP-only cookie
+    res.cookie('sessionId', sessionId, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none'
+      secure:process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 15 * 60 * 1000
     });
 
-   res.json({
-      success: true,
-      message: `MFA code sent to ${user.email}`,
-       token:token
-    });
+    return void  res.json({ success: true, message: 'MFA code sent to your email' });
   } catch (err) {
     console.error('Login error:', err);
-   res.status(500).json({ success: false, message: 'Internal Server Error' });
+    return void  res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 //Multifactor authentication
-    export const twoFactorLogin  = async (req:Request, res:Response, next:NextFunction) =>{
+  
+export const twoFactorLogin:RequestHandler = async (req: Request, res: Response): Promise<void> => {
+  const { mfacode } = req.body;
+  const sessionId = req.cookies.sessionId  || req.headers.authorization?.split(' ')[1] ;
+   console.log(sessionId)
+    const redis = getRedisClient();
 
-          const {  mfacode } = req.body;
-           const User =  req?.user as USER
-           const userId=User.id
-           console.log(`this is ${req.user}`)
-  if (!userId || !mfacode) {
-   res.status(400).json({ success: false, message: 'MFA code and user ID are required' });
-     
+  if (!sessionId) {
+    return void  res.status(400).json({ success: false, message: 'Session expired or invalid' });
+  }
+
+  if (!mfacode) {
+    return void  res.status(400).json({ success: false, message: 'MFA code is required' });
   }
 
   try {
-    // Step 1: Get the stored MFA secret
-    const result = await pool.query(
-      'SELECT id, email, firstname, lastname, mfa_secret FROM users WHERE id = $1',
-      [userId]
-    );
-
-    if (result.rowCount === 0) {
-     res.status(404).json({ success: false, message: 'User not found' });
+    const sessionData = await redis.get(`mfa:${sessionId}`);
+    if (!sessionData) {
+      return void  res.status(400).json({ success: false, message: 'MFA session expired' });
     }
 
-    const user = result.rows[0];
-  
-    if (!user.mfa_secret) {
-     res.status(400).json({ success: false, message: 'MFA not initiated or expired' });
-    }
-
-    // Step 2: Verify the MFA code
+    const userData = JSON.parse(sessionData);
+    console.log(userData)
+    // Verify MFA code
     const verified = speakeasy.totp.verify({
-      secret: user.mfa_secret,
+      secret: userData.secret,
       encoding: 'base32',
       token: mfacode,
-      window: 1, // allows ±30s drift
+      window: 1
     });
-
-
 
     if (!verified) {
-     res.status(401).json({ success: false, message: 'Invalid MFA code' });
+      return void  res.status(401).json({ success: false, message: 'Invalid MFA code' });
     }
 
-    // Step 3: Clean up MFA secret 
-    await pool.query('UPDATE users SET mfa_secret = NULL WHERE id = $1', [user.id]);
+    // Remove MFA session
+    await redis.del(`mfa:${sessionId}`);
 
-    // Step 4: Create a session token (e.g., full auth token)
-    const accessToken = createAccessToken({
-      id: user.id,
-      email: user.email,
-      firstname: user.firstname,
-      lastname: user.lastname
+    // Clear session cookie
+    res.clearCookie('sessionId', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none'
     });
-    console.log('This is', accessToken)
-    // Step 5: Set cookie or return token
-    
+
+      const userPayload =  {
+      id: userData.userId,
+      email: userData.email,
+      firstname: userData.firstname,
+      lastname: userData.lastname
+    }
+
+    // Generate JWT
+    const accessToken = createAccessToken(userPayload);
+     const refreshToken = createRefreshToken(userPayload);
+
+    // Set JWT as cookie 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000 // 1 day
+      maxAge: 24 * 60 * 60 * 1000
     });
 
-   res.json({ success: true, message: 'MFA verified. Login successful!', user:req.user, accessToken:accessToken });
-  return;
+    res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+    
+    delete userData.secret; // remove sensitive info
+
+    return void  res.status(200).json({ success: true, message: 'Login successful', user: userData });
   } catch (err) {
-    console.error('verifyMFA error:', err);
-   res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error('MFA verify error:', err);
+    return void  res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
+};
+   
+
+export const refreshAccessToken:RequestHandler = async (req:Request, res:Response): Promise<void> => {
+  const redis = getRedisClient();
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return void res.status(401).json({ success: false, message: 'No refresh token provided' });
+
+  try {
+    const decoded = verifyRefreshToken(refreshToken);
+if (decoded) {
+    // Check if token matches stored one in Redis
+    const storedToken = await redis.get(`refresh:${decoded?.id}`);
+    if (storedToken !== refreshToken) {
+      return void res.status(403).json({ success: false, message: 'Invalid refresh token' });
     }
 
-   
+
+const userPayload =  {
+      id:  decoded.id,
+      email: decoded.email,
+      firstname: decoded.firstname,
+      lastname: decoded.lastname
+    }
+    const newAccessToken = createAccessToken(userPayload);
+
+      
+
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 15 * 60 * 1000,
+    });
+  return void res.json({ success: true, message: 'Token refreshed' });
+}
+  
+  
+  } catch (err) {
+    return void res.status(403).json({ success: false, message: 'Invalid or expired refresh token' });
+  }
+};
     // Forgot password
-export const ForgotPassword = async (req: Request, res: Response) => {
+export const ForgotPassword:RequestHandler = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body;
 
   try {
@@ -334,23 +379,24 @@ export const getAuthUser = async (req: Request, res: Response) => {
     user: req.user,
   });
 };
-  //Retrieve authenticated User
-export const LogOut = async (req: any, res: any) => {
-  if (!req.user) {
-   res.status(401).json({ success: false, message: "No user found" });
+
+  
+export const LogOut = async (req:any, res:any) => {
+    const redis = getRedisClient();
+  const refreshToken = req.cookies.refreshToken;
+  if (refreshToken) {
+    try {
+      const decoded = verifyRefreshToken(refreshToken);
+      await redis.del(`refresh:${decoded?.id}`);
+    } catch {}
   }
 
-  res.clearCookie('accessToken', {
-    httpOnly: true,
-    secure: true,       // set true if HTTPS
-    sameSite: 'None',   // adjust according to your client setup
-  });
+  res.clearCookie('accessToken');
+  res.clearCookie('refreshToken');
 
-  console.log('Cookie cleared');
- res.status(200).json({ success: true, message: 'Logout success!' });
-   return;
+  return res.json({ success: true, message: 'Logged out successfully' });
 };
-  
+
   
 
 

@@ -2,20 +2,25 @@ import dotenv from 'dotenv';
 import httpServer, { corsOptions } from './server';
 import {pool} from '../models/connectDb'
 import { Server, Socket } from "socket.io";
-
+import { verifyAccessToken } from '../middlewares/jwt/jwt';
+import jwt, {JwtPayload} from 'jsonwebtoken'
+import { parse } from 'cookie';
 import { v4 as uuidv4 } from 'uuid';
+import { initRedis } from './config/redis';
 // Socket.IO: handle user connections
 
 const PORT = process.env.PORT || 5000;
 
+dotenv.config();
 
 
 
-;
 
 
 
 
+(async () => {
+  await initRedis(); 
 
 
 
@@ -32,8 +37,38 @@ let users : any = {};
     transports: ["websocket", 'polling']
 });
 
+interface AuthenticatedSocket extends Socket {
+  user?: JwtPayload | string;
+}
+
+
+io.use((socket, next) => {
+  const cookieHeader = socket.handshake.headers.cookie;
+
+  if (!cookieHeader) {
+    return next(new Error('Authentication error: No cookie'));
+  }
+
+  const cookies = parse(cookieHeader);
+  const token = cookies.accessToken;  // name must match res.cookie key
+
+  if (!token) {
+    return next(new Error('Authentication error: Token missing'));
+  }
+
+  try {
+    const decoded = verifyAccessToken(token);
+    (socket as any).user = decoded;
+    next();
+  } catch (err) {
+    next(new Error('Authentication error: Invalid token'));
+  }
+});
 
 io.on('connection', (socket:Socket) => {
+
+console.log(`Connected user: ${socket.id}`);
+socket.emit("welcome", { message: "Authenticated successfully" });
 
 httpServer.on('connection', (socket) => {
   socket.setNoDelay(true);
@@ -456,7 +491,6 @@ socket.on('disconnect', () => {
 });
 
 
-dotenv.config()
 
 
 
@@ -470,10 +504,18 @@ const connectDB = () => {
   })
 }
 
-connectDB()
+connectDB();
 
 
+
+
+// Initialize Redis before starting the server
+
+  
 httpServer.listen(PORT, () => {
   console.log(`[server]: ChatPlanet Server Active!!! http://localhost:${PORT}`);
 });
 
+
+
+})();

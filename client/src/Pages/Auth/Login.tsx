@@ -1,17 +1,17 @@
 
-import {  redirect, useNavigate, Navigate } from 'react-router-dom';
+
 import "../../index.css"
 
-
+import { Navigate } from "react-router-dom";
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 
-import {useEffect,  useState} from 'react';
+import {  useState} from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../Redux/app/hook';
-import  {getMessage, getAuthSuccess, getAuthUser, getIsAuthorized, getIsAuthenticated, fetchLogin} from '../../Redux/features/auth/authSlice';
+import  {getMessage, getAuthUser, getIsAuthorized , getError,  fetchLogin} from '../../Redux/features/auth/authSlice';
 
 
 const Login = () => {
@@ -20,16 +20,17 @@ const Login = () => {
     email:string,
   }
    
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const dispatch = useAppDispatch()
   
 
       
   const message = useAppSelector(getMessage)
-  const success = useAppSelector(getAuthSuccess)
-  const isAuthenticated = useAppSelector(getIsAuthenticated)
-  const isAuthorized = useAppSelector(getIsAuthorized)
   const user = useAppSelector(getAuthUser)
+  const isAuthorized = useAppSelector(getIsAuthorized)
+  const error = useAppSelector(getError)
+  //  const success = useAppSelector(getAuthSuccess)
+
   const [submitting, setSubmitting] = useState(false);
 
 
@@ -57,26 +58,20 @@ const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      password: '',
+      password: "",
       email:"",
     },
     validationSchema,
     onSubmit: handleSubmit,
   });
 
-  useEffect(() => {
-   if(success && isAuthenticated){
-    navigate('/2facode/verify')
-   }else{
-    redirect("/login")
-   }
-  }, [dispatch, isAuthenticated, navigate, success])
+
 
   return (
 
           
           <div className="flex bg-slate-50  m-auto h-screen ">
-        {isAuthenticated && isAuthorized && user && (
+       { isAuthorized && user && (
           <Navigate to="/" replace={true} />
         )}
               <div className="m-auto p-auto w-96">
@@ -124,7 +119,7 @@ const Login = () => {
 
   <div className=' text-gunMetal'> Not registered?  <a href="/register" className='text-violet-500' >Sign up</a></div>
 </div>
-          <p className="text-violet-500  mt-2  text-center">{message}</p> 
+ <p className={`${ message ?  'text-green-500 mt-2 text-center'  : 'text-red-500 mt-2 text-center'  } `}>{message ? message : error?.message.toString()}</p>
                </form>
   
          

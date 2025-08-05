@@ -5,13 +5,16 @@ import { useAppDispatch, useAppSelector } from '../../Redux/app/hook';
 import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { fetchResetPassword, getMessage } from '../../Redux/features/auth/authSlice';
+import { fetchResetPassword, getMessage, getError } from '../../Redux/features/auth/authSlice';
 
 
 const ResetPassword = () => {
   const {id} = useParams()
   const dispatch = useAppDispatch()
+
   const message = useAppSelector(getMessage)
+  const error = useAppSelector(getError)
+
   const [submitting, setSubmitting] = useState(false);
 
 
@@ -92,7 +95,7 @@ interface FormValues {
 
                </form>
     <div className="ms-auto fs-4 p-2"><p className="fs-6 mr-4 ">  <a href="/Login" className="text-decoration-none text-reset fs-5">Login</a></p></div>
-    <p className="text-danger text-center">{message}</p>
+ <p className={`${ message ?  'text-green-500 mt-2 text-center'  : 'text-red-500 mt-2 text-center'  } `}>{message ? message : error?.message.toString()}</p>
    
 </div>
     

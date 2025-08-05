@@ -1,13 +1,9 @@
 
 import jwt from 'jsonwebtoken'
 import { NextFunction  } from "express";
+import { verifyToken } from 'authenticator';
 
-// Create JWT for Two factor Authorization
- export const createAccessToken = (data:{id:string, email:string, firstname:string, lastname:string}) => {
-return jwt.sign(data, process.env.ACCESSTOKEN!,  {
-  expiresIn:process.env.JWT_ACCESS_EXPIRATION!,
-})
-} 
+
 
  //Create JWT for Two factor Authentication
 export const create2FAtoken = (data:{id:string, email:string, firstname:string, lastname:string}) => {
@@ -16,6 +12,16 @@ export const create2FAtoken = (data:{id:string, email:string, firstname:string, 
   })
   }
   
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    email: string;
+    firstname: string;
+    lastname: string;
+  };
+
+}
+
 
 // Create Forgot Password JWT 
   export const forgotPasswordToken = (id:string) => {
@@ -25,6 +31,72 @@ export const create2FAtoken = (data:{id:string, email:string, firstname:string, 
     }
   
 
+
+
+interface AccessTokenPayload {
+  id: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+}
+
+interface RefreshTokenPayload {
+  id: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+}
+
+
+export const createAccessToken = (payload: AccessTokenPayload): string => {
+  return jwt.sign(payload, process.env.ACCESSTOKEN! as string, {
+    expiresIn: process.env.JWT_ACCESS_EXPIRATION! || '15m', // Short-lived token
+  });
+};
+
+export const createRefreshToken = (payload: RefreshTokenPayload): string => {
+  return jwt.sign(payload, process.env.REFRESHTOKEN as string, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRATION! || '7d', // Long-lived token
+  });
+};
+
+export const verifyAccessToken = (token: string): AccessTokenPayload | null => {
+  try {
+    return jwt.verify(token, process.env.ACCESSTOKEN as string) as AccessTokenPayload;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const verifyRefreshToken = (token: string): RefreshTokenPayload | null => {
+  try {
+    return jwt.verify(token, process.env.REFRESHTOKEN as string) as RefreshTokenPayload;
+  } catch (error) {
+    return null;
+  }
+};
+
+
+ 
+
+export const authorizeJWT = (req:any,  res:any, next:any) => {
+const token = req.cookies.accessToken || req.headers.authorization?.split(' ')[1];
+console.log(token)
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESSTOKEN as string) as AuthenticatedRequest['user'];
+    req.user = decoded;
+   
+    next();
+  } catch (error) {
+    return res.status(403).json({ success: false, message: 'Invalid or expired token' });
+  }
+  
+}
+
 // Create Change Password JWT 
     export const changePasswordToken = (id:any) => {
       return jwt.sign({id}, process.env.CHANGE_PASSSWORD_TOKEN!,  {
@@ -33,67 +105,9 @@ export const create2FAtoken = (data:{id:string, email:string, firstname:string, 
       }
   
   
-      //verify JWT accessToken
-export const authenticateJWT = (req:any, res:any, next:any) => {
-  const accessToken = req.cookies.accessToken
-  console.log(`na this be ${accessToken}`)
-if (!accessToken){
-  console.log('No  token found, authorization denied!')
-  return res.json({success:false,  message:"No Acces Token, Please login!"})
-}else{
- // Verify the token using the secret key
- jwt.verify(accessToken, process.env.ACCESSTOKEN!, async (err:any, user:any) => {
-  if(err){
-    res.json({ success: false, message:`Invalid or expired token` })
-  }
-     else{
-    // Attach the user to req.user
-    req.user = user
-    console.log(req.user)
-     next(); 
-     // Proceed to the next middleware or route handle  
-     }  
-  
-})
-}
-
-
-};
-
-   
  
 
-export const authorizeJWT = (req:any,  res:any, next:any) => {
-  const token = req.cookies.token
-try{
-  // Fetching Token from request header
-
-console.log(token)
-console.log('getting login token')
-if (token){
-  jwt.verify(token, process.env.TWOFACODE_TOKEN!, async (err:any, user:any) => {
-    if(err){
-      res.json({success:false,  message:`Invalid or expired access token!`})
-    }
-         // Attach the user to req.user
-         req.user = user
-         console.log(req.user)
-         next(); 
-    // Proceed to the next middleware or route handle
- })
-  
-}else{
-  res.json({success:false,  message:"Login required!"})
-}
-
-
-}catch (err){
-console.log(err)
-}
-  
-}
-
-
+   
 
 
 
@@ -116,4 +130,13 @@ jwt.verify(forgotPasswordtoken , process.env.FORGOT_PASSWORD_TOKEN!, async (err:
 })
 next()  
 }
+
+
+
+
+
+
+
+
+
 

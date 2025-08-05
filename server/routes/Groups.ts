@@ -3,7 +3,7 @@ import {
 createGroup,addGroupMember,  getGroups, getGroupMember, searchGroup
  } from "../controllers/Groups";
 import { upload } from '../utils/storage';
- import { authenticateJWT } from '../middlewares/jwt/jwt';
+ import { authorizeJWT } from '../middlewares/jwt/jwt';
 const router = express.Router();
 
 
@@ -11,12 +11,12 @@ const router = express.Router();
 
 
  
-router.post('/creategroup', authenticateJWT, upload.fields([{ name: 'image', maxCount: 1 }]),  createGroup )
+router.post('/creategroup', authorizeJWT, upload.fields([{ name: 'image', maxCount: 1 }]),  createGroup )
 
-router.post('/add/groupmembers', authenticateJWT,   addGroupMember )
-router.get('/getgroups', authenticateJWT,   getGroups )
-router.get('/get/groupmembers', authenticateJWT,getGroupMember )
-router.get('/search-group', authenticateJWT, searchGroup)
+router.post('/add/groupmembers', authorizeJWT,   addGroupMember )
+router.get('/getgroups', authorizeJWT,   getGroups )
+router.get('/get/groupmembers', authorizeJWT,getGroupMember )
+router.get('/search-group', authorizeJWT, searchGroup)
 
 
  

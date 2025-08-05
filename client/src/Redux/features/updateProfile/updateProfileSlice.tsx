@@ -1,7 +1,7 @@
 import { createSlice,  createAsyncThunk } from '@reduxjs/toolkit'
 
 import { RootState } from '../../app/store'
-import axios from 'axios'
+import axios from '../../../utils/axios/axiosconfig'
 
 export interface updateprofileState {
     message:string,

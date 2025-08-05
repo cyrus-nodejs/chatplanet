@@ -11,11 +11,11 @@ import contactRoutes from '../routes/Contact'
 import groupRoutes from '../routes/Groups'
 import { createServer } from "http";
 import cors from "cors"
-import { authenticateJWT } from '../middlewares/jwt/jwt';
+import { authorizeJWT } from '../middlewares/jwt/jwt';
 import cookieParser from 'cookie-parser';
  import cron from 'node-cron';
 import axios from 'axios';
-
+// import redisClient from './config/redis'
 
 dotenv.config()
 
@@ -38,6 +38,14 @@ app.use(express.urlencoded({ extended: true }));
  app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 
 
+// // ✅ Ensure Redis is connected before starting the server
+// redisClient.on('connect', () => {
+//   console.log('✅ Redis is connected');
+// });
+
+// redisClient.on('error', (err) => {
+//   console.error('❌ Redis error:', err);
+// });
 
 
 
@@ -71,7 +79,7 @@ app.use(cors(corsOptions));
 
 app.set('trust proxy', 1) 
 
-app.get("/", authenticateJWT, async (req: any, res: any) => {
+app.get("/", authorizeJWT, async (req: any, res: any) => {
   res.send(`Express + TypeScript Server ${req.user.firstname} `);
   
 
