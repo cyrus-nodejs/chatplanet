@@ -129,7 +129,7 @@ export const Login:RequestHandler = async (req: Request, res: Response): Promise
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
       secure:true,
-      sameSite: 'lax',
+      sameSite: 'none',
       maxAge: 15 * 60 * 1000
     });
 
@@ -182,7 +182,7 @@ export const twoFactorLogin:RequestHandler = async (req: Request, res: Response)
     res.clearCookie('sessionId', {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax'
+      sameSite: 'none'
     });
 
       const userPayload =  {
@@ -200,7 +200,7 @@ export const twoFactorLogin:RequestHandler = async (req: Request, res: Response)
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000
     });
 
