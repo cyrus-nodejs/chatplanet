@@ -4,10 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config()
 
-// console.log(`${process.env.REDIS_USERNAME}`)
-// console.log(process.env.REDIS_HOST)
-// console.log(process.env.REDIS_PORT)
-// console.log(process.env.REDIS_PASSWORD)
+
 let redisClient: RedisClientType;
 
 export const initRedis = async (): Promise<RedisClientType> => {
